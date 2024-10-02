@@ -38,9 +38,8 @@ $(document).ready(() => {
   streams.home.forEach((tweet) => {
     //create a new div for each tweet
     const $tweet = $('<div class="tweet"></div>');
-  });
 
-  //create a clickable user element (wrap username in a span)
+    //create a clickable user element (wrap username in a span)
   const $user = $(`<span class="user">@${tweet.user}</span>`);
 
   //create a message element to hold the tweet's message
@@ -52,9 +51,28 @@ $(document).ready(() => {
   //append user, message, and time to the tweet div
   $tweet.append($user).append($message).append($time);
 
+  //append the newly created tweet to the tweet feed
+  $('#tweet-feed').append($tweet);
 
+  });
 
+  //event listener for posting a new tweet
+  $('#tweet-button').on('click', () => {
+    //get the tweet message from the textarea input
+    const tweetMessage = $('#tweet-input').val();
 
+    //if there is a message, proceed to add the message
+    if (tweetMessage) {
+      //function from data-generator.js
+      writeTweet(tweetMessage); 
+
+      //clear input after tweeting
+      $(#'tweet-input').val('');
+
+      //refresh the tweet feed to include the new tweet
+      createTweets();
+    }
+  });
 
   const $tweets = streams.home.map((tweet) => {
     const $tweet = $('<div></div>');
