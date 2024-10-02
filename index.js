@@ -49,7 +49,8 @@ $(document).ready(() => {
   //format the time using moment.js (from created_at property)
   const $time = $('<span class="time"></span>').text(moment(tweet.created_at).fromNow());
 
-  
+  //append user, message, and time to the tweet div
+  $tweet.append($user).append($message).append($time);
 
 
 
