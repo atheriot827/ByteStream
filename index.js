@@ -10,7 +10,14 @@ $(document).ready(() => {
   $body.html(''); //clears body - will clear tag you call it on
 
   //create the main container and title
-  const $container = $('<div class="container"></div>');
+  const $container = $('<div class="container"></div>').css({
+    width: '80%',
+    //centers the container
+    margin: '0 auto',
+    //centers the text
+    textAlign: 'center'
+  });
+
   const $title = $('<h1>Twiddler!</h1>');
 
   //create a tweet feed section where all tweets will be displayed
@@ -21,6 +28,7 @@ $(document).ready(() => {
     <div id="new-tweet">
       <textarea id ="tweet-input" placeholder="What\'s happening?"></textarea>
       <button id="tweet-button">Tweet</button>
+      <button id="refresh-button">Refresh Tweets</button>
     </div>
   `);
 
@@ -29,6 +37,46 @@ $(document).ready(() => {
 
   //append entire container to the body
   $body.append($container);
+
+//textarea and button styling
+$('#tweet-input').css({
+  //full width
+  width: '100%',
+  //height of textarea
+  height: '60px',
+  //space below textarea
+  marginBottom: '10px',
+  //inner padding
+  padding: '5px',
+  //border styling
+  border: '1px solid #ddd',
+  //rounded corners
+  borderRadius: '4px',
+});
+
+$('#tweet-button, #refresh-button').css({
+  //padding inside buttons
+  padding: '10px, 15px',
+  //margin between buttons
+  margin: '5px',
+  //no border
+  border: 'none',
+  //border radius
+  borderRadius: '4px',
+  //background color
+  backgroundColor: '#007bff',
+  //text color
+  color: 'white',
+  //pointer cursor on hover
+  cursor: 'pointer'
+});
+
+$('#tweet-button, #refresh-button').hover(
+  //hover effect
+  function() { $(this).css('backgroundColor', '#0056b3'); },
+  //restore color
+  function () { $(this).css('backgroundColor', '#007bff'); }
+)
 
   //function to create and display tweets
   function createTweets() {
