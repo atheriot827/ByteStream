@@ -26,8 +26,13 @@ $(document).ready(() => {
   //append the title, tweet feed, and new feed section to the container
   $container.append($title).append($tweetFeed).append($newTweet);
 
-  //put this into a function
+  //append entire container to the body
+  $body.append($container);
+
+  //function to create and display tweets
   function createTweets() {
+  //clear the tweet feed first before appending new tweets to avoid duplicates
+  $()
   const $tweets = streams.home.map((tweet) => {
     const $tweet = $('<div></div>');
     const text = `@${tweet.user}: ${tweet.message}`;
