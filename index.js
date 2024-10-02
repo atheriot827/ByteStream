@@ -4,6 +4,7 @@
 //wait until the document is fully loaded
 $(document).ready(() => {
 
+
   //clear the body - dynamically add content
   const $body = $('body');
   $body.html(''); //clears body - will clear tag you call it on
@@ -55,6 +56,7 @@ $(document).ready(() => {
   $('#tweet-feed').append($tweet);
 
   });
+}
 
   //event listener for posting a new tweet
   $('#tweet-button').on('click', () => {
@@ -67,24 +69,29 @@ $(document).ready(() => {
       writeTweet(tweetMessage); 
 
       //clear input after tweeting
-      $(#'tweet-input').val('');
+      $('#tweet-input').val('');
 
       //refresh the tweet feed to include the new tweet
       createTweets();
     }
   });
 
-  const $tweets = streams.home.map((tweet) => {
-    const $tweet = $('<div></div>');
-    const text = `@${tweet.user}: ${tweet.message}`;
+  //initial load: display the pre-generated tweets
+  createTweets();
 
-    $tweet.text(text);
-
-    return $tweet;
-  });
-  $body.append($tweets);
-}
 });
+
+  // const $tweets = streams.home.map((tweet) => {
+  //   const $tweet = $('<div></div>');
+  //   const text = `@${tweet.user}: ${tweet.message}`;
+
+  //   $tweet.text(text);
+
+  //   return $tweet;
+  // });
+  // $body.append($tweets);
+
+
 
 //create a tweets div
 //streams.home is an array of tweets
