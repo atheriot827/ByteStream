@@ -84,24 +84,37 @@ $('#tweet-button, #refresh-button').hover(
   $('#tweet-feed').html('');
   
   //map over the streams.home array to create tweet elements
-  streams.home.forEach((tweet) => {
-    //create a new div for each tweet
-    const $tweet = $('<div class="tweet"></div>');
+  streams.home.forEach((tweetData) => {
+
+    //create tweet styling
+    const $tweetDiv = $('div class="tweet"></div>').css({
+      //border around tweets
+      border: '1px solid #ddd',
+      //margin around each tweet
+      margin: '10px',
+      //padding inside tweet
+      padding: '10px',
+      //rounded corners
+      borderRadius: '5px',
+      //align text to the left
+      textAlign: 'left',
+    });
+
 
     //create a clickable user element (wrap username in a span)
-  const $user = $(`<span class="user">@${tweet.user}</span>`);
+  const $user = $(`<span class="user">@${tweetData.user}</span>`);
 
   //create a message element to hold the tweet's message
-  const $message = $('<p></p>').text(tweet.message);
+  const $message = $('<p></p>').text(tweetData.message);
 
   //format the time using moment.js (from created_at property)
-  const $time = $('<span class="time"></span>').text(moment(tweet.created_at).fromNow());
+  const $time = $('<span class="time"></span>').text(moment(tweetData.created_at).fromNow());
 
   //append user, message, and time to the tweet div
-  $tweet.append($user).append($message).append($time);
+  $tweetDiv.append($user).append($message).append($time);
 
   //append the newly created tweet to the tweet feed
-  $('#tweet-feed').append($tweet);
+  $('#tweet-feed').append($tweetDiv);
 
   });
 }
