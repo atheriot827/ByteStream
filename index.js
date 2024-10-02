@@ -32,7 +32,29 @@ $(document).ready(() => {
   //function to create and display tweets
   function createTweets() {
   //clear the tweet feed first before appending new tweets to avoid duplicates
-  $()
+  $('#tweet-feed').html('');
+  
+  //map over the streams.home array to create tweet elements
+  streams.home.forEach((tweet) => {
+    //create a new div for each tweet
+    const $tweet = $('<div class="tweet"></div>');
+  });
+
+  //create a clickable user element (wrap username in a span)
+  const $user = $(`<span class="user">@${tweet.user}</span>`);
+
+  //create a message element to hold the tweet's message
+  const $message = $('<p></p>').text(tweet.message);
+
+  //format the time using moment.js (from created_at property)
+  const $time = $('<span class="time"></span>').text(moment(tweet.created_at).fromNow());
+
+  
+
+
+
+
+
   const $tweets = streams.home.map((tweet) => {
     const $tweet = $('<div></div>');
     const text = `@${tweet.user}: ${tweet.message}`;
