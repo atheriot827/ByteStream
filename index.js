@@ -155,6 +155,15 @@ $('#tweet-button, #refresh-button').hover(
     }
   });
 
+//refresh button functionality
+$('#refresh-button').on('click', () => {
+  //reload all tweets when "Refresh Tweets" button is clicked
+  createTweets();
+})
+
+
+
+
   //initial load: display the pre-generated tweets
   createTweets();
 
