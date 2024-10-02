@@ -4,7 +4,6 @@
 //wait until the document is fully loaded
 $(document).ready(() => {
 
-
   //clear the body - dynamically add content
   const $body = $('body');
   $body.html(''); //clears body - will clear tag you call it on
@@ -23,20 +22,21 @@ $(document).ready(() => {
   //create a tweet feed section where all tweets will be displayed
   const $tweetFeed = $('<div id="tweet-feed"></div>');
 
-  //create a new tweet section with a text area and a button
-  const $newTweet = $(`
-    <div id="new-tweet">
-      <textarea id ="tweet-input" placeholder="What\'s happening?"></textarea>
-      <button id="tweet-button">Tweet</button>
-      <button id="refresh-button">Refresh Tweets</button>
-    </div>
-  `);
+  
+// Create tweet controls (textarea and buttons)
+const $tweetControls = $(`
+  <div id="tweet-controls">
+    <textarea id="tweet-input" placeholder="What's happening?"></textarea>
+    <button id="tweet-button">Tweet</button>
+    <button id="refresh-button">Refresh Tweets</button>
+  </div>
+`);
 
-  //append the title, tweet feed, and new feed section to the container
-  $container.append($title).append($tweetFeed).append($newTweet);
+// Append the title, tweet controls, and tweet feed to the container
+$container.append($title).append($tweetControls).append($tweetFeed);
 
-  //append entire container to the body
-  $body.append($container);
+// Append the entire container to the body
+$body.append($container);
 
 //textarea and button styling
 $('#tweet-input').css({
@@ -157,18 +157,27 @@ $('#tweet-button, #refresh-button').hover(
 
 //refresh button functionality
 $('#refresh-button').on('click', () => {
+  //clear existing tweets
+  streams.home = [];
+
+  //generate a new set of random tweets
+  for (let i = 0; i < 10; i++) {
+    generateRandomTweet();
+  }
+
   //reload all tweets when "Refresh Tweets" button is clicked
   createTweets();
-})
+});
 
 //show users timeline functionality
 function showUserTimeline(username) {
   //clear the tweet feed before appending new tweets
   $('#tweet-feed').html('');
-}
 
 //fetch the user's tweets from the streams object
-const userTweets = streams[username];
+const userTweets = streams.users[username];
+
+//loop through user's tweets and append them to the tweet feed
 userTweets.forEach((tweetData) => {
   const $userTweetDiv = $('<div class="tweet"></div>').css({
     border: '1px solid #ddd',
@@ -198,7 +207,7 @@ userTweets.forEach((tweetData) => {
   //append userTweetDiv to tweet feed
   $('#tweet-feed').append($userTweetDiv);
 })
-
+}
 
 
   //initial load: display the pre-generated tweets
