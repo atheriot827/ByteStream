@@ -1,10 +1,30 @@
 
-//ALL CODE GOES INSDIE HERE 
+//ALL CODE GOES INSIDE HERE 
+
+//wait until the document is fully loaded
 $(document).ready(() => {
+
+  //clear the body - dynamically add content
   const $body = $('body');
   $body.html(''); //clears body - will clear tag you call it on
 
-  //create a tweets div
+  //create the main container and title
+  const $container = $('<div class="container"></div>');
+  const $title = $('<h1>Twiddler!</h1>');
+
+  //create a tweet feed section where all tweets will be displayed
+  const $tweetFeed = $('<div id="tweet-feed"></div>');
+
+  //create a new tweet section with a text area and a button
+  const $newTweet = $(`
+    <div id="new-tweet">
+      <textarea id ="tweet-input" placeholder="What\'s happening?"></textarea>
+      <button id="tweet-button">Tweet</button>
+    </div>
+  `);
+
+  //append the title, tweet feed, and new feed section to the container
+  $container.append($title).append($tweetFeed).append($newTweet);
 
   //put this into a function
   function createTweets() {
@@ -20,6 +40,7 @@ $(document).ready(() => {
 }
 });
 
+//create a tweets div
 //streams.home is an array of tweets
 //console.log streams.home -> constantly new tweets(?) are being added to streams.home because of data-generator.js
 //will need the actual time (moment - format dates) and the human friendly time (moment - relative time)
