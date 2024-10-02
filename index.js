@@ -87,7 +87,7 @@ $('#tweet-button, #refresh-button').hover(
   streams.home.forEach((tweetData) => {
 
     //create tweet styling
-    const $tweetDiv = $('div class="tweet"></div>').css({
+    const $tweetDiv = $('<div class="tweet"></div>').css({
       //border around tweets
       border: '1px solid #ddd',
       //margin around each tweet
@@ -100,22 +100,40 @@ $('#tweet-button, #refresh-button').hover(
       textAlign: 'left',
     });
 
-
     //create a clickable user element (wrap username in a span)
-  const $user = $(`<span class="user">@${tweetData.user}</span>`);
+  const $user = $(`<span class="user">@${tweetData.user}</span>`).css({
+    //bold username
+    fontWeight: 'bold',
+    //blue color for clickable username
+    color: 'blue',
+    //cursor changes to pointer on hover
+    cursor: 'pointer'
+  });
+
+  //add onclick function for username
+  //display timeline when user clicked
+  $user.on('click', () => {
+    showUserTimeline(tweetData.user);
+  })
 
   //create a message element to hold the tweet's message
-  const $message = $('<p></p>').text(tweetData.message);
+  //create a message element to hold the tweets message
+  const $message = $('<p></p>').text(tweetData.message).css({
+    margin: '5px 0'
+  });
 
   //format the time using moment.js (from created_at property)
-  const $time = $('<span class="time"></span>').text(moment(tweetData.created_at).fromNow());
+  const $time = $('<span class="time"></span>').text(moment(tweetData.created_at).fromNow()).css({
+    //smaller font size for the timestamp
+    fontSize: '0.8em',
+    //gray color for time
+    color: 'gray',
+  })
 
   //append user, message, and time to the tweet div
-  $tweetDiv.append($user).append($message).append($time);
-
+  $tweetDiv.append($user).append($message).append($time)
   //append the newly created tweet to the tweet feed
   $('#tweet-feed').append($tweetDiv);
-
   });
 }
 
