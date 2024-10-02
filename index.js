@@ -167,6 +167,37 @@ function showUserTimeline(username) {
   $('#tweet-feed').html('');
 }
 
+//fetch the user's tweets from the streams object
+const userTweets = streams[username];
+userTweets.forEach((tweetData) => {
+  const $userTweetDiv = $('<div class="tweet"></div>').css({
+    border: '1px solid #ddd',
+    margin: '10px',
+    padding: '10px',
+    borderRadius: '5px',
+    textAlign: 'left'
+  });
+
+  const $user = $(`<span class="user">@${tweetData.user}</span>`).css({
+    fontWeight: 'bold',
+    color: 'blue',
+    cursor: 'pointer'
+  });
+
+  const $message = $('<p></p>').text(tweetData.message).css({
+    margin: '5px 0'
+  });
+
+  const $time = $('<span class="time"></span>').text(moment(tweetData.created_at).fromNow()).css({
+    fontSize: '0.8em',
+    color: 'gray'
+  });
+
+  //appending to userTweetDiv
+  $userTweetDiv.append($user).append($message).append($time);
+  //append userTweetDiv to tweet feed
+  $('#tweet-feed').append($userTweetDiv);
+})
 
 
 
