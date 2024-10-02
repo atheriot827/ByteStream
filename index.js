@@ -161,6 +161,12 @@ $('#refresh-button').on('click', () => {
   createTweets();
 })
 
+//show users timeline functionality
+function showUserTimeline(username) {
+  //clear the tweet feed before appending new tweets
+  $('#tweet-feed').html('');
+}
+
 
 
 
