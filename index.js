@@ -4,6 +4,7 @@
 //wait until the document is fully loaded
 $(document).ready(() => {
 
+  //number of new tweets to generate at a time, and max number of tweets to display
   const newTweetsCount = 1; // Number of new tweets to generate at a time
   const maxDisplayedTweets = 10; // Maximum number of tweets to display
 
@@ -93,17 +94,18 @@ $('#tweet-button, #refresh-button').hover(
 )
 
 const writeTweetAndDisplay = (message, username) => {
-  // Call the writeTweet function to add the tweet to the data structure
+  // call the writeTweet function to add the tweet to the data structure
+  //this allows writing tweets with any username
   writeTweet(message, username);
 
-  // Now, dynamically update the DOM to show the tweet at the top of the tweet feed
+  //create the new tweet object with user, message, and creation time
   const tweet = {
     user: username,
     message: message,
     created_at: new Date(),
   };
 
-  // Create a new div for the tweet
+  // dynamically create the new tweet HTML and style it
   const $newTweet = $('<div class="tweet"></div>').css({
     border: '1px solid #ddd',
     margin: '10px',
@@ -167,6 +169,7 @@ $newTweet.append($('<span class="actual-time"></span>').text(` - ${formattedTime
   //add onclick function for username
   //display timeline when user clicked
   $user.on('click', () => {
+    //implement this function to filter by user timeline
     showUserTimeline(tweet.user);
   })
 
@@ -199,39 +202,29 @@ $newTweet.append($('<span class="actual-time"></span>').text(` - ${formattedTime
 
     // Set the global visitor property when the tweet button is clicked
     const username = $('#username-input').val().trim(); // Get username input
+    const tweetMessage = $('#tweet-input').val().trim();
 
     // Ensure a valid username is entered
-    if (username) {
-
-      const tweetMessage = $('#tweet-input').val().trim();
-
-    //if there is a message, proceed to add the message
-      if (tweetMessage) {
-
+    if (username && tweetMessage) {
       //call the writeTweet function
         writeTweetAndDisplay(tweetMessage, username); 
-
         //clear input after tweeting
         $('#tweet-input').val('');
         $('#username-input').val('');
     } else {
-      alert('Please enter a tweet message.')
+      alert('Please enter both a username and a tweet message.');
     }
-      } else {
-    alert('Please enter a valid username.')
-      }
-    });
+  });
+    
 
 //refresh button functionality
 $('#refresh-button').on('click', () => {
   //clear existing tweets
   streams.home = [];
-
   //generate a new set of random tweets
   for (let i = 0; i < 10; i++) {
     generateRandomTweet();
   }
-
   //reload all tweets when "Refresh Tweets" button is clicked
   createTweets();
 });
@@ -242,13 +235,12 @@ const autoRefreshTweets = () => {
   for (let i = 0; i < newTweetsCount; i++) { // Change this number to adjust how many new tweets are generated at a time
     generateRandomTweet();
   }
-
   //reload all tweets
   createTweets();
 };
 
-//set an interval to refresh tweets every 5 seconds (5000 milliseconds)
-setInterval(autoRefreshTweets, 5000); // Change the interval as needed
+//set an interval to refresh tweets every 10 seconds (10000 milliseconds)
+setInterval(autoRefreshTweets, 10000); // Change the interval as needed
 
   //initial load: display the pre-generated tweets
   createTweets();
