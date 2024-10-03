@@ -81,14 +81,19 @@ const writeTweet = (message) => {
     throw new Error('Set the global visitor property!');
   }
   
+  //dynamically add the visitor to the streams.users if they dont exist
   if (!streams.users[visitor]) {
     streams.users[visitor] = [];
 
   }
+
+  //create the new tweet
   const tweet = {
     user: visitor,
     message: message,
     created_at: new Date(),
   };
+
+  //add tweet to the users array and the global home timeline
   addTweet(tweet);
 };

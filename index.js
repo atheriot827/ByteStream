@@ -3,8 +3,9 @@
 
 //wait until the document is fully loaded
 $(document).ready(() => {
+
     // Store the username globally
-    window.visitor = 'shawndrost'; 
+    window.visitor = 'newUser'; 
 
     //initialize streams if not already initialized
     if(!window.streams) {
@@ -72,7 +73,7 @@ $('#tweet-input').css({
 
 $('#tweet-button, #refresh-button').css({
   //padding inside buttons
-  padding: '10px, 15px',
+  padding: '10px 15px',
   //margin between buttons
   margin: '5px',
   //no border
@@ -162,8 +163,8 @@ $('#tweet-button, #refresh-button').hover(
     if (tweetMessage) {
       const newTweet = {
         user: window.visitor,
-        content: tweetMessage,
-        timestamp: Date.now()
+        message: tweetMessage,
+        created_at: new Date()
       };
 
       //call the function from data-generator
@@ -198,7 +199,7 @@ function showUserTimeline(username) {
   $('#tweet-feed').html('');
 
 //fetch the user's tweets from the streams object
-const userTweets = streams.users[username];
+const userTweets = streams.users[username] || [];
 
 //loop through user's tweets and append them to the tweet feed
 userTweets.forEach((tweetData) => {
