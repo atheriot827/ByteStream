@@ -123,6 +123,14 @@ $(document).ready(() => {
     $('#tweet-feed').prepend($newTweet);
   };
 
+  const processMessage  = (message) => {
+    //use regex to find hashtags
+    return message.replace(/(#\w+)/g, (tag) => {
+      return `<span class="hashtag" style="color:blue; cursor:pointer;">${tag}</span>`
+    });
+  };
+
+
   //function to create and display tweets
   function createTweets(additionalTweets = []) {
     const allTweets = streams.home.slice().reverse();
@@ -155,7 +163,9 @@ $(document).ready(() => {
         fontWeight: 'bold',
         color: 'blue',
         cursor: 'pointer'
-      });
+      }).on('click', () => {
+        showUserTimeline(tweet.user);   //call function to show user timeline
+      })
 
       //add onclick function for username
       $user.on('click', () => {
@@ -164,7 +174,7 @@ $(document).ready(() => {
       });
 
       //create a message element to hold the tweet's message
-      const $message = $('<p></p>').text(tweet.message).css({
+      const $message = $('<p></p>').html(processMessage(tweet.message)).css({
         margin: '5px 0'
       });
 
