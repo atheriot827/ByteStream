@@ -171,7 +171,7 @@ $(document).ready(() => {
       //format the actual time and human-friendly time
       const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
       const relativeTime = moment(tweet.created_at).fromNow();
-      const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} - ${formattedTime}`).css({
+      const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css({
         fontSize: '0.8em',
         color: 'gray',
       });
@@ -238,7 +238,7 @@ $(document).ready(() => {
       const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
       const relativeTime = moment(tweet.created_at).fromNow();
 
-      const $time = $('<span class="time"></span>').text(`${relativeTime} - ${formattedTime}`).css({
+      const $time = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css({
         fontSize: '0.8em',
         color: 'gray',
       });
