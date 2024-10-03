@@ -88,13 +88,38 @@ $('#tweet-button, #refresh-button').hover(
   function () { $(this).css('backgroundColor', '#007bff'); }
 )
 
+const writeTweetAndDisplay = (message, username) => {
+  // Call the writeTweet function to add the tweet to the data structure
+  writeTweet(message, username);
+
+  // Now, dynamically update the DOM to show the tweet at the top of the tweet feed
+  const tweet = {
+    user: username,
+    message: message,
+    created_at: new Date(),
+  };
+
+  // Create a new div for the tweet
+  const $newTweet = $('<div class="tweet"></div>').css({
+    border: '1px solid #ddd',
+    margin: '10px',
+    padding: '10px',
+    borderRadius: '5px',
+    textAlign: 'left',
+  });
+  $newTweet.text(`@${tweet.user}: ${tweet.message} (${moment(tweet.created_at).fromNow()})`);
+
+  // Prepend the new tweet to the top of the tweet feed
+  $('#tweet-feed').prepend($newTweet);
+};
+
   //function to create and display tweets
   function createTweets() {
   //clear the tweet feed first before appending new tweets to avoid duplicates
   $('#tweet-feed').html('');
   
   //map over the streams.home array to create tweet elements
-  streams.home.forEach((tweet) => {
+  streams.home.slice().reverse().forEach((tweet) => {
 
     //create tweet styling
     const $tweetDiv = $('<div class="tweet"></div>').css({
@@ -142,8 +167,8 @@ $('#tweet-button, #refresh-button').hover(
 
   //append user, message, and time to the tweet div
   $tweetDiv.append($user).append($message).append($time)
-  //append the newly created tweet to the tweet feed
-  $('#tweet-feed').append($tweetDiv);
+  //prepend the newly created tweet to the tweet feed to maintain reverse chronological order
+  $('#tweet-feed').prepend($tweetDiv);
   });
 }
 
@@ -155,22 +180,18 @@ $('#tweet-button, #refresh-button').hover(
 
     // Ensure a valid username is entered
     if (username) {
-      window.visitor = username; // Set the global visitor property
 
-    //get the tweet message from the textarea input
-    const tweetMessage = $('#tweet-input').val().trim();
+      const tweetMessage = $('#tweet-input').val().trim();
 
     //if there is a message, proceed to add the message
-    if (tweetMessage) {
+      if (tweetMessage) {
 
       //call the writeTweet function
-        writeTweet(tweetMessage, username); 
+        writeTweetAndDisplay(tweetMessage, username); 
 
         //clear input after tweeting
         $('#tweet-input').val('');
-
-        //refresh the tweet feed to include the new tweet
-        createTweets();
+        $('#username-input').val('');
     } else {
       alert('Please enter a tweet message.')
     }
@@ -198,7 +219,7 @@ $('#refresh-button').on('click', () => {
     $('#tweet-feed').html(''); //clear the tweet feed before displaying new tweets
 
     //iterate over the streams.home array to create tweet elements
-    streams.home.forEach((tweet) => {
+    streams.home.slice().reverse().forEach((tweet) => {
       const $tweetDiv = $('<div class="tweet"></div>').css({
         border: '1px solid #ddd',
         margin: '10px',
@@ -229,7 +250,7 @@ $('#refresh-button').on('click', () => {
 
       // Append elements to the tweet div
       $tweetDiv.append($user).append($message).append($time);
-      $('#tweet-feed').append($tweetDiv); // Append the tweet to the feed
+      $('#tweet-feed').prepend($tweetDiv); // prepend the tweet to the feed
     });
   }
 
@@ -238,10 +259,10 @@ function showUserTimeline(username) {
   //clear the tweet feed before appending new tweets
   $('#tweet-feed').html('');
 
-//fetch the user's tweets from the streams object
-const userTweets = streams.users[username] || [];
+//fetch the user's tweets from the streams object and reverse them for RCO
+const userTweets = (streams.users[username] || []).slice().reverse();
 
-//loop through user's tweets and append them to the tweet feed
+//loop through user's tweets and prepend them to the tweet feed
 userTweets.forEach((tweet) => {
   const $userTweetDiv = $('<div class="tweet"></div>').css({
     border: '1px solid #ddd',
@@ -268,8 +289,8 @@ userTweets.forEach((tweet) => {
 
   //appending to userTweetDiv
   $userTweetDiv.append($user).append($message).append($time);
-  //append userTweetDiv to tweet feed
-  $('#tweet-feed').append($userTweetDiv);
+  //prepend userTweetDiv to tweet feed
+  $('#tweet-feed').prepend($userTweetDiv);
 })
 }
 
