@@ -4,6 +4,9 @@
 //wait until the document is fully loaded
 $(document).ready(() => {
 
+  const newTweetsCount = 1; // Number of new tweets to generate at a time
+  const maxDisplayedTweets = 10; // Maximum number of tweets to display
+
   //clear the body - dynamically add content
   const $body = $('body');
   $body.html(''); //clears body - will clear tag you call it on
@@ -47,6 +50,7 @@ $container.append($title).append($tweetControls).append($tweetFeed);
 
 // Append the entire container to the body
 $body.append($container);
+
 
 //textarea and button styling
 $('#tweet-input').css({
@@ -123,15 +127,20 @@ $newTweet.append($('<span class="actual-time"></span>').text(` - ${formattedTime
   $('#tweet-feed').prepend($newTweet);
 };
 
+
+
+
   //function to create and display tweets
   function createTweets() {
   //clear the tweet feed first before appending new tweets to avoid duplicates
   $('#tweet-feed').html('');
   
-  //map over the streams.home array to create tweet elements
-  streams.home.slice().reverse().forEach((tweet) => {
+  // Iterate over the latest tweets and display only up to maxDisplayedTweets
+  const tweetsToDisplay = streams.home.slice().reverse().slice(0, maxDisplayedTweets);
 
-    //create tweet styling
+  //map over the streams.home array to create tweet elements
+  tweetsToDisplay.forEach((tweet) => {
+  //create tweet styling
     const $tweetDiv = $('<div class="tweet"></div>').css({
       //border around tweets
       border: '1px solid #ddd',
@@ -226,6 +235,20 @@ $('#refresh-button').on('click', () => {
   //reload all tweets when "Refresh Tweets" button is clicked
   createTweets();
 });
+
+//function to automatically refresh tweets at regular intervals
+const autoRefreshTweets = () => {
+  // Generate a new set of random tweets
+  for (let i = 0; i < newTweetsCount; i++) { // Change this number to adjust how many new tweets are generated at a time
+    generateRandomTweet();
+  }
+
+  //reload all tweets
+  createTweets();
+};
+
+//set an interval to refresh tweets every 5 seconds (5000 milliseconds)
+setInterval(autoRefreshTweets, 5000); // Change the interval as needed
 
   //initial load: display the pre-generated tweets
   createTweets();
