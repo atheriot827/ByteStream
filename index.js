@@ -4,23 +4,6 @@
 //wait until the document is fully loaded
 $(document).ready(() => {
 
-    // Store the username globally
-    window.visitor = 'newUser'; 
-
-    //initialize streams if not already initialized
-    if(!window.streams) {
-      window.streams = {
-        users: {},
-        home: []
-      };
-    }
-
-    //ensure the visitor user exists in streams.users
-    if (!window.streams.users[window.visitor]) {
-      window.streams.users[window.visitor] = [];
-    }
-
-
   //clear the body - dynamically add content
   const $body = $('body');
   $body.html(''); //clears body - will clear tag you call it on
@@ -36,19 +19,29 @@ $(document).ready(() => {
 
   const $title = $('<h1>Twiddler!</h1>');
 
-  //create a tweet feed section where all tweets will be displayed
-  const $tweetFeed = $('<div id="tweet-feed"></div>');
+  //create a username input field
+  const $usernameInput = $('<input id="username-input" placeholder="Enter your username" />').css({
+    width: '100%',
+    height: '40px',
+    marginBottom: '10px',
+    padding: '5px',
+    border: '1px solid #ddd',
+    borderRadius: '4px'
+  });
 
-  
 // Create tweet controls (textarea and buttons)
 const $tweetControls = $(`
   <div id="tweet-controls">
+    ${$usernameInput.prop('outerHTML')} 
     <textarea id="tweet-input" placeholder="What's happening?"></textarea>
     <button id="tweet-button">Tweet</button>
     <button id="refresh-button">Refresh Tweets</button>
   </div>
 `);
 
+
+//create a tweet feed section where all tweets will be displayed
+const $tweetFeed = $('<div id="tweet-feed"></div>');
 // Append the title, tweet controls, and tweet feed to the container
 $container.append($title).append($tweetControls).append($tweetFeed);
 
@@ -101,7 +94,7 @@ $('#tweet-button, #refresh-button').hover(
   $('#tweet-feed').html('');
   
   //map over the streams.home array to create tweet elements
-  streams.home.forEach((tweetData) => {
+  streams.home.forEach((tweet) => {
 
     //create tweet styling
     const $tweetDiv = $('<div class="tweet"></div>').css({
@@ -118,7 +111,7 @@ $('#tweet-button, #refresh-button').hover(
     });
 
     //create a clickable user element (wrap username in a span)
-  const $user = $(`<span class="user">@${tweetData.user}</span>`).css({
+  const $user = $(`<span class="user">@${tweet.user}</span>`).css({
     //bold username
     fontWeight: 'bold',
     //blue color for clickable username
@@ -130,17 +123,17 @@ $('#tweet-button, #refresh-button').hover(
   //add onclick function for username
   //display timeline when user clicked
   $user.on('click', () => {
-    showUserTimeline(tweetData.user);
+    showUserTimeline(tweet.user);
   })
 
   //create a message element to hold the tweet's message
   //create a message element to hold the tweets message
-  const $message = $('<p></p>').text(tweetData.message).css({
+  const $message = $('<p></p>').text(tweet.message).css({
     margin: '5px 0'
   });
 
   //format the time using moment.js (from created_at property)
-  const $time = $('<span class="time"></span>').text(moment(tweetData.created_at).fromNow()).css({
+  const $time = $('<span class="time"></span>').text(moment(tweet.created_at).fromNow()).css({
     //smaller font size for the timestamp
     fontSize: '0.8em',
     //gray color for time
@@ -156,28 +149,35 @@ $('#tweet-button, #refresh-button').hover(
 
   //event listener for posting a new tweet
   $('#tweet-button').on('click', () => {
+
+    // Set the global visitor property when the tweet button is clicked
+    const username = $('#username-input').val().trim(); // Get username input
+
+    // Ensure a valid username is entered
+    if (username) {
+      window.visitor = username; // Set the global visitor property
+
     //get the tweet message from the textarea input
-    const tweetMessage = $('#tweet-input').val();
+    const tweetMessage = $('#tweet-input').val().trim();
 
     //if there is a message, proceed to add the message
     if (tweetMessage) {
-      const newTweet = {
-        user: window.visitor,
-        message: tweetMessage,
-        created_at: new Date()
-      };
 
-      //call the function from data-generator
-      addTweet(newTweet);
+      //call the writeTweet function
+        writeTweet(tweetMessage, username); 
 
-      //clear input after tweeting
-      $('#tweet-input').val('');
+        //clear input after tweeting
+        $('#tweet-input').val('');
 
-
-      //refresh the tweet feed to include the new tweet
-      createTweets();
+        //refresh the tweet feed to include the new tweet
+        createTweets();
+    } else {
+      alert('Please enter a tweet message.')
     }
-  });
+      } else {
+    alert('Please enter a valid username.')
+      }
+    });
 
 //refresh button functionality
 $('#refresh-button').on('click', () => {
@@ -193,6 +193,46 @@ $('#refresh-button').on('click', () => {
   createTweets();
 });
 
+  //function to create and display tweets
+  function createTweets() {
+    $('#tweet-feed').html(''); //clear the tweet feed before displaying new tweets
+
+    //iterate over the streams.home array to create tweet elements
+    streams.home.forEach((tweet) => {
+      const $tweetDiv = $('<div class="tweet"></div>').css({
+        border: '1px solid #ddd',
+        margin: '10px',
+        padding: '10px',
+        borderRadius: '5px',
+        textAlign: 'left',
+      });
+
+      const $user = $(`<span class="user">@${tweet.user}</span>`).css({
+        fontWeight: 'bold',
+        color: 'blue',
+        cursor: 'pointer',
+      });
+
+      //add click event to show user timeline
+      $user.on('click', () => {
+        showUserTimeline(tweet.user);
+      });
+
+      const $message = $('<p></p>').text(tweet.message).css({
+        margin: '5px 0',
+      });
+
+      const $time = $('<span class="time"></span>').text(moment(tweet.created_at).fromNow()).css({
+        fontSize: '0.8em',
+        color: 'gray',
+      });
+
+      // Append elements to the tweet div
+      $tweetDiv.append($user).append($message).append($time);
+      $('#tweet-feed').append($tweetDiv); // Append the tweet to the feed
+    });
+  }
+
 //show users timeline functionality
 function showUserTimeline(username) {
   //clear the tweet feed before appending new tweets
@@ -202,7 +242,7 @@ function showUserTimeline(username) {
 const userTweets = streams.users[username] || [];
 
 //loop through user's tweets and append them to the tweet feed
-userTweets.forEach((tweetData) => {
+userTweets.forEach((tweet) => {
   const $userTweetDiv = $('<div class="tweet"></div>').css({
     border: '1px solid #ddd',
     margin: '10px',
@@ -211,17 +251,17 @@ userTweets.forEach((tweetData) => {
     textAlign: 'left'
   });
 
-  const $user = $(`<span class="user">@${tweetData.user}</span>`).css({
+  const $user = $(`<span class="user">@${tweet.user}</span>`).css({
     fontWeight: 'bold',
     color: 'blue',
     cursor: 'pointer'
   });
 
-  const $message = $('<p></p>').text(tweetData.message).css({
+  const $message = $('<p></p>').text(tweet.message).css({
     margin: '5px 0'
   });
 
-  const $time = $('<span class="time"></span>').text(moment(tweetData.created_at).fromNow()).css({
+  const $time = $('<span class="time"></span>').text(moment(tweet.created_at).fromNow()).css({
     fontSize: '0.8em',
     color: 'gray'
   });

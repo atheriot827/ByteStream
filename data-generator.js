@@ -19,10 +19,8 @@ const users = Object.keys(streams.users);
 const addTweet = (newTweet) => {
   const username = newTweet.user;
 
-  //check if the users exists before pushing
   if (!streams.users[username]) {
-    console.error(`User ${username} does not exist in streams.users`);
-    return;
+    streams.users[username] = []; // If not, create an array for that user
   }
 
   streams.users[username].push(newTweet);
@@ -74,26 +72,13 @@ scheduleNextTweet();
 
 // Utility function for letting students add "write a tweet" functionality
 // (NOTE: Not used by the rest of this file.)
-const writeTweet = (message) => {
-  const visitor = window.visitor;
+const writeTweet = (message, username) => {
 
-  if (!visitor){
-    throw new Error('Set the global visitor property!');
-  }
-  
-  //dynamically add the visitor to the streams.users if they dont exist
-  if (!streams.users[visitor]) {
-    streams.users[visitor] = [];
 
-  }
-
-  //create the new tweet
   const tweet = {
-    user: visitor,
+    user: username,
     message: message,
     created_at: new Date(),
   };
-
-  //add tweet to the users array and the global home timeline
   addTweet(tweet);
 };
