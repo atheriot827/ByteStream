@@ -107,7 +107,17 @@ const writeTweetAndDisplay = (message, username) => {
     borderRadius: '5px',
     textAlign: 'left',
   });
-  $newTweet.text(`@${tweet.user}: ${tweet.message} (${moment(tweet.created_at).fromNow()})`);
+
+//format the actual time and human-friendly time
+const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A'); // e.g., "October 3rd 2024, 3:45 PM"
+const relativeTime = moment(tweet.created_at).fromNow(); // e.g., "a few seconds ago"
+
+//add both formatted time and relative time to the text text
+$newTweet.text(`@${tweet.user}: ${tweet.message} (${relativeTime})`);
+$newTweet.append($('<span class="actual-time"></span>').text(` - ${formattedTime}`).css({
+  fontSize: '0.8em',
+  color: 'gray',
+}));
 
   // Prepend the new tweet to the top of the tweet feed
   $('#tweet-feed').prepend($newTweet);
@@ -157,8 +167,11 @@ const writeTweetAndDisplay = (message, username) => {
     margin: '5px 0'
   });
 
-  //format the time using moment.js (from created_at property)
-  const $time = $('<span class="time"></span>').text(moment(tweet.created_at).fromNow()).css({
+  //format the actual time and human-friendly time
+  const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
+  const relativeTime = moment(tweet.created_at).fromNow();
+
+  const $time = $('<span class="time"></span>').text(`${relativeTime} - ${formattedTime}`).css({
     //smaller font size for the timestamp
     fontSize: '0.8em',
     //gray color for time
@@ -213,87 +226,6 @@ $('#refresh-button').on('click', () => {
   //reload all tweets when "Refresh Tweets" button is clicked
   createTweets();
 });
-
-  //function to create and display tweets
-  function createTweets() {
-    $('#tweet-feed').html(''); //clear the tweet feed before displaying new tweets
-
-    //iterate over the streams.home array to create tweet elements
-    streams.home.slice().reverse().forEach((tweet) => {
-      const $tweetDiv = $('<div class="tweet"></div>').css({
-        border: '1px solid #ddd',
-        margin: '10px',
-        padding: '10px',
-        borderRadius: '5px',
-        textAlign: 'left',
-      });
-
-      const $user = $(`<span class="user">@${tweet.user}</span>`).css({
-        fontWeight: 'bold',
-        color: 'blue',
-        cursor: 'pointer',
-      });
-
-      //add click event to show user timeline
-      $user.on('click', () => {
-        showUserTimeline(tweet.user);
-      });
-
-      const $message = $('<p></p>').text(tweet.message).css({
-        margin: '5px 0',
-      });
-
-      const $time = $('<span class="time"></span>').text(moment(tweet.created_at).fromNow()).css({
-        fontSize: '0.8em',
-        color: 'gray',
-      });
-
-      // Append elements to the tweet div
-      $tweetDiv.append($user).append($message).append($time);
-      $('#tweet-feed').prepend($tweetDiv); // prepend the tweet to the feed
-    });
-  }
-
-//show users timeline functionality
-function showUserTimeline(username) {
-  //clear the tweet feed before appending new tweets
-  $('#tweet-feed').html('');
-
-//fetch the user's tweets from the streams object and reverse them for RCO
-const userTweets = (streams.users[username] || []).slice().reverse();
-
-//loop through user's tweets and prepend them to the tweet feed
-userTweets.forEach((tweet) => {
-  const $userTweetDiv = $('<div class="tweet"></div>').css({
-    border: '1px solid #ddd',
-    margin: '10px',
-    padding: '10px',
-    borderRadius: '5px',
-    textAlign: 'left'
-  });
-
-  const $user = $(`<span class="user">@${tweet.user}</span>`).css({
-    fontWeight: 'bold',
-    color: 'blue',
-    cursor: 'pointer'
-  });
-
-  const $message = $('<p></p>').text(tweet.message).css({
-    margin: '5px 0'
-  });
-
-  const $time = $('<span class="time"></span>').text(moment(tweet.created_at).fromNow()).css({
-    fontSize: '0.8em',
-    color: 'gray'
-  });
-
-  //appending to userTweetDiv
-  $userTweetDiv.append($user).append($message).append($time);
-  //prepend userTweetDiv to tweet feed
-  $('#tweet-feed').prepend($userTweetDiv);
-})
-}
-
 
   //initial load: display the pre-generated tweets
   createTweets();
