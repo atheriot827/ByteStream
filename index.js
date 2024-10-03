@@ -204,6 +204,8 @@ $(document).ready(() => {
 
 
   function showUserTimeline(username) {
+    //maximum number of tweets to display per user
+    const maxUserTweets = 10;
     // Clear the tweet feed before showing the user's tweets
     $('#tweet-feed').html('');
   
@@ -217,7 +219,7 @@ $(document).ready(() => {
     }
   
     // Display the user's tweets
-    userTweets.forEach((tweet) => {
+    userTweets.slice(0, maxUserTweets).forEach((tweet) => {
       // Create tweet styling
       const $tweetDiv = $('<div class="tweet"></div>').css({
         border: '1px solid #ddd',
