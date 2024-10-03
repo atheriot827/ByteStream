@@ -178,6 +178,59 @@ $(document).ready(() => {
         margin: '5px 0'
       });
 
+      //after creating the message element
+      $message.on('click', '.hashtag', function() {
+        const hashtag = $(this).text();
+        showHashtagTimeLine(hashtag); //call function to show tweets with this hashtag
+      });
+
+      function showHashtagTimeLine(hashtag) {
+        //clear the tweet feed before showing the hashtags
+        $('#tweet-feed').html('');
+
+        //get only the tweets that contain the hashtag
+        const hashtagTweets = streams.home.filter(tweet => tweet.message.includes(hashtag));
+
+  // If no tweets are found for the hashtag, display a message
+  if (hashtagTweets.length === 0) {
+    $('#tweet-feed').html(`<p>No tweets available for the hashtag ${hashtag}.</p>`);
+    return;
+  }
+
+  // Display the hashtag's tweets
+  hashtagTweets.forEach((tweet) => {
+    // Create tweet styling (similar to createTweets function)
+    const $tweetDiv = $('<div class="tweet"></div>').css({
+      border: '1px solid #ddd',
+      margin: '10px',
+      padding: '10px',
+      borderRadius: '5px',
+      textAlign: 'left',
+    });
+
+    // Create a message element to hold the tweet's message
+    const $message = $('<p></p>').text(tweet.message).css({
+      margin: '5px 0'
+    });
+
+    // Format and display time (similar to createTweets function)
+    const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
+    const relativeTime = moment(tweet.created_at).fromNow();
+    const actualTime = moment(tweet.created_at).format('h:mm A');
+    
+    const $time = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css({
+      fontSize: '0.8em',
+      color: 'gray',
+    });
+
+    // Append user, message, and time to the tweet div
+    $tweetDiv.append($message).append($time);
+    // Prepend the newly created tweet to the tweet feed
+    $('#tweet-feed').prepend($tweetDiv);
+  });
+}
+
+
       //format the actual time and human-friendly time
       const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
       const relativeTime = moment(tweet.created_at).fromNow();
