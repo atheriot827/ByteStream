@@ -146,6 +146,7 @@ $(document).ready(() => {
 
   //function to create and display tweets
   function createTweets(additionalTweets = []) {
+    const $tweetFeed = $('#tweet-feed');
     const allTweets = streams.home.slice().reverse();
     const newTweets = additionalTweets.length ? additionalTweets : allTweets.slice(0, maxDisplayedTweets);
   
