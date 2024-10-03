@@ -110,6 +110,19 @@ $(document).ready(() => {
     const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A'); // e.g., "October 3rd 2024, 3:45 PM"
     const relativeTime = moment(tweet.created_at).fromNow(); // e.g., "a few seconds ago"
 
+    // create a clickable user element (wrap username in a span)
+    const $user = $(`<span class="user">@${tweet.user}</span>`).css({
+      fontWeight: 'bold',
+      color: 'blue',
+      cursor: 'pointer'
+    }).on('click', () => {
+      showUserTimeline(tweet.user);   //call function to show user timeline
+    });
+
+    //add both formatted time and relative time to the text
+    $newTweet.append($user).append(`: ${tweet.message} (${relativeTime})`);
+
+
     //add both formatted time and relative time to the text
     $newTweet.text(`@${tweet.user}: ${tweet.message} (${relativeTime})`);
     $newTweet.append($('<span class="actual-time"></span>').text(` - ${formattedTime}`).css({
@@ -167,11 +180,11 @@ $(document).ready(() => {
         showUserTimeline(tweet.user);   //call function to show user timeline
       })
 
-      //add onclick function for username
-      $user.on('click', () => {
-        //implement this function to filter by user timeline
-        showUserTimeline(tweet.user);
-      });
+      // //add onclick function for username
+      // $user.on('click', () => {
+      //   //implement this function to filter by user timeline
+      //   showUserTimeline(tweet.user);
+      // });
 
       //create a message element to hold the tweet's message
       const $message = $('<p></p>').html(processMessage(tweet.message)).css({
