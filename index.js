@@ -3,6 +3,22 @@
 
 //wait until the document is fully loaded
 $(document).ready(() => {
+    // Store the username globally
+    window.visitor = 'shawndrost'; 
+
+    //initialize streams if not already initialized
+    if(!window.streams) {
+      window.streams = {
+        users: {},
+        home: []
+      };
+    }
+
+    //ensure the visitor user exists in streams.users
+    if (!window.streams.users[window.visitor]) {
+      window.streams.users[window.visitor] = [];
+    }
+
 
   //clear the body - dynamically add content
   const $body = $('body');
@@ -144,11 +160,18 @@ $('#tweet-button, #refresh-button').hover(
 
     //if there is a message, proceed to add the message
     if (tweetMessage) {
-      //function from data-generator.js
-      writeTweet(tweetMessage); 
+      const newTweet = {
+        user: window.visitor,
+        content: tweetMessage,
+        timestamp: Date.now()
+      };
+
+      //call the function from data-generator
+      addTweet(newTweet);
 
       //clear input after tweeting
       $('#tweet-input').val('');
+
 
       //refresh the tweet feed to include the new tweet
       createTweets();

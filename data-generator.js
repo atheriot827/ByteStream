@@ -18,6 +18,13 @@ const users = Object.keys(streams.users);
 // Utility function for adding tweets to our data structures
 const addTweet = (newTweet) => {
   const username = newTweet.user;
+
+  //check if the users exists before pushing
+  if (!streams.users[username]) {
+    console.error(`User ${username} does not exist in streams.users`);
+    return;
+  }
+
   streams.users[username].push(newTweet);
   streams.home.push(newTweet);
 };
@@ -73,10 +80,15 @@ const writeTweet = (message) => {
   if (!visitor){
     throw new Error('Set the global visitor property!');
   }
+  
+  if (!streams.users[visitor]) {
+    streams.users[visitor] = [];
 
+  }
   const tweet = {
     user: visitor,
     message: message,
+    created_at: new Date(),
   };
   addTweet(tweet);
 };
