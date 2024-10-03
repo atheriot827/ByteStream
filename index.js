@@ -5,7 +5,7 @@
 $(document).ready(() => {
 
   //number of new tweets to generate at a time, and max number of tweets to display
-  const newTweetsCount = 1; // Number of new tweets to generate at a time
+  const newTweetsCount = 3; // Number of new tweets to generate at a time
   const maxDisplayedTweets = 10; // Maximum number of tweets to display
 
   //clear the body - dynamically add content
@@ -82,13 +82,20 @@ $(document).ready(() => {
   // Append the entire container to the body
   $body.append($container);
 
+  // initialize an array to track displayed tweet ids to avoid duplicates
+  const displayedTweetMessages = new Set();
+
   const writeTweetAndDisplay = (message, username) => {
+    writeTweet(message, username);
     // create the new tweet object with user, message, and creation time
     const tweet = {
       user: username,
       message: message,
       created_at: new Date(),
     };
+
+    // add user-written tweet to streams.home so it persists on feed
+    streams.home.push(tweet);
 
     // dynamically create the new tweet HTML and style it
     const $newTweet = $('<div class="tweet"></div>').css({
@@ -110,20 +117,25 @@ $(document).ready(() => {
       color: 'gray',
     }));
 
+    // add the tweet id to the displayedTweetIds set to track it
+    displayedTweetMessages.add(tweet.message);
     // Prepend the new tweet to the top of the tweet feed
     $('#tweet-feed').prepend($newTweet);
   };
 
   //function to create and display tweets
-  function createTweets() {
-    //clear the tweet feed first before appending new tweets to avoid duplicates
-    $('#tweet-feed').html('');
+  function createTweets(additionalTweets = []) {
+    const allTweets = streams.home.slice().reverse();
+    const newTweets = additionalTweets.length ? additionalTweets : allTweets.slice(0, maxDisplayedTweets);
   
-    // Iterate over the latest tweets and display only up to maxDisplayedTweets
-    const tweetsToDisplay = streams.home.slice().reverse().slice(0, maxDisplayedTweets);
-
     //map over the streams.home array to create tweet elements
-    tweetsToDisplay.forEach((tweet) => {
+    newTweets.forEach((tweet) => {
+      //check if the tweet has already been displayed by checking the tweet message id
+      if (displayedTweetMessages.has(tweet.message)) {
+        //skip already displayed tweets
+        return;
+      }
+      
       //create tweet styling
       const $tweetDiv = $('<div class="tweet"></div>').css({
         border: '1px solid #ddd',
@@ -154,14 +166,16 @@ $(document).ready(() => {
       //format the actual time and human-friendly time
       const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
       const relativeTime = moment(tweet.created_at).fromNow();
-
-      const $time = $('<span class="time"></span>').text(`${relativeTime} - ${formattedTime}`).css({
+      const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} - ${formattedTime}`).css({
         fontSize: '0.8em',
         color: 'gray',
       });
 
+      //add the tweet message to the displayedTweetsMessages set to track it
+      displayedTweetMessages.add(tweet.message);
+
       //append user, message, and time to the tweet div
-      $tweetDiv.append($user).append($message).append($time);
+      $tweetDiv.append($user).append($message).append($timeInfo);
       //prepend the newly created tweet to the tweet feed to maintain reverse chronological order
       $('#tweet-feed').prepend($tweetDiv);
     });
@@ -227,11 +241,25 @@ $(document).ready(() => {
 
   //event listener for refreshing the tweet feed
   $('#refresh-button').on('click', () => {
-    createTweets(); // Call createTweets function on refresh
+    const newTweets = [];
+    for (let i =0; i < newTweetsCount; i++) {
+      generateRandomTweet();
+      newTweets.push(streams.home[streams.home.length - 1]);
+    }
+    createTweets(newTweets); // Call createTweets function on refresh
   });
 
+  const autoRefreshTweets = () => {
+    const newTweets = [];
+    for (let i = 0; i < newTweetsCount; i++) {
+      generateRandomTweet();
+      newTweets.push(streams.home[streams.home.length - 1]);
+    }
+    createTweets(newTweets);
+  }
+
   //automatic interval to refresh tweets every 1 minute
-  setInterval(createTweets, 60000);
+  setInterval(autoRefreshTweets, 60000);
   
   //initialize the page by creating tweets
   createTweets(); 
