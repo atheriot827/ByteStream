@@ -128,6 +128,11 @@ $(document).ready(() => {
     const allTweets = streams.home.slice().reverse();
     const newTweets = additionalTweets.length ? additionalTweets : allTweets.slice(0, maxDisplayedTweets);
   
+    //clear current tweet feed if its empty
+    if ($('#tweet-feed').is(':empty')) {
+      $('#tweet-feed').html('');
+    }
+
     //map over the streams.home array to create tweet elements
     newTweets.forEach((tweet) => {
       //check if the tweet has already been displayed by checking the tweet message id
@@ -179,7 +184,24 @@ $(document).ready(() => {
       //prepend the newly created tweet to the tweet feed to maintain reverse chronological order
       $('#tweet-feed').prepend($tweetDiv);
     });
+    
+    //ensure the feed does not exceed the maximum number of displayed tweets
+    const tweetCount = $('#tweet-feed .tweet').length; 
+    //get the current count of displayed tweets
+    if (tweetCount > maxDisplayedTweets) {
+      $('#tweet-feed .tweet:gt(' + (maxDisplayedTweets - 1) + ')').remove(); 
+      //remove the oldest tweets
+      displayedTweetMessages.clear(); 
+      //clear the displayed messages set
+      $('#tweet-feed .tweet').each((_, tweetDiv) => {
+        const message = $(tweetDiv).find('p').text(); 
+        //extract the message from the tweet div
+        displayedTweetMessages.add(message); 
+        //add remaining tweets to the set
+      });
+    }
   }
+
 
   function showUserTimeline(username) {
     // Clear the tweet feed before showing the user's tweets
