@@ -33,219 +33,211 @@ $(document).ready(() => {
     borderRadius: '4px'
   });
 
-// Create tweet controls (textarea and buttons)
-const $tweetControls = $(`
-  <div id="tweet-controls">
-    ${$usernameInput.prop('outerHTML')} 
-    <textarea id="tweet-input" placeholder="What's happening?"></textarea>
-    <button id="tweet-button">Tweet</button>
-    <button id="refresh-button">Refresh Tweets</button>
-  </div>
-`);
-
-
-//create a tweet feed section where all tweets will be displayed
-const $tweetFeed = $('<div id="tweet-feed"></div>');
-// Append the title, tweet controls, and tweet feed to the container
-$container.append($title).append($tweetControls).append($tweetFeed);
-
-// Append the entire container to the body
-$body.append($container);
-
-
-//textarea and button styling
-$('#tweet-input').css({
-  //full width
-  width: '100%',
-  //height of textarea
-  height: '60px',
-  //space below textarea
-  marginBottom: '10px',
-  //inner padding
-  padding: '5px',
-  //border styling
-  border: '1px solid #ddd',
-  //rounded corners
-  borderRadius: '4px',
-});
-
-$('#tweet-button, #refresh-button').css({
-  //padding inside buttons
-  padding: '10px 15px',
-  //margin between buttons
-  margin: '5px',
-  //no border
-  border: 'none',
-  //border radius
-  borderRadius: '4px',
-  //background color
-  backgroundColor: '#007bff',
-  //text color
-  color: 'white',
-  //pointer cursor on hover
-  cursor: 'pointer'
-});
-
-$('#tweet-button, #refresh-button').hover(
-  //hover effect
-  function() { $(this).css('backgroundColor', '#0056b3'); },
-  //restore color
-  function () { $(this).css('backgroundColor', '#007bff'); }
-)
-
-const writeTweetAndDisplay = (message, username) => {
-  // call the writeTweet function to add the tweet to the data structure
-  //this allows writing tweets with any username
-  writeTweet(message, username);
-
-  //create the new tweet object with user, message, and creation time
-  const tweet = {
-    user: username,
-    message: message,
-    created_at: new Date(),
-  };
-
-  // dynamically create the new tweet HTML and style it
-  const $newTweet = $('<div class="tweet"></div>').css({
-    border: '1px solid #ddd',
-    margin: '10px',
-    padding: '10px',
-    borderRadius: '5px',
-    textAlign: 'left',
-  });
-
-//format the actual time and human-friendly time
-const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A'); // e.g., "October 3rd 2024, 3:45 PM"
-const relativeTime = moment(tweet.created_at).fromNow(); // e.g., "a few seconds ago"
-
-//add both formatted time and relative time to the text text
-$newTweet.text(`@${tweet.user}: ${tweet.message} (${relativeTime})`);
-$newTweet.append($('<span class="actual-time"></span>').text(` - ${formattedTime}`).css({
-  fontSize: '0.8em',
-  color: 'gray',
-}));
-
-  // Prepend the new tweet to the top of the tweet feed
-  $('#tweet-feed').prepend($newTweet);
-};
-
-
-
-
-  //function to create and display tweets
-  function createTweets() {
-  //clear the tweet feed first before appending new tweets to avoid duplicates
-  $('#tweet-feed').html('');
+  //Create a div to hold tweet controls
+  const $tweetControls = $('<div id="tweet-controls"></div>');
   
-  // Iterate over the latest tweets and display only up to maxDisplayedTweets
-  const tweetsToDisplay = streams.home.slice().reverse().slice(0, maxDisplayedTweets);
+  // Append the username input to the tweet controls
+  $tweetControls.append($usernameInput);
+  
+  // Create the tweet input textarea
+  const $tweetInput = $('<textarea id="tweet-input" placeholder="What\'s happening?"></textarea>').css({
+    width: '100%',
+    height: '60px',
+    marginBottom: '10px',
+    padding: '5px',
+    border: '1px solid #ddd',
+    borderRadius: '4px',
+  });
+  
+  // Create the tweet button
+  const $tweetButton = $('<button id="tweet-button">Tweet</button>').css({
+    padding: '10px 15px',
+    margin: '5px',
+    border: 'none',
+    borderRadius: '4px',
+    backgroundColor: '#007bff',
+    color: 'white',
+    cursor: 'pointer'
+  });
+  
+  // Create the refresh button
+  const $refreshButton = $('<button id="refresh-button">Refresh Tweets</button>').css({
+    padding: '10px 15px',
+    margin: '5px',
+    border: 'none',
+    borderRadius: '4px',
+    backgroundColor: '#007bff',
+    color: 'white',
+    cursor: 'pointer'
+  });
+  
+  // Append the tweet input, tweet button, and refresh button to the tweet controls
+  $tweetControls.append($tweetInput).append($tweetButton).append($refreshButton);
 
-  //map over the streams.home array to create tweet elements
-  tweetsToDisplay.forEach((tweet) => {
-  //create tweet styling
-    const $tweetDiv = $('<div class="tweet"></div>').css({
-      //border around tweets
+  //create a tweet feed section where all tweets will be displayed
+  const $tweetFeed = $('<div id="tweet-feed"></div>');
+  // Append the title, tweet controls, and tweet feed to the container
+  $container.append($title).append($tweetControls).append($tweetFeed);
+
+  // Append the entire container to the body
+  $body.append($container);
+
+  const writeTweetAndDisplay = (message, username) => {
+    // create the new tweet object with user, message, and creation time
+    const tweet = {
+      user: username,
+      message: message,
+      created_at: new Date(),
+    };
+
+    // dynamically create the new tweet HTML and style it
+    const $newTweet = $('<div class="tweet"></div>').css({
       border: '1px solid #ddd',
-      //margin around each tweet
       margin: '10px',
-      //padding inside tweet
       padding: '10px',
-      //rounded corners
       borderRadius: '5px',
-      //align text to the left
       textAlign: 'left',
     });
 
-    //create a clickable user element (wrap username in a span)
-  const $user = $(`<span class="user">@${tweet.user}</span>`).css({
-    //bold username
-    fontWeight: 'bold',
-    //blue color for clickable username
-    color: 'blue',
-    //cursor changes to pointer on hover
-    cursor: 'pointer'
-  });
+    //format the actual time and human-friendly time
+    const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A'); // e.g., "October 3rd 2024, 3:45 PM"
+    const relativeTime = moment(tweet.created_at).fromNow(); // e.g., "a few seconds ago"
 
-  //add onclick function for username
-  //display timeline when user clicked
-  $user.on('click', () => {
-    //implement this function to filter by user timeline
-    showUserTimeline(tweet.user);
-  })
+    //add both formatted time and relative time to the text
+    $newTweet.text(`@${tweet.user}: ${tweet.message} (${relativeTime})`);
+    $newTweet.append($('<span class="actual-time"></span>').text(` - ${formattedTime}`).css({
+      fontSize: '0.8em',
+      color: 'gray',
+    }));
 
-  //create a message element to hold the tweet's message
-  //create a message element to hold the tweets message
-  const $message = $('<p></p>').text(tweet.message).css({
-    margin: '5px 0'
-  });
+    // Prepend the new tweet to the top of the tweet feed
+    $('#tweet-feed').prepend($newTweet);
+  };
 
-  //format the actual time and human-friendly time
-  const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
-  const relativeTime = moment(tweet.created_at).fromNow();
+  //function to create and display tweets
+  function createTweets() {
+    //clear the tweet feed first before appending new tweets to avoid duplicates
+    $('#tweet-feed').html('');
+  
+    // Iterate over the latest tweets and display only up to maxDisplayedTweets
+    const tweetsToDisplay = streams.home.slice().reverse().slice(0, maxDisplayedTweets);
 
-  const $time = $('<span class="time"></span>').text(`${relativeTime} - ${formattedTime}`).css({
-    //smaller font size for the timestamp
-    fontSize: '0.8em',
-    //gray color for time
-    color: 'gray',
-  })
+    //map over the streams.home array to create tweet elements
+    tweetsToDisplay.forEach((tweet) => {
+      //create tweet styling
+      const $tweetDiv = $('<div class="tweet"></div>').css({
+        border: '1px solid #ddd',
+        margin: '10px',
+        padding: '10px',
+        borderRadius: '5px',
+        textAlign: 'left',
+      });
 
-  //append user, message, and time to the tweet div
-  $tweetDiv.append($user).append($message).append($time)
-  //prepend the newly created tweet to the tweet feed to maintain reverse chronological order
-  $('#tweet-feed').prepend($tweetDiv);
-  });
-}
+      //create a clickable user element (wrap username in a span)
+      const $user = $(`<span class="user">@${tweet.user}</span>`).css({
+        fontWeight: 'bold',
+        color: 'blue',
+        cursor: 'pointer'
+      });
+
+      //add onclick function for username
+      $user.on('click', () => {
+        //implement this function to filter by user timeline
+        showUserTimeline(tweet.user);
+      });
+
+      //create a message element to hold the tweet's message
+      const $message = $('<p></p>').text(tweet.message).css({
+        margin: '5px 0'
+      });
+
+      //format the actual time and human-friendly time
+      const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
+      const relativeTime = moment(tweet.created_at).fromNow();
+
+      const $time = $('<span class="time"></span>').text(`${relativeTime} - ${formattedTime}`).css({
+        fontSize: '0.8em',
+        color: 'gray',
+      });
+
+      //append user, message, and time to the tweet div
+      $tweetDiv.append($user).append($message).append($time);
+      //prepend the newly created tweet to the tweet feed to maintain reverse chronological order
+      $('#tweet-feed').prepend($tweetDiv);
+    });
+  }
+
+  function showUserTimeline(username) {
+    // Clear the tweet feed before showing the user's tweets
+    $('#tweet-feed').html('');
+  
+    // Get only the tweets from the selected user and reverse them for chronological order
+    const userTweets = streams.users[username].slice().reverse();
+  
+    // If no tweets are found for the user, display a message
+    if (userTweets.length === 0) {
+      $('#tweet-feed').html('<p>No tweets available for this user.</p>');
+      return;
+    }
+  
+    // Display the user's tweets
+    userTweets.forEach((tweet) => {
+      // Create tweet styling
+      const $tweetDiv = $('<div class="tweet"></div>').css({
+        border: '1px solid #ddd',
+        margin: '10px',
+        padding: '10px',
+        borderRadius: '5px',
+        textAlign: 'left',
+      });
+
+      //create a message element to hold the tweet's message
+      const $message = $('<p></p>').text(tweet.message).css({
+        margin: '5px 0'
+      });
+
+      //format the actual time and human-friendly time
+      const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
+      const relativeTime = moment(tweet.created_at).fromNow();
+
+      const $time = $('<span class="time"></span>').text(`${relativeTime} - ${formattedTime}`).css({
+        fontSize: '0.8em',
+        color: 'gray',
+      });
+
+      //append user, message, and time to the tweet div
+      $tweetDiv.append($message).append($time);
+      //prepend the newly created tweet to the tweet feed
+      $('#tweet-feed').prepend($tweetDiv);
+    });
+  }
 
   //event listener for posting a new tweet
   $('#tweet-button').on('click', () => {
-
-    // Set the global visitor property when the tweet button is clicked
-    const username = $('#username-input').val().trim(); // Get username input
+    const username = $('#username-input').val().trim();
     const tweetMessage = $('#tweet-input').val().trim();
 
-    // Ensure a valid username is entered
     if (username && tweetMessage) {
-      //call the writeTweet function
-        writeTweetAndDisplay(tweetMessage, username); 
-        //clear input after tweeting
-        $('#tweet-input').val('');
-        $('#username-input').val('');
+      writeTweetAndDisplay(tweetMessage, username); 
+      $('#tweet-input').val(''); // Clear input after tweeting
     } else {
       alert('Please enter both a username and a tweet message.');
     }
   });
-    
 
-//refresh button functionality
-$('#refresh-button').on('click', () => {
-  //clear existing tweets
-  streams.home = [];
-  //generate a new set of random tweets
-  for (let i = 0; i < 10; i++) {
-    generateRandomTweet();
-  }
-  //reload all tweets when "Refresh Tweets" button is clicked
-  createTweets();
-});
+  //event listener for refreshing the tweet feed
+  $('#refresh-button').on('click', () => {
+    createTweets(); // Call createTweets function on refresh
+  });
 
-//function to automatically refresh tweets at regular intervals
-const autoRefreshTweets = () => {
-  // Generate a new set of random tweets
-  for (let i = 0; i < newTweetsCount; i++) { // Change this number to adjust how many new tweets are generated at a time
-    generateRandomTweet();
-  }
-  //reload all tweets
-  createTweets();
-};
-
-//set an interval to refresh tweets every 10 seconds (10000 milliseconds)
-setInterval(autoRefreshTweets, 10000); // Change the interval as needed
-
-  //initial load: display the pre-generated tweets
-  createTweets();
+  //automatic interval to refresh tweets every 1 minute
+  setInterval(createTweets, 60000);
+  
+  //initialize the page by creating tweets
+  createTweets(); 
 
 });
+  
 
   // const $tweets = streams.home.map((tweet) => {
   //   const $tweet = $('<div></div>');
