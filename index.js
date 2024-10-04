@@ -90,18 +90,23 @@ $(document).ready(() => {
   const displayedTweetMessages = new Set();
 
   const writeTweetAndDisplay = (message, username) => {
-    writeTweet(message, username);
-    // create the new tweet object with user, message, and creation time
+    writeTweet(message, username); // This writes the new tweet using the provided writeTweet function
+
+    // Create a new tweet object with user details, message, and creation time
     const tweet = {
       user: username,
       message: message,
-      created_at: new Date(),
+      created_at: new Date(), // Timestamp of when the tweet was created
     };
 
-    // add user-written tweet to streams.home so it persists on feed
+    // Push the newly written tweet to streams.home so it persists on the feed
     streams.home.push(tweet);
 
-    // dynamically create the new tweet HTML and style it
+    // Format the tweet timestamp using moment.js (formatted time and relative time)
+    const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
+    const relativeTime = moment(tweet.created_at).fromNow(); // e.g., "a few seconds ago"
+
+    // Dynamically create the tweet's HTML structure with styling
     const $newTweet = $('<div class="tweet"></div>').css({
       border: '1px solid #ddd',
       margin: '10px',
@@ -110,33 +115,34 @@ $(document).ready(() => {
       textAlign: 'left',
     });
 
-    //format the actual time and human-friendly time
-    const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A'); // e.g., "October 3rd 2024, 3:45 PM"
-    const relativeTime = moment(tweet.created_at).fromNow(); // e.g., "a few seconds ago"
-
-    // create a clickable user element (wrap username in a span)
+    // Create a clickable user element and bind a click event to show the user's timeline
     const $user = $(`<span class="user">@${tweet.user}</span>`).css({
       fontWeight: 'bold',
       color: 'blue',
       cursor: 'pointer'
     }).on('click', () => {
-      showUserTimeline(tweet.user);   //call function to show user timeline
+      showUserTimeline(tweet.user); // Call the function to show the user's timeline
     });
 
-    //add both formatted time and relative time to the text
-    $newTweet.append($user).append(`: ${tweet.message} (${relativeTime})`);
+    // Process hashtags in the tweet's message and make them clickable
+    const processedMessage = processMessage(tweet.message); // Apply regex to format hashtags
+    const $message = $('<p></p>').html(processedMessage).css({
+      margin: '5px 0'
+    });
 
-
-    //add both formatted time and relative time to the text
-    $newTweet.text(`@${tweet.user}: ${tweet.message} (${relativeTime})`);
-    $newTweet.append($('<span class="actual-time"></span>').text(` - ${formattedTime}`).css({
+    // Format and display time info (relative and actual time)
+    const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css({
       fontSize: '0.8em',
       color: 'gray',
-    }));
+    });
 
-    // add the tweet id to the displayedTweetIds set to track it
+    // Append the tweet details (user, message, time) to the new tweet div
+    $newTweet.append($user).append($message).append($timeInfo);
+
+    // Track the tweet message to avoid displaying duplicates
     displayedTweetMessages.add(tweet.message);
-    // Prepend the new tweet to the top of the tweet feed
+
+    // Prepend the new tweet to the tweet feed (to display it at the top)
     $('#tweet-feed').prepend($newTweet);
   };
 
@@ -182,6 +188,7 @@ $(document).ready(() => {
         color: 'blue',
         cursor: 'pointer'
       }).on('click', () => {
+        console.log(`Username clicked: ${tweet.user}`)
         showUserTimeline(tweet.user);   //call function to show user timeline
       })
 
@@ -247,8 +254,6 @@ $(document).ready(() => {
     $('#tweet-feed').prepend($tweetDiv);
   });
 }
-
-
       //format the actual time and human-friendly time
       const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
       const relativeTime = moment(tweet.created_at).fromNow();
@@ -300,7 +305,7 @@ $(document).ready(() => {
     }
   
     // Display the user's tweets
-    userTweets.slice(0, maxUserTweets).forEach((tweet) => {
+    userTweets.forEach((tweet) => {
       // Create tweet styling
       const $tweetDiv = $('<div class="tweet"></div>').css({
         border: '1px solid #ddd',
@@ -310,22 +315,22 @@ $(document).ready(() => {
         textAlign: 'left',
       });
 
+      //format the actual time and human-friendly time
+      const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
+      const relativeTime = moment(tweet.created_at).fromNow();
+
+      const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css({
+        fontSize: '0.8em',
+        color: 'gray',
+      });
+
       //create a message element to hold the tweet's message
       const $message = $('<p></p>').text(tweet.message).css({
         margin: '5px 0'
       });
 
-      //format the actual time and human-friendly time
-      const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
-      const relativeTime = moment(tweet.created_at).fromNow();
-
-      const $time = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css({
-        fontSize: '0.8em',
-        color: 'gray',
-      });
-
       //append user, message, and time to the tweet div
-      $tweetDiv.append($message).append($time);
+      $tweetDiv.append($message).append($timeInfo);
       //prepend the newly created tweet to the tweet feed
       $('#tweet-feed').prepend($tweetDiv);
     });
@@ -344,6 +349,7 @@ $(document).ready(() => {
     }
   });
 
+  
   //event listener for refreshing the tweet feed
   $('#refresh-button').on('click', () => {
     const newTweets = [];
