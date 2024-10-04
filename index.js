@@ -4,6 +4,10 @@
 //wait until the document is fully loaded
 $(document).ready(() => {
 
+  $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">');
+  
+
+
   //number of new tweets to generate at a time, and max number of tweets to display
   const newTweetsCount = 3; // Number of new tweets to generate at a time
   const maxDisplayedTweets = 10; // Maximum number of tweets to display
