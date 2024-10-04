@@ -78,8 +78,24 @@ $(document).ready(() => {
   // Append the tweet input, tweet button, and refresh button to the tweet controls
   $tweetControls.append($tweetInput).append($tweetButton).append($refreshButton);
 
+  ////////////////////////////////////////TWEET FEED///////////////////////////////////////////////////////////
+
   //create a tweet feed section where all tweets will be displayed
   const $tweetFeed = $('<div id="tweet-feed"></div>');
+
+  $tweetFeed.css({
+    'background-color': '#222',          // Dark background for the feed container
+    'padding': '20px',                   // Padding inside the feed
+    'border-radius': '10px',             // Rounded corners for a modern look
+    'box-shadow': '0 4px 10px rgba(0,0,0,0.3)',  // Soft shadow effect
+    'max-height': '600px',               // Max height for the feed
+    'overflow-y': 'auto',                // Enable scrolling for overflow content
+    'margin': '20px 0',                  // Space around the tweet feed
+  });
+
+
+
+
   // Append the title, tweet controls, and tweet feed to the container
   $container.append($title).append($tweetControls).append($tweetFeed);
 
