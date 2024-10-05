@@ -78,9 +78,13 @@ $(document).ready(() => {
   // const $body = $('body');
   // $body.html(''); //clears body - will clear tag you call it on
 
+  
+
 //////////////////////////////////////////////sidebar///////////////////////////////////////////
 
 const $contentWrapper = $('<div id="content-wrapper"></div>').css({
+  border: '',
+  minHeight: '100vh',
   display: 'flex',
   justifyContent: 'space-between',
   width: '100%',
@@ -92,7 +96,8 @@ const $contentWrapper = $('<div id="content-wrapper"></div>').css({
 // Create the sidebar container
 const $sidebar = $('<div id="sidebar"></div>').css({
   flexBasis: '25%',                   // Sidebar width
-  backgroundColor: '#1b1b1b',      // Dark background
+  backgroundColor: '#333',      // Dark background
+  border: '',
   padding: '20px',                 // Padding inside the sidebar
   borderRadius: '10px',            // Rounded corners
   boxShadow: '0 4px 10px rgba(0,0,0,0.3)',  // Soft shadow
@@ -118,34 +123,108 @@ const $trendingList = $('<ul id="trending-list"></ul>').css({
   paddingLeft: '0'
 });
 
+loadTrendingHashtags($trendingList);
+
 // Append title and trending list to the sidebar
 $sidebar.append($sidebarTitle).append($trendingList);
-
 $contentWrapper.append($sidebar);
 
+function showHashtagTimeline(hashtag) {
+  //clear the tweet feed before showing the hashtags
+  $('#tweet-feed').html('');
+  //get only the tweets that contain the hashtag
+  const hashtagTweets = streams.home.filter(tweet => 
+    tweet.message.toLowerCase().includes(hashtag.toLowerCase())
+  );
+
+// If no tweets are found for the hashtag, display a message
+if (hashtagTweets.length === 0) {
+$('#tweet-feed').html(`<p>No tweets available for the hashtag ${hashtag}.</p>`);
+return;
+}
+
+// Display the hashtag's tweets
+hashtagTweets.forEach((tweet) => {
+// Create tweet styling (similar to createTweets function)
+const $tweetDiv = $('<div class="tweet"></div>').css({
+border: '1px solid #ddd',
+margin: '10px',
+padding: '10px',
+borderRadius: '5px',
+textAlign: 'left',
+});
+
+const $user = $(`<span class="user">@${tweet.user}</span>`).css({
+fontWeight: 'bold',
+cursor: 'pointer',
+color: '#00FFFF', // Neon blue for usernames
+});
+
+// Create a message element to hold the tweet's message
+const $message = $('<p></p>').html(processMessage(tweet.message)).css({
+margin: '5px 0'
+});
+
+// Format and display time (similar to createTweets function)
+const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
+const relativeTime = moment(tweet.created_at).fromNow();
+const $timeInfo = $('<span class="time"></span>')
+.text(`${relativeTime} | ${formattedTime}`)
+.css({
+  fontSize: '0.8em',
+  color: 'gray',
+});
+
+// Append user, message, and time to the tweet div
+$tweetDiv.append($user).append($message).append($timeInfo);
+$('#tweet-feed').prepend($tweetDiv);
+});
+
+
+// Add a return button
+const $returnButton = $('<button>Return to All Tweets</button>')
+.css({
+marginBottom: '10px',
+padding: '5px 10px',
+backgroundColor: '#00FF00',
+color: '#000',
+border: 'none',
+borderRadius: '5px',
+cursor: 'pointer'
+})
+.on('click', function() {
+createTweets(); // Recreate the main tweet feed
+});
+
+}
+
 // Function to load trending hashtags
-function loadTrendingHashtags() {
-  console.log('Tags:', tags); // Add this line
-  if (!tags || !Array.isArray(tags)) {
-    console.error('Tags array is undefined or not an array.');
-    return;
-  }
-  // Access the 'tags' array from data-generator.js
+function loadTrendingHashtags($trendingList) {
   tags.forEach(tag => {
-    
-    if(tag) { // Make sure tag is not an empty string
-      $('<li></li>').text(tag).css({
+    if(tag) {
+      const $li = $('<li></li>')
+      .text(tag)
+      .css({
         padding: '5px 0',
         cursor: 'pointer',
-        color: '#FF1493', // Neon pink for hashtags
-      }).appendTo('#trending-list');
+        color: '#FF1493',
+      })
+      .on('click', function() {
+        showHashtagTimeline(tag);
+      });
+      $trendingList.append($li);
     }
   });
 }
 
-// Load the trending hashtags when the page loads
-loadTrendingHashtags();
+// loadTrendingHashtags($trendingList);
+// // Load the trending hashtags when the page loads
+// $contentWrapper.append($sidebar);
 
+// $trendingList.on('click', 'li', function() {
+//   const clickedTag = $(this).text();
+//   showHashtagTimeline(clickedTag);
+// });
 
 /////////////////////////////////////////////main/////////////////////////////////////////////////////////////////
 
@@ -170,6 +249,8 @@ loadTrendingHashtags();
   })
 
   $contentWrapper.append($container);
+  console.log("Sidebar appended:", $sidebar);
+  console.log("Tags before loading:", tags);
 
 //////////////////////////////////////////////////////TWEET CONTROLS/////////////////////////////////////////////////
 
@@ -250,7 +331,7 @@ loadTrendingHashtags();
 );
   
   // Append the tweet input, tweet button, and refresh button to the tweet controls
-  $tweetControls.append($usernameInput, $tweetInput, $tweetButton, $refreshButton);
+  $tweetControls.append($usernameInput, $tweetInput, $tweetButton, $refreshButton,);
 
  
   ////////////////////////////////////////TWEET FEED///////////////////////////////////////////////////////////
@@ -372,6 +453,50 @@ loadTrendingHashtags();
         textAlign: 'left',
       });
 
+///////////////////////////////////UPDATE TRENDING HASHTAGS//////////////////////////////////////////
+
+      function updateTrendingHashtags() {
+        const hashtagCounts = {};
+        const $tweetFeed = $('#tweet-feed');
+        
+        // Extract hashtags from all tweets
+        $tweetFeed.find('.tweet').each(function() {
+          const tweetText = $(this).find('p').text();
+          const hashtags = tweetText.match(/#\w+/g) || [];
+          hashtags.forEach(tag => {
+            hashtagCounts[tag] = (hashtagCounts[tag] || 0) + 1;
+          });
+        });
+      
+        // Sort hashtags by count
+        const sortedHashtags = Object.entries(hashtagCounts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 10)  // Get top 10 trending hashtags
+          .map(entry => entry[0]);
+
+          
+      
+        // Update the trending list
+        const $trendingList = $('#trending-list');
+        $trendingList.empty();
+        sortedHashtags.forEach(tag => {
+          $('<li></li>')
+            .text(tag)
+            .css({
+              padding: '5px 0',
+              cursor: 'pointer',
+              color: '#FF1493',
+            })
+            .on('click', function() {
+              showHashtagTimeline(tag);
+            })
+            .appendTo($trendingList);
+        });
+      }
+      updateTrendingHashtags();
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
       //create a clickable user element (wrap username in a span)
       const $user = $(`<span class="user">@${tweet.user}</span>`).css({
         fontWeight: 'bold',
@@ -390,54 +515,10 @@ loadTrendingHashtags();
       //after creating the message element
       $message.on('click', '.hashtag', function() {
         const hashtag = $(this).text();
-        showHashtagTimeLine(hashtag); //call function to show tweets with this hashtag
+        showHashtagTimeline(hashtag); //call function to show tweets with this hashtag
       });
 
-      function showHashtagTimeLine(hashtag) {
-        //clear the tweet feed before showing the hashtags
-        $('#tweet-feed').html('');
 
-        //get only the tweets that contain the hashtag
-        const hashtagTweets = streams.home.filter(tweet => tweet.message.includes(hashtag));
-
-  // If no tweets are found for the hashtag, display a message
-  if (hashtagTweets.length === 0) {
-    $('#tweet-feed').html(`<p>No tweets available for the hashtag ${hashtag}.</p>`);
-    return;
-  }
-
-  // Display the hashtag's tweets
-  hashtagTweets.forEach((tweet) => {
-    // Create tweet styling (similar to createTweets function)
-    const $tweetDiv = $('<div class="tweet"></div>').css({
-      border: '1px solid #ddd',
-      margin: '10px',
-      padding: '10px',
-      borderRadius: '5px',
-      textAlign: 'left',
-    });
-
-    // Create a message element to hold the tweet's message
-    const $message = $('<p></p>').text(tweet.message).css({
-      margin: '5px 0'
-    });
-
-    // Format and display time (similar to createTweets function)
-    const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
-    const relativeTime = moment(tweet.created_at).fromNow();
-    const actualTime = moment(tweet.created_at).format('h:mm A');
-    
-    const $time = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css({
-      fontSize: '0.8em',
-      color: 'gray',
-    });
-
-    // Append user, message, and time to the tweet div
-    $tweetDiv.append($message).append($time);
-    // Prepend the newly created tweet to the tweet feed
-    $('#tweet-feed').prepend($tweetDiv);
-  });
-}
       //format the actual time and human-friendly time
       const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
       const relativeTime = moment(tweet.created_at).fromNow();
@@ -542,6 +623,7 @@ loadTrendingHashtags();
       newTweets.push(streams.home[streams.home.length - 1]);
     }
     createTweets(newTweets); // Call createTweets function on refresh
+    updateTrendingHashtags();
   });
 
   const autoRefreshTweets = () => {
@@ -551,13 +633,17 @@ loadTrendingHashtags();
       newTweets.push(streams.home[streams.home.length - 1]);
     }
     createTweets(newTweets);
+
   }
 
   //automatic interval to refresh tweets every 1 minute
-  setInterval(autoRefreshTweets, 60000);
+  setInterval(autoRefreshTweets, 10000);
   
   //initialize the page by creating tweets
   createTweets(); 
+
+  // Append the content wrapper to the body
+  
 
 });
   
