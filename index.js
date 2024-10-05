@@ -76,6 +76,63 @@ $(document).ready(() => {
   const $body = $('body');
   $body.html(''); //clears body - will clear tag you call it on
 
+//////////////////////////////////////////////sidebar///////////////////////////////////////////
+// Create the sidebar container
+const $sidebar = $('<div id="sidebar"></div>').css({
+  width: '20%',                   // Sidebar width
+  backgroundColor: '#1b1b1b',      // Dark background
+  padding: '20px',                 // Padding inside the sidebar
+  borderRadius: '10px',            // Rounded corners
+  boxShadow: '0 4px 10px rgba(0,0,0,0.3)',  // Soft shadow
+  maxHeight: '600px',              // Limit height of the sidebar
+  overflowY: 'auto',               // Enable scrolling if content overflows
+  marginRight: '20px',             // Add spacing between sidebar and main content
+  color: '#fff'                    // Text color in the sidebar
+});
+
+// Add title for the sidebar
+const $sidebarTitle = $('<h2>Trending Hashtags</h2>').css({
+  textAlign: 'left',
+  fontSize: '1.5em',
+  marginBottom: '10px',
+  borderBottom: '2px solid #FF1493', // Neon pink underline
+  paddingBottom: '10px'
+});
+
+// Add a list for trending hashtags
+const $trendingList = $('<ul id="trending-list"></ul>').css({
+  listStyle: 'none',
+  paddingLeft: '0'
+});
+
+// Append title and trending list to the sidebar
+$sidebar.append($sidebarTitle).append($trendingList);
+
+// Function to load trending hashtags
+function loadTrendingHashtags() {
+  // Access the 'tags' array from data-generator.js
+  tags.forEach(tag => {
+    if(tag) { // Make sure tag is not an empty string
+      $('<li></li>').text(tag).css({
+        padding: '5px 0',
+        cursor: 'pointer',
+        color: '#FF1493', // Neon pink for hashtags
+      }).appendTo('#trending-list');
+    }
+  });
+}
+
+// Load the trending hashtags when the page loads
+loadTrendingHashtags();
+
+
+/////////////////////////////////////////////main/////////////////////////////////////////////////////////////////
+
+  const $layoutContainer = $('<div class="layout-container"></div>').css({
+    display: 'flex',
+    justifyContent: 'space-between',  // Space between sidebar and content
+  });
+
   //create the main container and title
   const $container = $('<div class="container"></div>').css({
     width: '80%',
@@ -89,6 +146,14 @@ $(document).ready(() => {
   const $title = $('<h1>Twiddler!</h1>').css({
     fontfamily: 'Orbitron'
   })
+
+  // Append the main content to the layout container
+  $layoutContainer.append($sidebar).append($container);
+
+  // Append the layout container to the body
+  $('body').html('').append($layoutContainer);
+
+//////////////////////////////////////////////////////TWEET CONTROLS/////////////////////////////////////////////////
 
   //create a username input field
   const $usernameInput = $('<input id="username-input" placeholder="Enter your username" />').css({
@@ -172,6 +237,7 @@ $(document).ready(() => {
   // Append the tweet input, tweet button, and refresh button to the tweet controls
   $tweetControls.append($tweetInput).append($tweetButton).append($refreshButton);
 
+ 
   ////////////////////////////////////////TWEET FEED///////////////////////////////////////////////////////////
 
   //create a tweet feed section where all tweets will be displayed
@@ -189,7 +255,7 @@ $(document).ready(() => {
 
 
   // Append the title, tweet controls, and tweet feed to the container
-  $container.append($title).append($tweetControls).append($tweetFeed);
+  $container.append($title).append($tweetFeed).append($tweetControls);
 
   // Append the entire container to the body
   $body.append($container);
