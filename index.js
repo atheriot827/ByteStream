@@ -14,7 +14,7 @@ $(document).ready(() => {
         font-family: 'Roboto', sans-serif;
         background-color: #1b1b1b; /* dark charcoal */
         color: #fff;
-        background: url('https://i.imgur.com/eurGxJ8.jpeg') center center / cover, #1b1b1b;
+        
       }
 
       /* Custom Scrollbar */
@@ -77,9 +77,19 @@ $(document).ready(() => {
   $body.html(''); //clears body - will clear tag you call it on
 
 //////////////////////////////////////////////sidebar///////////////////////////////////////////
+
+const $contentWrapper = $('<div id="content-wrapper"></div>').css({
+  display: 'flex',
+  justifyContent: 'space-between',
+  width: '100%',
+  height: '100vh',      // Ensure it takes the full height of the viewport
+  boxSizing: 'border-box',
+  padding: '0 20px'
+});
+
 // Create the sidebar container
 const $sidebar = $('<div id="sidebar"></div>').css({
-  width: '20%',                   // Sidebar width
+  flexBasis: '25%',                   // Sidebar width
   backgroundColor: '#1b1b1b',      // Dark background
   padding: '20px',                 // Padding inside the sidebar
   borderRadius: '10px',            // Rounded corners
@@ -87,7 +97,8 @@ const $sidebar = $('<div id="sidebar"></div>').css({
   maxHeight: '600px',              // Limit height of the sidebar
   overflowY: 'auto',               // Enable scrolling if content overflows
   marginRight: '20px',             // Add spacing between sidebar and main content
-  color: '#fff'                    // Text color in the sidebar
+  color: '#fff',                    // Text color in the sidebar
+  boxSizing: 'border-box', // Ensures padding is included in width calculation
 });
 
 // Add title for the sidebar
@@ -128,32 +139,36 @@ loadTrendingHashtags();
 
 /////////////////////////////////////////////main/////////////////////////////////////////////////////////////////
 
-  const $layoutContainer = $('<div class="layout-container"></div>').css({
-    display: 'flex',
-    justifyContent: 'space-between',  // Space between sidebar and content
-  });
+  // const $layoutContainer = $('<div class="layout-container"></div>').css({
+  //   display: 'flex',
+  //   justifyContent: 'space-between',  // Space between sidebar and content
+  // });
 
   //create the main container and title
   const $container = $('<div class="container"></div>').css({
-    width: '80%',
+    flexBasis: '70%',
     margin: '0 auto',                         
     textAlign: 'center',
     backgroundColor: 'rgba(27, 27, 27, 0.8)', // Make it semi-transparent
     borderRadius: '10px',                     // Optional: Adds rounded corners
     padding: '20px',                          // Optional: Adds padding
+    boxSizing: 'border-box'
   });
 
   const $title = $('<h1>Twiddler!</h1>').css({
     fontfamily: 'Orbitron'
   })
 
-  // Append the main content to the layout container
-  $layoutContainer.append($sidebar).append($container);
+  // // Append the main content to the layout container
+  // $layoutContainer.append($sidebar).append($container);
 
-  // Append the layout container to the body
-  $('body').html('').append($layoutContainer);
+  // // Append the layout container to the body
+  // $('body').html('').append($layoutContainer);
 
 //////////////////////////////////////////////////////TWEET CONTROLS/////////////////////////////////////////////////
+
+  //Create a div to hold tweet controls
+  const $tweetControls = $('<div id="tweet-controls"></div>');
 
   //create a username input field
   const $usernameInput = $('<input id="username-input" placeholder="Enter your username" />').css({
@@ -164,12 +179,6 @@ loadTrendingHashtags();
     border: '1px solid #ddd',
     borderRadius: '4px'
   });
-
-  //Create a div to hold tweet controls
-  const $tweetControls = $('<div id="tweet-controls"></div>');
-  
-  // Append the username input to the tweet controls
-  $tweetControls.append($usernameInput);
   
   // Create the tweet input textarea
   const $tweetInput = $('<textarea id="tweet-input" placeholder="What\'s happening?"></textarea>').css({
@@ -235,15 +244,14 @@ loadTrendingHashtags();
 );
   
   // Append the tweet input, tweet button, and refresh button to the tweet controls
-  $tweetControls.append($tweetInput).append($tweetButton).append($refreshButton);
+  $tweetControls.append($usernameInput, $tweetInput, $tweetButton, $refreshButton);
 
  
   ////////////////////////////////////////TWEET FEED///////////////////////////////////////////////////////////
 
   //create a tweet feed section where all tweets will be displayed
-  const $tweetFeed = $('<div id="tweet-feed"></div>');
-
-  $tweetFeed.css({
+  const $tweetFeed = $('<div id="tweet-feed"></div>').css({
+    width: '100%',
     'background-color': '#222',          // Dark background for the feed container
     'padding': '20px',                   // Padding inside the feed
     'border-radius': '10px',             // Rounded corners for a modern look
@@ -251,14 +259,16 @@ loadTrendingHashtags();
     'max-height': '600px',               // Max height for the feed
     'overflow-y': 'auto',                // Enable scrolling for overflow content
     'margin': '20px 0',                  // Space around the tweet feed
+    'boxSizing': 'border-box'
   });
 
 
-  // Append the title, tweet controls, and tweet feed to the container
-  $container.append($title).append($tweetFeed).append($tweetControls);
+ // Append all components to the content wrapper
+ $contentWrapper.append($sidebar).append($container);
+ $container.append($title, $tweetFeed, $tweetControls);
 
-  // Append the entire container to the body
-  $body.append($container);
+ // Append the content wrapper to the body
+ $body.append($contentWrapper);
 
   // initialize an array to track displayed tweet ids to avoid duplicates
   const displayedTweetMessages = new Set();
