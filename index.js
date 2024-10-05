@@ -4,7 +4,67 @@
 //wait until the document is fully loaded
 $(document).ready(() => {
 
-  $('head').append('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">');
+  $('head').append(`
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+      h1, h2, h3 {
+        font-family: 'Orbitron', sans-serif;
+      }
+      body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #1b1b1b; /* dark charcoal */
+        color: #fff;
+        background: url('https://i.imgur.com/eurGxJ8.jpeg') center center / cover, #1b1b1b;
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1b1b1b; /* Dark background */
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #9400D3; /* electric purple */
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #FF1493; /* neon pink */
+      }
+
+      /* Tweet styles with glassmorphism */
+      #tweet-feed .tweet {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        padding: 10px;
+        margin-bottom: 15px;
+        color: #fff;
+      }
+      #tweet-feed .tweet {
+        background: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
+        border: 1px solid rgba(255, 255, 255, 0.2); /* Semi-transparent border */
+        backdrop-filter: blur(10px); /* Glassmorphism effect */
+        border-radius: 10px; /* Rounded corners */
+        padding: 10px;
+        margin-bottom: 15px;
+        color: #fff;
+      }
+      #tweet-feed .tweet:hover {
+        box-shadow: 0px 0px 15px #FF1493; /* Neon pink glow */
+        border-color: #FF1493; /* neon pink border on hover */
+      }
+
+      /* User and Hashtag Colors */
+      .user {
+        color: #00FFFF; /* neon blue */
+      }
+      .hashtag {
+        color: #FF1493; /* neon pink */
+        cursor: pointer;
+      }
+    </style>
+  `);
   
 
 
@@ -19,13 +79,16 @@ $(document).ready(() => {
   //create the main container and title
   const $container = $('<div class="container"></div>').css({
     width: '80%',
-    //centers the container
-    margin: '0 auto',
-    //centers the text
-    textAlign: 'center'
+    margin: '0 auto',                         
+    textAlign: 'center',
+    backgroundColor: 'rgba(27, 27, 27, 0.8)', // Make it semi-transparent
+    borderRadius: '10px',                     // Optional: Adds rounded corners
+    padding: '20px',                          // Optional: Adds padding
   });
 
-  const $title = $('<h1>Twiddler!</h1>');
+  const $title = $('<h1>Twiddler!</h1>').css({
+    fontfamily: 'Orbitron'
+  })
 
   //create a username input field
   const $usernameInput = $('<input id="username-input" placeholder="Enter your username" />').css({
@@ -53,27 +116,58 @@ $(document).ready(() => {
     borderRadius: '4px',
   });
   
+  
   // Create the tweet button
   const $tweetButton = $('<button id="tweet-button">Tweet</button>').css({
     padding: '10px 15px',
     margin: '5px',
     border: 'none',
-    borderRadius: '4px',
-    backgroundColor: '#007bff',
-    color: 'white',
+    borderRadius: '5px',
+    backgroundColor: '#00FF00',
+    color: '#000',
     cursor: 'pointer'
-  });
+  }).hover(
+    function() {
+      $(this).css({
+        backgroundColor: '#9400D3',
+        boxShadow: '0px 0px 15px #00FF00',
+        transform: 'scale(1.20)' 
+      });
+    },
+    function() {
+      $(this).css({
+        backgroundColor: '#00FF00',
+        boxShadow: 'none',
+        transform: 'scale(1)'
+      });
+    }
+  );
   
   // Create the refresh button
   const $refreshButton = $('<button id="refresh-button">Refresh Tweets</button>').css({
     padding: '10px 15px',
     margin: '5px',
     border: 'none',
-    borderRadius: '4px',
-    backgroundColor: '#007bff',
-    color: 'white',
+    borderRadius: '5px',
+    backgroundColor: '#00FF00',
+    color: '#000',
     cursor: 'pointer'
-  });
+  }).hover(
+    function() { // Mouse over
+        $(this).css({
+            backgroundColor: '#9400D3', // Electric purple
+            boxShadow: '0px 0px 15px #00FF00', // Bright green glow
+            transform: 'scale(1.15)'
+        });
+    },
+    function() { // Mouse out
+        $(this).css({
+            backgroundColor: '#00FF00', // Back to bright green
+            boxShadow: 'none', // Remove glow
+            transform: 'scale(1)'
+        });
+    }
+);
   
   // Append the tweet input, tweet button, and refresh button to the tweet controls
   $tweetControls.append($tweetInput).append($tweetButton).append($refreshButton);
@@ -92,8 +186,6 @@ $(document).ready(() => {
     'overflow-y': 'auto',                // Enable scrolling for overflow content
     'margin': '20px 0',                  // Space around the tweet feed
   });
-
-
 
 
   // Append the title, tweet controls, and tweet feed to the container
@@ -134,7 +226,6 @@ $(document).ready(() => {
     // Create a clickable user element and bind a click event to show the user's timeline
     const $user = $(`<span class="user">@${tweet.user}</span>`).css({
       fontWeight: 'bold',
-      color: 'blue',
       cursor: 'pointer'
     }).on('click', () => {
       showUserTimeline(tweet.user); // Call the function to show the user's timeline
@@ -165,7 +256,7 @@ $(document).ready(() => {
   const processMessage  = (message) => {
     //use regex to find hashtags
     return message.replace(/(#\w+)/g, (tag) => {
-      return `<span class="hashtag" style="color:blue; cursor:pointer;">${tag}</span>`
+      return `<span class="hashtag" style="color:#FF1493; cursor:pointer;">${tag}</span>`
     });
   };
 
@@ -183,14 +274,14 @@ $(document).ready(() => {
 
     //map over the streams.home array to create tweet elements
     newTweets.forEach((tweet) => {
-      //check if the tweet has already been displayed by checking the tweet message id
       if (displayedTweetMessages.has(tweet.message)) {
         //skip already displayed tweets
         return;
       }
       
       //create tweet styling
-      const $tweetDiv = $('<div class="tweet"></div>').css({
+      const $tweetDiv = $('<div class="tweet"></div>')
+      .css({
         border: '1px solid #ddd',
         margin: '10px',
         padding: '10px',
@@ -201,18 +292,12 @@ $(document).ready(() => {
       //create a clickable user element (wrap username in a span)
       const $user = $(`<span class="user">@${tweet.user}</span>`).css({
         fontWeight: 'bold',
-        color: 'blue',
         cursor: 'pointer'
       }).on('click', () => {
         console.log(`Username clicked: ${tweet.user}`)
         showUserTimeline(tweet.user);   //call function to show user timeline
       })
 
-      // //add onclick function for username
-      // $user.on('click', () => {
-      //   //implement this function to filter by user timeline
-      //   showUserTimeline(tweet.user);
-      // });
 
       //create a message element to hold the tweet's message
       const $message = $('<p></p>').html(processMessage(tweet.message)).css({
