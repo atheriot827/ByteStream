@@ -40,6 +40,12 @@ const objects = ['my', 'your', 'the', 'a', 'my', 'an entire', 'this', 'that', 't
 const nouns = ['cat', 'koolaid', 'system', 'city', 'worm', 'cloud', 'potato', 'money', 'way of life', 'belief system', 'security system', 'bad decision', 'future', 'life', 'pony', 'mind'];
 const tags = ['#techlife', '#burningman', '#sf', '#butonlyiknowhow', '#forreal', '#sxsw', '#ballin', '#omg', '#yolo', '#magic', '', '', '', ''];
 
+// Expose tags globally
+window.tags = tags;
+
+// Optionally, expose streams as well
+window.streams = streams;
+
 const randomMessage = () => {
   return [
     randomElement(opening),

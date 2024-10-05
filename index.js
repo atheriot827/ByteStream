@@ -72,9 +72,11 @@ $(document).ready(() => {
   const newTweetsCount = 3; // Number of new tweets to generate at a time
   const maxDisplayedTweets = 10; // Maximum number of tweets to display
 
+
+
   //clear the body - dynamically add content
-  const $body = $('body');
-  $body.html(''); //clears body - will clear tag you call it on
+  // const $body = $('body');
+  // $body.html(''); //clears body - will clear tag you call it on
 
 //////////////////////////////////////////////sidebar///////////////////////////////////////////
 
@@ -119,10 +121,18 @@ const $trendingList = $('<ul id="trending-list"></ul>').css({
 // Append title and trending list to the sidebar
 $sidebar.append($sidebarTitle).append($trendingList);
 
+$contentWrapper.append($sidebar);
+
 // Function to load trending hashtags
 function loadTrendingHashtags() {
+  console.log('Tags:', tags); // Add this line
+  if (!tags || !Array.isArray(tags)) {
+    console.error('Tags array is undefined or not an array.');
+    return;
+  }
   // Access the 'tags' array from data-generator.js
   tags.forEach(tag => {
+    
     if(tag) { // Make sure tag is not an empty string
       $('<li></li>').text(tag).css({
         padding: '5px 0',
@@ -156,14 +166,10 @@ loadTrendingHashtags();
   });
 
   const $title = $('<h1>Twiddler!</h1>').css({
-    fontfamily: 'Orbitron'
+    fontFamily: 'Orbitron'
   })
 
-  // // Append the main content to the layout container
-  // $layoutContainer.append($sidebar).append($container);
-
-  // // Append the layout container to the body
-  // $('body').html('').append($layoutContainer);
+  $contentWrapper.append($container);
 
 //////////////////////////////////////////////////////TWEET CONTROLS/////////////////////////////////////////////////
 
@@ -268,7 +274,7 @@ loadTrendingHashtags();
  $container.append($title, $tweetFeed, $tweetControls);
 
  // Append the content wrapper to the body
- $body.append($contentWrapper);
+ const $body = $('body').empty().append($contentWrapper);
 
   // initialize an array to track displayed tweet ids to avoid duplicates
   const displayedTweetMessages = new Set();
@@ -336,6 +342,7 @@ loadTrendingHashtags();
     });
   };
 
+  $contentWrapper.append($container);
 
   //function to create and display tweets
   function createTweets(additionalTweets = []) {
