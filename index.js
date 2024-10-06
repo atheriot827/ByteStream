@@ -251,47 +251,95 @@ function updateTrendingHashtags() {
   //create the main container and title
   const $container = $('<div class="container"></div>').css({
     flexBasis: '70%',
-    margin: '0 auto',                         
+    margin: '0 auto',
     textAlign: 'center',
-    backgroundColor: 'rgba(27, 27, 27, 0.8)', // Make it semi-transparent
-    borderRadius: '10px',                     // Optional: Adds rounded corners
-    padding: '20px',                          // Optional: Adds padding
-    boxSizing: 'border-box'
+    backgroundColor: 'rgba(27, 27, 27, 0.8)',
+    borderRadius: '10px',
+    padding: '20px',
+    boxSizing: 'border-box',
+    position: 'relative',
+    height: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    paddingBottom: '180px'
   });
 
+  const $titleContainer = $('<div id="title-container"></div>').css({
+    marginBottom: '20px'
+  });
+  
   const $title = $('<h1>Twiddler!</h1>').css({
-    fontFamily: 'Orbitron'
+    fontFamily: 'Orbitron',
+    color: '#00FFFF', // Neon blue color, adjust as needed
+    textShadow: '0 0 10px #00FFFF',
+    margin: '0'
   })
 
-  $contentWrapper.append($container);
+  $titleContainer.append($title);
+
+  $contentWrapper.append($sidebar).append($container);
+
   
+
+  const $tweetFeedContainer = $('<div id="tweet-feed-container"></div>').css({
+    flex: '1',
+    marginBottom: '20px', // Space for controls
+    padding: '20px',      // Add padding
+    backgroundColor: 'rgba(255, 255, 255, 0.05)', // Slight background for visibility
+    borderRadius: '10px'  // Rounded corners
+  });
+  
+  const $tweetControlsContainer = $('<div id="tweet-controls-container"></div>').css({
+    position: 'absolute',
+    bottom: '5px',
+    left: '20px',
+    right: '20px',
+    backgroundColor: 'rgba(27, 27, 27, 0.9)',
+    padding: '20px',
+    borderRadius: '10px',
+    boxShadow: '0 -5px 15px rgba(0,0,0,0.3)'
+  });
+  
+  $container.append($titleContainer).append($tweetFeedContainer).append($tweetControlsContainer);
 
 //////////////////////////////////////////////////////TWEET CONTROLS/////////////////////////////////////////////////
 
   //Create a div to hold tweet controls
-  const $tweetControls = $('<div id="tweet-controls"></div>');
+  const $tweetControls = $('<div id="tweet-controls"></div>').css({
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px'
+  });
+
 
   //create a username input field
   const $usernameInput = $('<input id="username-input" placeholder="Enter your username" />').css({
     width: '100%',
     height: '40px',
     marginBottom: '10px',
-    padding: '5px',
+    padding: '10px',
     border: '1px solid #ddd',
-    borderRadius: '4px'
+    borderRadius: '4px',
+    boxSizing: 'border-box'
   });
   
   // Create the tweet input textarea
   const $tweetInput = $('<textarea id="tweet-input" placeholder="What\'s happening?"></textarea>').css({
     width: '100%',
-    height: '60px',
-    marginBottom: '10px',
-    padding: '5px',
+    padding: '10px',
     border: '1px solid #ddd',
     borderRadius: '4px',
+    boxSizing: 'border-box',
+    resize: 'vertical',
+    minHeight: '60px'
   });
-  
-  
+
+  // Adjust button container
+  const $buttonContainer = $('<div></div>').css({
+    display: 'flex',
+    justifyContent: 'space-between'
+  });
+
   // Create the tweet button
   const $tweetButton = $('<button id="tweet-button">Tweet</button>').css({
     padding: '10px 15px',
@@ -339,15 +387,13 @@ function updateTrendingHashtags() {
   });
   
   // Update click handler
-$tweetButton.on('click', function() {
+$tweetButton.off('click').on('click', function(e) {
+  e.preventDefault();
+
   const username = $('#username-input').val().trim();
   const tweetMessage = $('#tweet-input').val().trim();
 
-  console.log('Username:', username);
-  console.log('Tweet message:', tweetMessage);
-
   if (username && tweetMessage) {
-    console.log('Both fields are filled. Attempting to post tweet.');
     writeTweetAndDisplay(tweetMessage, username);
     $('#tweet-input').val(''); // Clear input after tweeting
     
@@ -371,44 +417,85 @@ $tweetButton.on('click', function() {
       });
     }, 1000); // Reset after 1 second
   } else {
-    console.log('Missing input. Username or tweet message is empty.');
     alert('Please enter both a username and a tweet message.');
   }
 });
   
-
 const $returnButton = $('<button id="return-button">Return to All Tweets</button>').css({
-  padding: '10px 15px',
+  padding: '10px 20px',
   margin: '5px',
   border: 'none',
   borderRadius: '5px',
-  backgroundColor: '#00FF00',
-  color: '#000',
-  cursor: 'pointer'
+  backgroundColor: 'transparent',
+  color: '#FF1493', // Neon pink text
+  fontSize: '16px',
+  fontWeight: 'bold',
+  cursor: 'pointer',
+  transition: 'all 0.3s ease',
+  boxShadow: '0 0 10px #FF1493', // Neon glow
+  textShadow: '0 0 5px #FF1493', // Text glow
+  outline: 'none'
 }).hover(
   function() { // Mouse over
     $(this).css({
-      backgroundColor: '#9400D3',
-      boxShadow: '0px 0px 15px #00FF00',
-      transform: 'scale(1.15)'
+      backgroundColor: 'rgba(255, 20, 147, 0.2)', // Slight pink tint
+      boxShadow: '0 0 20px #FF1493, 0 0 30px #FF1493', // Intensify glow
+      textShadow: '0 0 10px #FF1493',
+      transform: 'scale(1.05)' // Slight grow effect
     });
   },
   function() { // Mouse out
     $(this).css({
-      backgroundColor: '#00FF00',
-      boxShadow: 'none',
+      backgroundColor: 'transparent',
+      boxShadow: '0 0 10px #FF1493',
+      textShadow: '0 0 5px #FF1493',
       transform: 'scale(1)'
     });
   }
-);
+).on('mousedown', function() { // Mouse press
+  $(this).css({
+    transform: 'scale(0.95)', // Slight shrink effect
+    boxShadow: '0 0 5px #FF1493', // Reduce glow
+    textShadow: '0 0 2px #FF1493'
+  });
+}).on('mouseup mouseleave', function() { // Mouse release or leave
+  $(this).css({
+    transform: 'scale(1)',
+    boxShadow: '0 0 10px #FF1493',
+    textShadow: '0 0 5px #FF1493'
+  });
+});
 
 $returnButton.on('click', function() {
   currentView = 'main';
+  $('#tweet-feed').empty();
   createTweets();
+  autoRefreshTweets(); // Restart auto-refresh
+  $(this).hide(); // Hide the return button
+
+  // Add click animation
+  $(this).css({
+    backgroundColor: 'rgba(255, 20, 147, 0.3)', // More intense pink background
+    color: '#FFFFFF', // White text
+    textShadow: '0 0 10px #FF1493, 0 0 20px #FF1493', // Intense text glow
+    boxShadow: '0 0 30px #FF1493, 0 0 50px #FF1493', // Intense box glow
+    transform: 'scale(1.1)' // Slightly larger
+  });
+  
+  // Reset button after animation
+  setTimeout(() => {
+    $(this).css({
+      backgroundColor: 'transparent',
+      color: '#FF1493',
+      textShadow: '0 0 5px #FF1493',
+      boxShadow: '0 0 10px #FF1493',
+      transform: 'scale(1)'
+    });
+  }, 300); // Reset after 0.3 seconds
 });
   
-  // Append the tweet input, tweet button, and refresh button to the tweet controls
-  $tweetControls.append($usernameInput, $tweetInput, $tweetButton, $returnButton);
+$buttonContainer.append($tweetButton).append($returnButton);
+$tweetControls.append($usernameInput).append($tweetInput).append($buttonContainer);
 
  
   ////////////////////////////////////////TWEET FEED///////////////////////////////////////////////////////////
@@ -417,7 +504,7 @@ $returnButton.on('click', function() {
   const $tweetFeed = $('<div id="tweet-feed"></div>').css({
     width: '100%',
     'background-color': '#222',          // Dark background for the feed container
-    'padding': '20px',                   // Padding inside the feed
+    'padding': '10px',                   // Padding inside the feed
     'border-radius': '10px',             // Rounded corners for a modern look
     'box-shadow': '0 4px 10px rgba(0,0,0,0.3)',  // Soft shadow effect
     'max-height': '600px',               // Max height for the feed
@@ -429,7 +516,10 @@ $returnButton.on('click', function() {
 
  // Append all components to the content wrapper
  $contentWrapper.append($sidebar).append($container);
- $container.append($title, $tweetFeed, $tweetControls);
+ //$container.append($title, $tweetFeed, $tweetControls);
+
+$tweetFeedContainer.append($tweetFeed);
+$tweetControlsContainer.append($tweetControls);
 
  // Append the content wrapper to the body
  const $body = $('body').empty().append($contentWrapper);
@@ -438,7 +528,12 @@ $returnButton.on('click', function() {
   const displayedTweetMessages = new Set();
 
   const writeTweetAndDisplay = (message, username) => {
-    writeTweet(message, username); // This writes the new tweet using the provided writeTweet function
+    console.log('Attempting to write tweet:', { message, username });
+
+    try {
+    writeTweet(message, username); 
+
+    console.log('Tweet written successfully');
 
     // Create a new tweet object with user details, message, and creation time
     const tweet = {
@@ -447,12 +542,12 @@ $returnButton.on('click', function() {
       created_at: new Date(), // Timestamp of when the tweet was created
     };
 
+    console.log('New tweet object:', tweet);
+
+
     // Push the newly written tweet to streams.home so it persists on the feed
     streams.home.push(tweet);
-
-    // Format the tweet timestamp using moment.js (formatted time and relative time)
-    const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
-    const relativeTime = moment(tweet.created_at).fromNow(); // e.g., "a few seconds ago"
+    console.log('Tweet added to streams.home');
 
     // Dynamically create the tweet's HTML structure with styling
     const $newTweet = $('<div class="tweet"></div>').css({
@@ -478,6 +573,8 @@ $returnButton.on('click', function() {
     });
 
     // Format and display time info (relative and actual time)
+    const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
+    const relativeTime = moment(tweet.created_at).fromNow(); // e.g., "a few seconds ago"
     const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css({
       fontSize: '0.8em',
       color: 'gray',
@@ -491,7 +588,16 @@ $returnButton.on('click', function() {
 
     // Prepend the new tweet to the tweet feed (to display it at the top)
     $('#tweet-feed').prepend($newTweet);
-  };
+    console.log('New tweet added to the DOM');
+
+    // Update trending hashtags
+    updateTrendingHashtags();
+    console.log('Trending hashtags updated');
+  } catch (error) {
+    console.error('Error in writeTweetAndDisplay:', error);
+  }
+};
+  
 
   const processMessage  = (message) => {
     //use regex to find hashtags
@@ -500,13 +606,13 @@ $returnButton.on('click', function() {
     });
   };
 
-  $contentWrapper.append($container);
+  // $contentWrapper.append($container);
 
   //function to create and display tweets
   function createTweets(additionalTweets = []) {
     $('#return-button').hide();
     // $('#tweet-feed').empty();
-    const $tweetFeed = $('#tweet-feed');
+    const $tweetFeed = $('#tweet-feed-container #tweet-feed');
     const allTweets = streams.home.slice().reverse();
     const newTweets = additionalTweets.length ? additionalTweets : allTweets.slice(0, maxDisplayedTweets);
   
@@ -567,7 +673,7 @@ $returnButton.on('click', function() {
       //append user, message, and time to the tweet div
       $tweetDiv.append($user).append($message).append($timeInfo);
       //prepend the newly created tweet to the tweet feed to maintain reverse chronological order
-      $('#tweet-feed').prepend($tweetDiv);
+      $('#tweet-feed-container #tweet-feed').prepend($tweetDiv);
     });
     
     //ensure the feed does not exceed the maximum number of displayed tweets
@@ -639,19 +745,6 @@ $returnButton.on('click', function() {
     });
   }
 
-  //event listener for posting a new tweet
-  $('#tweet-button').on('click', () => {
-    const username = $('#username-input').val().trim();
-    const tweetMessage = $('#tweet-input').val().trim();
-
-    if (username && tweetMessage) {
-      writeTweetAndDisplay(tweetMessage, username); 
-      $('#tweet-input').val(''); // Clear input after tweeting
-    } else {
-      alert('Please enter both a username and a tweet message.');
-    }
-  });
-
   let currentView = 'main'
   let autoRefreshTimer;
 
@@ -668,6 +761,17 @@ $returnButton.on('click', function() {
   }
   autoRefreshTimer = setTimeout(autoRefreshTweets, 10000);
 };
+
+// Append all components to the content wrapper
+$contentWrapper.append($sidebar).append($container);
+
+// Populate the containers
+$titleContainer.append($title);
+$tweetFeedContainer.append($tweetFeed);
+$tweetControlsContainer.append($tweetControls);
+
+// Append the content wrapper to the body
+$('body').empty().append($contentWrapper);
 
 // Initialize the page by creating tweets
 currentView = 'main';
