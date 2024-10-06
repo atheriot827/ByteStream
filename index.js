@@ -387,39 +387,37 @@ function updateTrendingHashtags() {
   });
   
   // Update click handler
-$tweetButton.off('click').on('click', function(e) {
-  e.preventDefault();
-
-  const username = $('#username-input').val().trim();
-  const tweetMessage = $('#tweet-input').val().trim();
-
-  if (username && tweetMessage) {
-    writeTweetAndDisplay(tweetMessage, username);
-    $('#tweet-input').val(''); // Clear input after tweeting
-    
-    // Add success animation
-    $(this).text('Posted!').css({
-      backgroundColor: 'rgba(0, 255, 0, 0.3)', // More intense green background
-      color: '#FFFFFF', // White text
-      textShadow: '0 0 10px #00FF00, 0 0 20px #00FF00', // Intense text glow
-      boxShadow: '0 0 30px #00FF00, 0 0 50px #00FF00', // Intense box glow
-      transform: 'scale(1.1)' // Slightly larger
-    });
-    
-    // Reset button after animation
-    setTimeout(() => {
-      $(this).text('Tweet').css({
-        backgroundColor: 'transparent',
-        color: '#00FF00',
-        textShadow: '0 0 5px #00FF00',
-        boxShadow: '0 0 10px #00FF00',
-        transform: 'scale(1)'
-      });
-    }, 1000); // Reset after 1 second
-  } else {
-    alert('Please enter both a username and a tweet message.');
-  }
+  $(document).on('click', '#tweet-button', function(e) {
+    console.log('Tweet button clicked');
+    e.preventDefault();
+    const username = $('#username-input').val().trim();
+    const tweetMessage = $('#tweet-input').val().trim();
+    if (username && tweetMessage) {
+        writeTweetAndDisplay(tweetMessage, username);
+        $('#tweet-input').val('');
+        // Add success animation
+        $(this).text('Posted!').css({
+            backgroundColor: 'rgba(0, 255, 0, 0.3)',
+            color: '#FFFFFF',
+            textShadow: '0 0 10px #00FF00, 0 0 20px #00FF00',
+            boxShadow: '0 0 30px #00FF00, 0 0 50px #00FF00',
+            transform: 'scale(1.1)'
+        });
+        // Reset button after animation
+        setTimeout(() => {
+            $(this).text('Tweet').css({
+                backgroundColor: 'transparent',
+                color: '#00FF00',
+                textShadow: '0 0 5px #00FF00',
+                boxShadow: '0 0 10px #00FF00',
+                transform: 'scale(1)'
+            });
+        }, 1000);
+    } else {
+        alert('Please enter both a username and a tweet message.');
+    }
 });
+
   
 const $returnButton = $('<button id="return-button">Return to All Tweets</button>').css({
   padding: '10px 20px',
@@ -466,32 +464,31 @@ const $returnButton = $('<button id="return-button">Return to All Tweets</button
   });
 });
 
-$returnButton.on('click', function() {
+$(document).on('click', '#return-button', function() {
+  console.log('Return button clicked');
   currentView = 'main';
   $('#tweet-feed').empty();
   createTweets();
-  autoRefreshTweets(); // Restart auto-refresh
-  $(this).hide(); // Hide the return button
-
+  autoRefreshTweets();
+  $(this).hide();
   // Add click animation
   $(this).css({
-    backgroundColor: 'rgba(255, 20, 147, 0.3)', // More intense pink background
-    color: '#FFFFFF', // White text
-    textShadow: '0 0 10px #FF1493, 0 0 20px #FF1493', // Intense text glow
-    boxShadow: '0 0 30px #FF1493, 0 0 50px #FF1493', // Intense box glow
-    transform: 'scale(1.1)' // Slightly larger
+      backgroundColor: 'rgba(255, 20, 147, 0.3)',
+      color: '#FFFFFF',
+      textShadow: '0 0 10px #FF1493, 0 0 20px #FF1493',
+      boxShadow: '0 0 30px #FF1493, 0 0 50px #FF1493',
+      transform: 'scale(1.1)'
   });
-  
   // Reset button after animation
   setTimeout(() => {
-    $(this).css({
-      backgroundColor: 'transparent',
-      color: '#FF1493',
-      textShadow: '0 0 5px #FF1493',
-      boxShadow: '0 0 10px #FF1493',
-      transform: 'scale(1)'
-    });
-  }, 300); // Reset after 0.3 seconds
+      $(this).css({
+          backgroundColor: 'transparent',
+          color: '#FF1493',
+          textShadow: '0 0 5px #FF1493',
+          boxShadow: '0 0 10px #FF1493',
+          transform: 'scale(1)'
+      });
+  }, 300);
 });
   
 $buttonContainer.append($tweetButton).append($returnButton);
@@ -610,6 +607,7 @@ $tweetControlsContainer.append($tweetControls);
 
   //function to create and display tweets
   function createTweets(additionalTweets = []) {
+    console.log('Creating tweets. Current view:', currentView);
     $('#return-button').hide();
     // $('#tweet-feed').empty();
     const $tweetFeed = $('#tweet-feed-container #tweet-feed');
@@ -749,6 +747,7 @@ $tweetControlsContainer.append($tweetControls);
   let autoRefreshTimer;
 
   const autoRefreshTweets = () => {
+    console.log('Auto-refreshing. Current view:', currentView);
     clearTimeout(autoRefreshTimer); // Clear any existing timer
 
     if (currentView === 'main') {
@@ -777,6 +776,9 @@ $('body').empty().append($contentWrapper);
 currentView = 'main';
 createTweets();
 autoRefreshTweets(); // Start auto-refresh
+
+console.log('Tweet button exists:', $('#tweet-button').length > 0);
+console.log('Return button exists:', $('#return-button').length > 0);
 });
   
 
