@@ -89,7 +89,8 @@ const $contentWrapper = $('<div id="content-wrapper"></div>').css({
     minHeight: '100vh',
     width: '100%',
     boxSizing: 'border-box',
-    padding: '20px'
+    padding: '20px',
+    overflow: 'hidden'
 });
 
 const $titleContainer = $('<div id="title-container"></div>').css({
@@ -125,7 +126,9 @@ const $sidebar = $('<div id="sidebar"></div>').css({
   overflowY: 'auto',               // Enable scrolling if content overflows
   marginRight: '20px',             // Add spacing between sidebar and main content
   color: '#fff',                    // Text color in the sidebar
-  boxSizing: 'border-box', // Ensures padding is included in width calculation
+  boxSizing: 'border-box',
+  display: 'flex',
+  flexDirection: 'column' // Ensures padding is included in width calculation
 });
 
 // Append title and sidebar to the sidebar wrapper
@@ -279,37 +282,42 @@ function updateTrendingHashtags() {
     borderRadius: '10px',
     padding: '20px',
     boxSizing: 'border-box',
-    height: 'calc(100vh - 100px)', // Adjust the 100px as needed to account for the title
-    overflow: 'hidden' // Prevent overflow
+    overflow: 'hidden',
+    height: '100%' // Prevent overflow
   });
- 
-  const $tweetFeedContainer = $('<div id="tweet-feed-container"></div>').css({
+
+  const $tweetFeed = $('<div id="tweet-feed"></div>').css({
     flex: '1 1 auto',
+    overflowY: 'auto',
     marginBottom: '20px',
     padding: '10px',
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: '10px'
   });
-  
-  const $tweetControlsContainer = $('<div id="tweet-controls-container"></div>').css({
+
+  //Create a div to hold tweet controls
+  const $tweetControls = $('<div id="tweet-controls"></div>').css({ 
     flexShrink: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+    padding: '10px',
     backgroundColor: 'rgba(27, 27, 27, 0.9)',
-    padding: '20px',
     borderRadius: '10px',
     boxShadow: '0 -5px 15px rgba(0,0,0,0.3)'
   });
-  
-  $container.append($tweetFeedContainer).append($tweetControlsContainer);
 
-//////////////////////////////////////////////////////TWEET CONTROLS/////////////////////////////////////////////////
+  $container.append($tweetFeed).append($tweetControls);
+ 
 
-  //Create a div to hold tweet controls
-  const $tweetControls = $('<div id="tweet-controls"></div>').css({
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '10px'
+  $('body').css({
+    margin: 0,
+    padding: 0,
+    overflow: 'hidden'
   });
-
+  
+  
+  $container.append($tweetFeed).append($tweetControls);
 
   //create a username input field
   const $usernameInput = $('<input id="username-input" placeholder="Enter your username" />').css({
@@ -493,25 +501,8 @@ $(document).on('click', '#return-button', function() {
 $buttonContainer.append($tweetButton).append($returnButton);
 $tweetControls.append($usernameInput).append($tweetInput).append($buttonContainer);
 
- 
-  ////////////////////////////////////////TWEET FEED///////////////////////////////////////////////////////////
-
-  //create a tweet feed section where all tweets will be displayed
-  const $tweetFeed = $('<div id="tweet-feed"></div>').css({
-    width: '100%',
-    'background-color': '#222',          // Dark background for the feed container
-    'padding': '10px',                   // Padding inside the feed
-    'border-radius': '10px',             // Rounded corners for a modern look
-    'box-shadow': '0 4px 10px rgba(0,0,0,0.3)',  // Soft shadow effect
-    'max-height': '600px',               // Max height for the feed
-    'overflow-y': 'auto',                // Enable scrolling for overflow content
-    'margin': '20px 0',                  // Space around the tweet feed
-    'boxSizing': 'border-box'
-  });
-
-
-$tweetFeedContainer.append($tweetFeed);
-$tweetControlsContainer.append($tweetControls);
+// $tweetFeed.append($tweetFeed);
+// $tweetControlsContainer.append($tweetControls);
 
  // Append the content wrapper to the body
  const $body = $('body').empty().append($contentWrapper);
@@ -603,7 +594,7 @@ $tweetControlsContainer.append($tweetControls);
     console.log('Creating tweets. Current view:', currentView);
     $('#return-button').hide();
     // $('#tweet-feed').empty();
-    const $tweetFeed = $('#tweet-feed-container #tweet-feed');
+    const $tweetFeed = $('#tweet-feed');
     const allTweets = streams.home.slice().reverse();
     const newTweets = additionalTweets.length ? additionalTweets : allTweets.slice(0, maxDisplayedTweets);
   
@@ -664,7 +655,7 @@ $tweetControlsContainer.append($tweetControls);
       //append user, message, and time to the tweet div
       $tweetDiv.append($user).append($message).append($timeInfo);
       //prepend the newly created tweet to the tweet feed to maintain reverse chronological order
-      $('#tweet-feed-container #tweet-feed').prepend($tweetDiv);
+      $('#tweet-feed').prepend($tweetDiv);
     });
     
     //ensure the feed does not exceed the maximum number of displayed tweets
@@ -758,25 +749,20 @@ $tweetControlsContainer.append($tweetControls);
 const $mainContentWrapper = $('<div id="main-content-wrapper"></div>').css({
   display: 'flex',
   justifyContent: 'space-between',
-  flex: 1
+  flex: 1,
+  overflow: 'hidden'
 });
 
-// Append main content wrapper to content wrapper
-$contentWrapper.append($mainContentWrapper);
+
 
 // Append sidebar and container to main content wrapper
 $mainContentWrapper.append($sidebarWrapper).append($container);
 
-// Populate the containers
-$tweetFeedContainer.append($tweetFeed);
-$tweetControlsContainer.append($tweetControls);
+// Append main content wrapper to content wrapper
+$contentWrapper.append($mainContentWrapper);
 
 // Append the content wrapper to the body
 $('body').empty().append($contentWrapper);
-
-// // Append title container to content wrapper
-// $contentWrapper.append($titleContainer);
-
 
 // Initialize the page by creating tweets
 currentView = 'main';
