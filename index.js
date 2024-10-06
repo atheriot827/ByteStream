@@ -74,15 +74,6 @@ $(document).ready(() => {
   const maxDisplayedTweets = 10; // Maximum number of tweets to display
 
 
-
-  //clear the body - dynamically add content
-  // const $body = $('body');
-  // $body.html(''); //clears body - will clear tag you call it on
-
-  
-
-//////////////////////////////////////////////sidebar///////////////////////////////////////////
-
 const $contentWrapper = $('<div id="content-wrapper"></div>').css({
     display: 'flex',
     flexDirection: 'column',
@@ -94,9 +85,8 @@ const $contentWrapper = $('<div id="content-wrapper"></div>').css({
 });
 
 const $titleContainer = $('<div id="title-container"></div>').css({
-  width: '25%', // Match the sidebar width
-  marginBottom: '30px',
-  paddingLeft: '20px' // Align with sidebar padding
+  marginBottom: '20px',
+    flexShrink: 0,
 });
 
 const $title = $('<h1>Twiddler!</h1>').css({
@@ -111,12 +101,14 @@ $titleContainer.append($title);
 const $sidebarWrapper = $('<div id="sidebar-wrapper"></div>').css({
   display: 'flex',
   flexDirection: 'column',
-  flexBasis: '25%' // Match the sidebar width
+  flexBasis: '25%',
+  marginRight: '20px'
 });
 
 // Create the sidebar container
 const $sidebar = $('<div id="sidebar"></div>').css({
-  flexBasis: '25%',                   // Sidebar width
+  // flexBasis: '25%',                   // Sidebar width
+  flex: '1',
   backgroundColor: '#333',      // Dark background
   border: '',
   padding: '20px',                 // Padding inside the sidebar
@@ -145,8 +137,11 @@ const $sidebarTitle = $('<h2>Trending Hashtags</h2>').css({
 
 // Add a list for trending hashtags
 const $trendingList = $('<ul id="trending-list"></ul>').css({
-  listStyle: 'none',
-  paddingLeft: '0'
+    listStyle: 'none',
+    padding: 0,
+    margin: 0,
+    flex: '1', // This will make it take up remaining space
+    overflowY: 'auto' // Allow scrolling if there are many trending hashtags
 });
 
 loadTrendingHashtags($trendingList);
@@ -304,13 +299,14 @@ function updateTrendingHashtags() {
     padding: '10px',
     backgroundColor: 'rgba(27, 27, 27, 0.9)',
     borderRadius: '10px',
-    boxShadow: '0 -5px 15px rgba(0,0,0,0.3)'
+    boxShadow: '0 -5px 15px rgba(0,0,0,0.3)',
   });
 
   $container.append($tweetFeed).append($tweetControls);
  
 
-  $('body').css({
+  $('body, html').css({
+    height: '100%',
     margin: 0,
     padding: 0,
     overflow: 'hidden'
@@ -419,7 +415,7 @@ function updateTrendingHashtags() {
                 boxShadow: '0 0 10px #00FF00',
                 transform: 'scale(1)'
             });
-        }, 1000);
+        }, 500);
     } else {
         alert('Please enter both a username and a tweet message.');
     }
@@ -474,7 +470,6 @@ const $returnButton = $('<button id="return-button">Return to All Tweets</button
 $(document).on('click', '#return-button', function() {
   console.log('Return button clicked');
   currentView = 'main';
-  $('#tweet-feed').empty();
   createTweets();
   autoRefreshTweets();
   $(this).hide();
@@ -501,9 +496,6 @@ $(document).on('click', '#return-button', function() {
 $buttonContainer.append($tweetButton).append($returnButton);
 $tweetControls.append($usernameInput).append($tweetInput).append($buttonContainer);
 
-// $tweetFeed.append($tweetFeed);
-// $tweetControlsContainer.append($tweetControls);
-
  // Append the content wrapper to the body
  const $body = $('body').empty().append($contentWrapper);
 
@@ -512,10 +504,8 @@ $tweetControls.append($usernameInput).append($tweetInput).append($buttonContaine
 
   const writeTweetAndDisplay = (message, username) => {
     console.log('Attempting to write tweet:', { message, username });
-
     try {
-    writeTweet(message, username); 
-
+    writeTweet(message, username);
     console.log('Tweet written successfully');
 
     // Create a new tweet object with user details, message, and creation time
@@ -525,11 +515,8 @@ $tweetControls.append($usernameInput).append($tweetInput).append($buttonContaine
       created_at: new Date(), // Timestamp of when the tweet was created
     };
 
-    console.log('New tweet object:', tweet);
-
-
     // Push the newly written tweet to streams.home so it persists on the feed
-    streams.home.push(tweet);
+    streams.home.unshift(tweet);
     console.log('Tweet added to streams.home');
 
     // Dynamically create the tweet's HTML structure with styling
@@ -589,93 +576,59 @@ $tweetControls.append($usernameInput).append($tweetInput).append($buttonContaine
     });
   };
 
-  //function to create and display tweets
   function createTweets(additionalTweets = []) {
     console.log('Creating tweets. Current view:', currentView);
     $('#return-button').hide();
-    // $('#tweet-feed').empty();
-    const $tweetFeed = $('#tweet-feed');
+
     const allTweets = streams.home.slice().reverse();
-    const newTweets = additionalTweets.length ? additionalTweets : allTweets.slice(0, maxDisplayedTweets);
-  
-    //clear current tweet feed if its empty
-    if ($('#tweet-feed').is(':empty')) {
-      $('#tweet-feed').html('');
-    }
+    const tweetsToDisplay = allTweets.slice(0, maxDisplayedTweets);
 
-    //map over the streams.home array to create tweet elements
-    newTweets.forEach((tweet) => {
-      if (displayedTweetMessages.has(tweet.message)) {
-        //skip already displayed tweets
-        return;
-      }
-      
-      //create tweet styling
-      const $tweetDiv = $('<div class="tweet"></div>')
-      .css({
-        border: '1px solid #ddd',
-        margin: '10px',
-        padding: '10px',
-        borderRadius: '5px',
-        textAlign: 'left',
-      });
+    $('#tweet-feed').empty();
 
-      //create a clickable user element (wrap username in a span)
-      const $user = $(`<span class="user">@${tweet.user}</span>`).css({
-        fontWeight: 'bold',
-        cursor: 'pointer'
-      }).on('click', () => {
-        console.log(`Username clicked: ${tweet.user}`)
-        showUserTimeline(tweet.user);   //call function to show user timeline
-      })
+    tweetsToDisplay.forEach((tweet) => {
+        const $tweetDiv = $('<div class="tweet"></div>').css({
+            border: '1px solid #ddd',
+            margin: '10px',
+            padding: '10px',
+            borderRadius: '5px',
+            textAlign: 'left',
+        });
 
-      //create a message element to hold the tweet's message
-      const $message = $('<p></p>').html(processMessage(tweet.message)).css({
-        margin: '5px 0'
-      });
+        const $user = $(`<span class="user">@${tweet.user}</span>`).css({
+            fontWeight: 'bold',
+            cursor: 'pointer'
+        }).on('click', () => {
+            console.log(`Username clicked: ${tweet.user}`);
+            showUserTimeline(tweet.user);
+        });
 
-      //after creating the message element
-      $message.on('click', '.hashtag', function() {
-        const hashtag = $(this).text();
-        showHashtagTimeline(hashtag); //call function to show tweets with this hashtag
-      });
+        const $message = $('<p></p>').html(processMessage(tweet.message)).css({
+            margin: '5px 0'
+        });
 
+        $message.on('click', '.hashtag', function() {
+            const hashtag = $(this).text();
+            showHashtagTimeline(hashtag);
+        });
 
-      //format the actual time and human-friendly time
-      const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
-      const relativeTime = moment(tweet.created_at).fromNow();
-      const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css({
-        fontSize: '0.8em',
-        color: 'gray',
-      });
+        const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
+        const relativeTime = moment(tweet.created_at).fromNow();
+        const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css({
+            fontSize: '0.8em',
+            color: 'gray',
+        });
 
-      //add the tweet message to the displayedTweetsMessages set to track it
-      displayedTweetMessages.add(tweet.message);
-
-      //append user, message, and time to the tweet div
-      $tweetDiv.append($user).append($message).append($timeInfo);
-      //prepend the newly created tweet to the tweet feed to maintain reverse chronological order
-      $('#tweet-feed').prepend($tweetDiv);
+        $tweetDiv.append($user).append($message).append($timeInfo);
+        $('#tweet-feed').append($tweetDiv);
     });
-    
-    //ensure the feed does not exceed the maximum number of displayed tweets
-    const tweetCount = $('#tweet-feed .tweet').length; 
-    //get the current count of displayed tweets
-    if (tweetCount > maxDisplayedTweets) {
-      $('#tweet-feed .tweet:gt(' + (maxDisplayedTweets - 1) + ')').remove(); 
-      //remove the oldest tweets
-      displayedTweetMessages.clear(); 
-      //clear the displayed messages set
-      $('#tweet-feed .tweet').each((_, tweetDiv) => {
-        const message = $(tweetDiv).find('p').text(); 
-        //extract the message from the tweet div
-        displayedTweetMessages.add(message); 
-        //add remaining tweets to the set
-      });
-    }
-    updateTrendingHashtags();
-  }
 
+    displayedTweetMessages.clear();
+    tweetsToDisplay.forEach(tweet => {
+        displayedTweetMessages.add(tweet.message);
+    });
+
+    updateTrendingHashtags();
+}
 
   function showUserTimeline(username) {
     clearTimeout(autoRefreshTimer);
@@ -750,6 +703,7 @@ const $mainContentWrapper = $('<div id="main-content-wrapper"></div>').css({
   display: 'flex',
   justifyContent: 'space-between',
   flex: 1,
+  height: '100%',
   overflow: 'hidden'
 });
 
