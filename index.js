@@ -3,6 +3,7 @@
 
 //wait until the document is fully loaded
 $(document).ready(() => {
+  
 
   $('head').append(`
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
@@ -130,6 +131,9 @@ $sidebar.append($sidebarTitle).append($trendingList);
 $contentWrapper.append($sidebar);
 
 function showHashtagTimeline(hashtag) {
+  clearTimeout(autoRefreshTimer);
+  currentView = 'hashtag';
+  $('#return-button').show();
   //clear the tweet feed before showing the hashtags
   $('#tweet-feed').html('');
   //get only the tweets that contain the hashtag
@@ -145,7 +149,6 @@ return;
 
 // Display the hashtag's tweets
 hashtagTweets.forEach((tweet) => {
-// Create tweet styling (similar to createTweets function)
 const $tweetDiv = $('<div class="tweet"></div>').css({
 border: '1px solid #ddd',
 margin: '10px',
@@ -165,7 +168,6 @@ const $message = $('<p></p>').html(processMessage(tweet.message)).css({
 margin: '5px 0'
 });
 
-// Format and display time (similar to createTweets function)
 const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
 const relativeTime = moment(tweet.created_at).fromNow();
 const $timeInfo = $('<span class="time"></span>')
@@ -180,21 +182,6 @@ $tweetDiv.append($user).append($message).append($timeInfo);
 $('#tweet-feed').prepend($tweetDiv);
 });
 
-
-// Add a return button
-const $returnButton = $('<button>Return to All Tweets</button>')
-.css({
-marginBottom: '10px',
-padding: '5px 10px',
-backgroundColor: '#00FF00',
-color: '#000',
-border: 'none',
-borderRadius: '5px',
-cursor: 'pointer'
-})
-.on('click', function() {
-createTweets(); // Recreate the main tweet feed
-});
 
 }
 
@@ -217,14 +204,42 @@ function loadTrendingHashtags($trendingList) {
   });
 }
 
-// loadTrendingHashtags($trendingList);
-// // Load the trending hashtags when the page loads
-// $contentWrapper.append($sidebar);
+function updateTrendingHashtags() {
+  const hashtagCounts = {};
+  const $tweetFeed = $('#tweet-feed');
+  
+  // Extract hashtags from all tweets
+  $tweetFeed.find('.tweet').each(function() {
+    const tweetText = $(this).find('p').text();
+    const hashtags = tweetText.match(/#\w+/g) || [];
+    hashtags.forEach(tag => {
+      hashtagCounts[tag] = (hashtagCounts[tag] || 0) + 1;
+    });
+  });
 
-// $trendingList.on('click', 'li', function() {
-//   const clickedTag = $(this).text();
-//   showHashtagTimeline(clickedTag);
-// });
+  // Sort hashtags by count
+  const sortedHashtags = Object.entries(hashtagCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)  // Get top 10 trending hashtags
+    .map(entry => entry[0]);
+
+  // Update the trending list
+  const $trendingList = $('#trending-list');
+  $trendingList.empty();
+  sortedHashtags.forEach(tag => {
+    $('<li></li>')
+      .text(tag)
+      .css({
+        padding: '5px 0',
+        cursor: 'pointer',
+        color: '#FF1493',
+      })
+      .on('click', function() {
+        showHashtagTimeline(tag);
+      })
+      .appendTo($trendingList);
+  });
+}
 
 /////////////////////////////////////////////main/////////////////////////////////////////////////////////////////
 
@@ -249,8 +264,7 @@ function loadTrendingHashtags($trendingList) {
   })
 
   $contentWrapper.append($container);
-  console.log("Sidebar appended:", $sidebar);
-  console.log("Tags before loading:", tags);
+  
 
 //////////////////////////////////////////////////////TWEET CONTROLS/////////////////////////////////////////////////
 
@@ -282,56 +296,119 @@ function loadTrendingHashtags($trendingList) {
   const $tweetButton = $('<button id="tweet-button">Tweet</button>').css({
     padding: '10px 15px',
     margin: '5px',
-    border: 'none',
+    border: '2px solid #00FF00',
     borderRadius: '5px',
-    backgroundColor: '#00FF00',
-    color: '#000',
-    cursor: 'pointer'
+    backgroundColor: 'transparent',
+    color: '#00FF00',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 0 10px #00FF00', // Neon glow
+    textShadow: '0 0 5px #00FF00', // Text glow
+    outline: 'none'
   }).hover(
     function() {
       $(this).css({
-        backgroundColor: '#9400D3',
-        boxShadow: '0px 0px 15px #00FF00',
-        transform: 'scale(1.20)' 
+        backgroundColor: 'rgba(0, 255, 0, 0.2)', // Slight green tint
+        boxShadow: '0 0 20px #00FF00, 0 0 30px #00FF00', // Intensify glow
+        textShadow: '0 0 10px #00FF00',
+        transform: 'scale(1.05)' // Slight grow effect
       });
     },
     function() {
       $(this).css({
-        backgroundColor: '#00FF00',
-        boxShadow: 'none',
+        backgroundColor: 'transparent',
+        boxShadow: '0 0 10px #00FF00',
+        textShadow: '0 0 5px #00FF00',
         transform: 'scale(1)'
       });
     }
-  );
+  ).on('mousedown', function() { // Mouse press
+    $(this).css({
+      transform: 'scale(0.95)', // Slight shrink effect
+      boxShadow: '0 0 5px #00FF00', // Reduce glow
+      textShadow: '0 0 2px #00FF00'
+    });
+  }).on('mouseup mouseleave', function() { // Mouse release or leave
+    $(this).css({
+      transform: 'scale(1)',
+      boxShadow: '0 0 10px #00FF00',
+      textShadow: '0 0 5px #00FF00'
+    });
+  });
   
-  // Create the refresh button
-  const $refreshButton = $('<button id="refresh-button">Refresh Tweets</button>').css({
-    padding: '10px 15px',
-    margin: '5px',
-    border: 'none',
-    borderRadius: '5px',
-    backgroundColor: '#00FF00',
-    color: '#000',
-    cursor: 'pointer'
-  }).hover(
-    function() { // Mouse over
-        $(this).css({
-            backgroundColor: '#9400D3', // Electric purple
-            boxShadow: '0px 0px 15px #00FF00', // Bright green glow
-            transform: 'scale(1.15)'
-        });
-    },
-    function() { // Mouse out
-        $(this).css({
-            backgroundColor: '#00FF00', // Back to bright green
-            boxShadow: 'none', // Remove glow
-            transform: 'scale(1)'
-        });
-    }
+  // Update click handler
+$tweetButton.on('click', function() {
+  const username = $('#username-input').val().trim();
+  const tweetMessage = $('#tweet-input').val().trim();
+
+  console.log('Username:', username);
+  console.log('Tweet message:', tweetMessage);
+
+  if (username && tweetMessage) {
+    console.log('Both fields are filled. Attempting to post tweet.');
+    writeTweetAndDisplay(tweetMessage, username);
+    $('#tweet-input').val(''); // Clear input after tweeting
+    
+    // Add success animation
+    $(this).text('Posted!').css({
+      backgroundColor: 'rgba(0, 255, 0, 0.3)', // More intense green background
+      color: '#FFFFFF', // White text
+      textShadow: '0 0 10px #00FF00, 0 0 20px #00FF00', // Intense text glow
+      boxShadow: '0 0 30px #00FF00, 0 0 50px #00FF00', // Intense box glow
+      transform: 'scale(1.1)' // Slightly larger
+    });
+    
+    // Reset button after animation
+    setTimeout(() => {
+      $(this).text('Tweet').css({
+        backgroundColor: 'transparent',
+        color: '#00FF00',
+        textShadow: '0 0 5px #00FF00',
+        boxShadow: '0 0 10px #00FF00',
+        transform: 'scale(1)'
+      });
+    }, 1000); // Reset after 1 second
+  } else {
+    console.log('Missing input. Username or tweet message is empty.');
+    alert('Please enter both a username and a tweet message.');
+  }
+});
+  
+
+const $returnButton = $('<button id="return-button">Return to All Tweets</button>').css({
+  padding: '10px 15px',
+  margin: '5px',
+  border: 'none',
+  borderRadius: '5px',
+  backgroundColor: '#00FF00',
+  color: '#000',
+  cursor: 'pointer'
+}).hover(
+  function() { // Mouse over
+    $(this).css({
+      backgroundColor: '#9400D3',
+      boxShadow: '0px 0px 15px #00FF00',
+      transform: 'scale(1.15)'
+    });
+  },
+  function() { // Mouse out
+    $(this).css({
+      backgroundColor: '#00FF00',
+      boxShadow: 'none',
+      transform: 'scale(1)'
+    });
+  }
 );
+
+$returnButton.on('click', function() {
+  currentView = 'main';
+  createTweets();
+});
   
   // Append the tweet input, tweet button, and refresh button to the tweet controls
-  $tweetControls.append($usernameInput, $tweetInput, $tweetButton, $refreshButton,);
+  $tweetControls.append($usernameInput, $tweetInput, $tweetButton, $returnButton);
 
  
   ////////////////////////////////////////TWEET FEED///////////////////////////////////////////////////////////
@@ -427,6 +504,8 @@ function loadTrendingHashtags($trendingList) {
 
   //function to create and display tweets
   function createTweets(additionalTweets = []) {
+    $('#return-button').hide();
+    // $('#tweet-feed').empty();
     const $tweetFeed = $('#tweet-feed');
     const allTweets = streams.home.slice().reverse();
     const newTweets = additionalTweets.length ? additionalTweets : allTweets.slice(0, maxDisplayedTweets);
@@ -453,50 +532,6 @@ function loadTrendingHashtags($trendingList) {
         textAlign: 'left',
       });
 
-///////////////////////////////////UPDATE TRENDING HASHTAGS//////////////////////////////////////////
-
-      function updateTrendingHashtags() {
-        const hashtagCounts = {};
-        const $tweetFeed = $('#tweet-feed');
-        
-        // Extract hashtags from all tweets
-        $tweetFeed.find('.tweet').each(function() {
-          const tweetText = $(this).find('p').text();
-          const hashtags = tweetText.match(/#\w+/g) || [];
-          hashtags.forEach(tag => {
-            hashtagCounts[tag] = (hashtagCounts[tag] || 0) + 1;
-          });
-        });
-      
-        // Sort hashtags by count
-        const sortedHashtags = Object.entries(hashtagCounts)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 10)  // Get top 10 trending hashtags
-          .map(entry => entry[0]);
-
-          
-      
-        // Update the trending list
-        const $trendingList = $('#trending-list');
-        $trendingList.empty();
-        sortedHashtags.forEach(tag => {
-          $('<li></li>')
-            .text(tag)
-            .css({
-              padding: '5px 0',
-              cursor: 'pointer',
-              color: '#FF1493',
-            })
-            .on('click', function() {
-              showHashtagTimeline(tag);
-            })
-            .appendTo($trendingList);
-        });
-      }
-      updateTrendingHashtags();
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-
       //create a clickable user element (wrap username in a span)
       const $user = $(`<span class="user">@${tweet.user}</span>`).css({
         fontWeight: 'bold',
@@ -505,7 +540,6 @@ function loadTrendingHashtags($trendingList) {
         console.log(`Username clicked: ${tweet.user}`)
         showUserTimeline(tweet.user);   //call function to show user timeline
       })
-
 
       //create a message element to hold the tweet's message
       const $message = $('<p></p>').html(processMessage(tweet.message)).css({
@@ -551,10 +585,14 @@ function loadTrendingHashtags($trendingList) {
         //add remaining tweets to the set
       });
     }
+    updateTrendingHashtags();
   }
 
 
   function showUserTimeline(username) {
+    clearTimeout(autoRefreshTimer);
+    currentView = 'user';
+    $('#return-button').show();
     //maximum number of tweets to display per user
     const maxUserTweets = 10;
     // Clear the tweet feed before showing the user's tweets
@@ -568,6 +606,7 @@ function loadTrendingHashtags($trendingList) {
       $('#tweet-feed').html('<p>No tweets available for this user.</p>');
       return;
     }
+
   
     // Display the user's tweets
     userTweets.forEach((tweet) => {
@@ -583,7 +622,6 @@ function loadTrendingHashtags($trendingList) {
       //format the actual time and human-friendly time
       const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
       const relativeTime = moment(tweet.created_at).fromNow();
-
       const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css({
         fontSize: '0.8em',
         color: 'gray',
@@ -614,37 +652,27 @@ function loadTrendingHashtags($trendingList) {
     }
   });
 
-  
-  //event listener for refreshing the tweet feed
-  $('#refresh-button').on('click', () => {
-    const newTweets = [];
-    for (let i =0; i < newTweetsCount; i++) {
-      generateRandomTweet();
-      newTweets.push(streams.home[streams.home.length - 1]);
-    }
-    createTweets(newTweets); // Call createTweets function on refresh
-    updateTrendingHashtags();
-  });
+  let currentView = 'main'
+  let autoRefreshTimer;
 
   const autoRefreshTweets = () => {
+    clearTimeout(autoRefreshTimer); // Clear any existing timer
+
+    if (currentView === 'main') {
     const newTweets = [];
     for (let i = 0; i < newTweetsCount; i++) {
       generateRandomTweet();
       newTweets.push(streams.home[streams.home.length - 1]);
     }
     createTweets(newTweets);
-
   }
+  autoRefreshTimer = setTimeout(autoRefreshTweets, 10000);
+};
 
-  //automatic interval to refresh tweets every 1 minute
-  setInterval(autoRefreshTweets, 10000);
-  
-  //initialize the page by creating tweets
-  createTweets(); 
-
-  // Append the content wrapper to the body
-  
-
+// Initialize the page by creating tweets
+currentView = 'main';
+createTweets();
+autoRefreshTweets(); // Start auto-refresh
 });
   
 
