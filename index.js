@@ -273,21 +273,35 @@ function updateTrendingHashtags() {
     flexBasis: '70%',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: 'rgba(27, 27, 27, 0.8)',
-    borderRadius: '10px',
-    padding: '20px',
+    backgroundColor: '#0a0a0a', // Very dark background
+    backgroundImage: `
+        linear-gradient(30deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
+        linear-gradient(150deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
+        linear-gradient(30deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
+        linear-gradient(150deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
+        linear-gradient(60deg, #22222280 25%, transparent 25.5%, transparent 75%, #22222280 75%, #22222280),
+        linear-gradient(60deg, #22222280 25%, transparent 25.5%, transparent 75%, #22222280 75%, #22222280)
+    `,
+    backgroundSize: '80px 140px',
+    backgroundPosition: '0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px',
+    borderRadius: '20px',
+    padding: '30px',
     boxSizing: 'border-box',
     overflow: 'hidden',
-    height: '100%' // Prevent overflow
+    boxShadow: '0 0 20px rgba(0, 255, 255, 0.2)'
   });
 
   const $tweetFeed = $('<div id="tweet-feed"></div>').css({
     flex: '1 1 auto',
     overflowY: 'auto',
     marginBottom: '20px',
-    padding: '10px',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: '10px'
+    padding: '20px',
+    backgroundColor: 'rgba(10, 10, 10, 0.6)', // More transparent
+    backdropFilter: 'blur(5px)',
+    WebkitBackdropFilter: 'blur(5px)',
+    borderRadius: '15px',
+    border: '1px solid rgba(0, 255, 255, 0.1)', // Subtle neon border
+    boxShadow: '0 0 15px rgba(0, 255, 255, 0.2)' // Neon glow
   });
 
   //Create a div to hold tweet controls
@@ -572,7 +586,7 @@ $tweetControls.append($usernameInput).append($tweetInput).append($buttonContaine
   const processMessage  = (message) => {
     //use regex to find hashtags
     return message.replace(/(#\w+)/g, (tag) => {
-      return `<span class="hashtag" style="color:#FF1493; cursor:pointer;">${tag}</span>`
+      return `<span class="hashtag" style="color:#FF1493; text-shadow: 0 0 5px rgba(255, 20, 147, 0.7), 0 0 10px rgba(0, 0, 0, 0.8); cursor:pointer;">${tag}</span>`;
     });
   };
 
@@ -587,23 +601,47 @@ $tweetControls.append($usernameInput).append($tweetInput).append($buttonContaine
 
     tweetsToDisplay.forEach((tweet) => {
         const $tweetDiv = $('<div class="tweet"></div>').css({
-            border: '1px solid #ddd',
-            margin: '10px',
-            padding: '10px',
-            borderRadius: '5px',
-            textAlign: 'left',
+          backgroundColor: 'rgba(20, 20, 20, 0.4)', // More transparent
+          border: '1px solid rgba(0, 255, 255, 0.1)',
+          borderRadius: '10px',
+          padding: '15px',
+          marginBottom: '15px',
+          transition: 'all 0.3s ease',
+          boxShadow: '0 0 10px rgba(0, 255, 255, 0.1)'
         });
+
+        // Add hover effect
+$tweetDiv.hover(
+  function() {
+      $(this).css({
+        backgroundColor: 'rgba(30, 30, 30, 0.6)',
+        boxShadow: '0 0 20px rgba(0, 255, 255, 0.3)',
+        transform: 'translateY(-2px)'
+      });
+  },
+  function() {
+      $(this).css({
+        backgroundColor: 'rgba(20, 20, 20, 0.4)',
+        boxShadow: '0 0 10px rgba(0, 255, 255, 0.1)',
+        transform: 'translateY(0)'
+      });
+  }
+);
 
         const $user = $(`<span class="user">@${tweet.user}</span>`).css({
             fontWeight: 'bold',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            color: '#00FFFF', // Neon cyan
+            textShadow: '0 0 5px rgba(0, 255, 255, 0.7), 0 0 10px rgba(0, 0, 0, 0.9)'
         }).on('click', () => {
             console.log(`Username clicked: ${tweet.user}`);
             showUserTimeline(tweet.user);
         });
 
         const $message = $('<p></p>').html(processMessage(tweet.message)).css({
-            margin: '5px 0'
+            margin: '10px 0',
+            color: '#FFFFFF',
+            textShadow: '0 0 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.6)'
         });
 
         $message.on('click', '.hashtag', function() {
@@ -615,7 +653,8 @@ $tweetControls.append($usernameInput).append($tweetInput).append($buttonContaine
         const relativeTime = moment(tweet.created_at).fromNow();
         const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css({
             fontSize: '0.8em',
-            color: 'gray',
+            color: 'rgba(0, 255, 255, 0.7)',
+            textShadow: '0 0 3px rgba(0, 0, 0, 0.8)'
         });
 
         $tweetDiv.append($user).append($message).append($timeInfo);
