@@ -84,14 +84,33 @@ $(document).ready(() => {
 //////////////////////////////////////////////sidebar///////////////////////////////////////////
 
 const $contentWrapper = $('<div id="content-wrapper"></div>').css({
-  border: '',
-  minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: '100vh',
+    width: '100%',
+    boxSizing: 'border-box',
+    padding: '20px'
+});
+
+const $titleContainer = $('<div id="title-container"></div>').css({
+  width: '25%', // Match the sidebar width
+  marginBottom: '30px',
+  paddingLeft: '20px' // Align with sidebar padding
+});
+
+const $title = $('<h1>Twiddler!</h1>').css({
+  fontFamily: 'Orbitron',
+  color: '#00FFFF', // Neon blue color, adjust as needed
+  textShadow: '0 0 10px #00FFFF',
+  margin: '0'
+});
+
+$titleContainer.append($title);
+
+const $sidebarWrapper = $('<div id="sidebar-wrapper"></div>').css({
   display: 'flex',
-  justifyContent: 'space-between',
-  width: '100%',
-  height: '100vh',      // Ensure it takes the full height of the viewport
-  boxSizing: 'border-box',
-  padding: '0 20px'
+  flexDirection: 'column',
+  flexBasis: '25%' // Match the sidebar width
 });
 
 // Create the sidebar container
@@ -108,6 +127,9 @@ const $sidebar = $('<div id="sidebar"></div>').css({
   color: '#fff',                    // Text color in the sidebar
   boxSizing: 'border-box', // Ensures padding is included in width calculation
 });
+
+// Append title and sidebar to the sidebar wrapper
+$sidebarWrapper.append($titleContainer).append($sidebar);
 
 // Add title for the sidebar
 const $sidebarTitle = $('<h2>Trending Hashtags</h2>').css({
@@ -128,7 +150,7 @@ loadTrendingHashtags($trendingList);
 
 // Append title and trending list to the sidebar
 $sidebar.append($sidebarTitle).append($trendingList);
-$contentWrapper.append($sidebar);
+$sidebarWrapper.append($sidebar);
 
 function showHashtagTimeline(hashtag) {
   clearTimeout(autoRefreshTimer);
@@ -251,56 +273,33 @@ function updateTrendingHashtags() {
   //create the main container and title
   const $container = $('<div class="container"></div>').css({
     flexBasis: '70%',
-    margin: '0 auto',
-    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
     backgroundColor: 'rgba(27, 27, 27, 0.8)',
     borderRadius: '10px',
     padding: '20px',
     boxSizing: 'border-box',
-    position: 'relative',
-    height: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    paddingBottom: '180px'
+    height: 'calc(100vh - 100px)', // Adjust the 100px as needed to account for the title
+    overflow: 'hidden' // Prevent overflow
   });
-
-  const $titleContainer = $('<div id="title-container"></div>').css({
-    marginBottom: '20px'
-  });
-  
-  const $title = $('<h1>Twiddler!</h1>').css({
-    fontFamily: 'Orbitron',
-    color: '#00FFFF', // Neon blue color, adjust as needed
-    textShadow: '0 0 10px #00FFFF',
-    margin: '0'
-  })
-
-  $titleContainer.append($title);
-
-  $contentWrapper.append($sidebar).append($container);
-
-  
-
+ 
   const $tweetFeedContainer = $('<div id="tweet-feed-container"></div>').css({
-    flex: '1',
-    marginBottom: '20px', // Space for controls
-    padding: '20px',      // Add padding
-    backgroundColor: 'rgba(255, 255, 255, 0.05)', // Slight background for visibility
-    borderRadius: '10px'  // Rounded corners
+    flex: '1 1 auto',
+    marginBottom: '20px',
+    padding: '10px',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: '10px'
   });
   
   const $tweetControlsContainer = $('<div id="tweet-controls-container"></div>').css({
-    position: 'absolute',
-    bottom: '5px',
-    left: '20px',
-    right: '20px',
+    flexShrink: 0,
     backgroundColor: 'rgba(27, 27, 27, 0.9)',
     padding: '20px',
     borderRadius: '10px',
     boxShadow: '0 -5px 15px rgba(0,0,0,0.3)'
   });
   
-  $container.append($titleContainer).append($tweetFeedContainer).append($tweetControlsContainer);
+  $container.append($tweetFeedContainer).append($tweetControlsContainer);
 
 //////////////////////////////////////////////////////TWEET CONTROLS/////////////////////////////////////////////////
 
@@ -511,10 +510,6 @@ $tweetControls.append($usernameInput).append($tweetInput).append($buttonContaine
   });
 
 
- // Append all components to the content wrapper
- $contentWrapper.append($sidebar).append($container);
- //$container.append($title, $tweetFeed, $tweetControls);
-
 $tweetFeedContainer.append($tweetFeed);
 $tweetControlsContainer.append($tweetControls);
 
@@ -602,8 +597,6 @@ $tweetControlsContainer.append($tweetControls);
       return `<span class="hashtag" style="color:#FF1493; cursor:pointer;">${tag}</span>`
     });
   };
-
-  // $contentWrapper.append($container);
 
   //function to create and display tweets
   function createTweets(additionalTweets = []) {
@@ -761,24 +754,35 @@ $tweetControlsContainer.append($tweetControls);
   autoRefreshTimer = setTimeout(autoRefreshTweets, 10000);
 };
 
-// Append all components to the content wrapper
-$contentWrapper.append($sidebar).append($container);
+// Create main content wrapper
+const $mainContentWrapper = $('<div id="main-content-wrapper"></div>').css({
+  display: 'flex',
+  justifyContent: 'space-between',
+  flex: 1
+});
+
+// Append main content wrapper to content wrapper
+$contentWrapper.append($mainContentWrapper);
+
+// Append sidebar and container to main content wrapper
+$mainContentWrapper.append($sidebarWrapper).append($container);
 
 // Populate the containers
-$titleContainer.append($title);
 $tweetFeedContainer.append($tweetFeed);
 $tweetControlsContainer.append($tweetControls);
 
 // Append the content wrapper to the body
 $('body').empty().append($contentWrapper);
 
+// // Append title container to content wrapper
+// $contentWrapper.append($titleContainer);
+
+
 // Initialize the page by creating tweets
 currentView = 'main';
 createTweets();
 autoRefreshTweets(); // Start auto-refresh
 
-console.log('Tweet button exists:', $('#tweet-button').length > 0);
-console.log('Return button exists:', $('#return-button').length > 0);
 });
   
 
