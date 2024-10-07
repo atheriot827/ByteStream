@@ -39,6 +39,7 @@ const verbs = ['downloaded', 'interfaced', 'deployed', 'developed', 'built', 'in
 const objects = ['my', 'your', 'the', 'a', 'my', 'an entire', 'this', 'that', 'the', 'the big', 'a new form of'];
 const nouns = ['cat', 'koolaid', 'system', 'city', 'worm', 'cloud', 'potato', 'money', 'way of life', 'belief system', 'security system', 'bad decision', 'future', 'life', 'pony', 'mind'];
 const tags = ['#techlife', '#burningman', '#sf', '#butonlyiknowhow', '#forreal', '#sxsw', '#ballin', '#omg', '#yolo', '#magic', '', '', '', ''];
+const emojis = ['😀', '😎', '🤖', '👽', '🚀', '💻', '🌈', '⚡️', '🔮', '🎲','', '', '', ''];
 
 // Expose tags globally
 window.tags = tags;
@@ -53,6 +54,7 @@ const randomMessage = () => {
     randomElement(objects),
     randomElement(nouns),
     randomElement(tags),
+    randomElement(emojis),
   ].join(' ');
 };
 

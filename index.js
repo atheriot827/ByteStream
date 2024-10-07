@@ -15,22 +15,115 @@ $('h1, h2, h3').css({
   fontFamily: "'Orbitron', sans-serif"
 });
 
-// Create a style for user and hashtag elements
 const globalStyles = `
-  <style>
-      .user { color: #00FFFF; }
-      .hashtag { color: #FF1493; cursor: pointer; }
-  </style>
+    <style>
+        .user {
+            color: #00FFFF;
+        }
+        .tweet .user {
+            font-weight: bold;
+            cursor: pointer;
+            color: #00FFFF;
+            text-shadow: 
+                0 0 5px rgba(0, 255, 255, 0.8),
+                0 0 10px rgba(0, 255, 255, 0.6),
+                0 0 15px rgba(0, 255, 255, 0.4),
+                0 0 20px rgba(0, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .tweet .user:hover {
+            color: #FFFFFF;
+            text-shadow: 
+                0 0 5px rgba(0, 255, 255, 1),
+                0 0 10px rgba(0, 255, 255, 0.8),
+                0 0 15px rgba(0, 255, 255, 0.6),
+                0 0 20px rgba(0, 255, 255, 0.4),
+                0 0 25px rgba(0, 255, 255, 0.2);
+        }
+        .hashtag {
+            color: #FF1493;
+            cursor: pointer;
+        }
+        #tweet-feed::-webkit-scrollbar {
+            display: none;
+        }
+        #tweet-button, #return-button {
+            padding: 10px 20px;
+            background-color: rgba(0, 255, 255, 0.2);
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            border-radius: 5px;
+            color: #00FFFF;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+            text-shadow: 0 0 5px rgba(0, 255, 255, 0.7);
+            position: relative;
+            overflow: hidden;
+        }
+        #tweet-button:hover, #return-button:hover {
+            background-color: rgba(0, 255, 255, 0.4);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 30px rgba(0, 255, 255, 0.6), 0 0 40px rgba(0, 255, 255, 0.4);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 1), 0 0 20px rgba(0, 255, 255, 0.8);
+            color: #FFFFFF;
+        }
+        #tweet-button::after, #return-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 255, 255, 0.8) 0%, rgba(0, 255, 255, 0) 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        #tweet-button:hover::after, #return-button:hover::after {
+            opacity: 1;
+        }
+        .time {
+            font-size: 0.8em;
+            color: #B14AED; /* Electric purple */
+            text-shadow: 0 0 3px rgba(177, 74, 237, 0.5), 0 0 10px rgba(177, 74, 237, 0.3);
+        }
+        .container {
+            background-color: rgba(20, 20, 20, 0.6);
+            border-radius: 20px;
+            padding: 30px;
+            box-sizing: border-box;
+            overflow: hidden;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.2),
+                0 0 40px rgba(0, 255, 255, 0.1),
+                inset 0 0 60px rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        #tweet-controls {
+            background-color: rgba(20, 20, 20, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 
+                0 0 15px rgba(0, 255, 255, 0.3),
+                0 0 30px rgba(0, 255, 255, 0.1),
+                inset 0 0 20px rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+        }
+        #sidebar {
+            background-color: rgba(20, 20, 20, 0.6);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 
+                0 0 20px rgba(255, 20, 147, 0.2),
+                0 0 40px rgba(255, 20, 147, 0.1),
+                inset 0 0 30px rgba(255, 20, 147, 0.1);
+            border: 1px solid rgba(255, 20, 147, 0.3);
+        }
+    </style>
 `;
-$('head').append(globalStyles);
 
-$('head').append(`
-  <style>
-      #tweet-feed::-webkit-scrollbar {
-          display: none;
-      }
-  </style>
-`);
+$('head').append(globalStyles);
 
 // Tweet styles
 function createTweetStyle() {
@@ -51,9 +144,9 @@ function createTweetStyle() {
 
 function createTimeStampStyle() {
   return {
-      fontSize: '0.8em',
-      color: 'rgba(0, 255, 255, 0.7)',
-      textShadow: '0 0 3px rgba(0, 0, 0, 0.8)'
+    fontSize: '0.8em',
+    color: '#B14AED', // Electric purple
+    textShadow: '0 0 3px rgba(177, 74, 237, 0.5), 0 0 5px rgba(177, 74, 237, 0.3)'
   };
 }
 
@@ -123,7 +216,7 @@ const $sidebarWrapper = $('<div id="sidebar-wrapper"></div>').css({
 // Create the sidebar container
 const $sidebar = $('<div id="sidebar"></div>').css({
   flex: '1',
-  backgroundColor: 'rgba(20, 20, 20, 0.4)', // Match tweet feed background
+  backgroundColor: 'rgba(20, 20, 20, 0.6)', // Match tweet feed background
   backdropFilter: 'blur(5px)',
   WebkitBackdropFilter: 'blur(5px)',
   padding: '20px',
@@ -132,7 +225,7 @@ const $sidebar = $('<div id="sidebar"></div>').css({
   overflowY: 'auto',
   color: '#fff',
   boxSizing: 'border-box',
-  border: '1px solid rgba(0, 255, 255, 0.1)' // Add subtle cyan border
+  border: '1px solid rgba(0, 255, 255, 0.01)' // Add subtle cyan border
 });
 
 // Append title and sidebar to the sidebar wrapper
@@ -167,45 +260,49 @@ function showHashtagTimeline(hashtag) {
   clearTimeout(autoRefreshTimer);
   currentView = 'hashtag';
   $('#return-button').show();
-  //clear the tweet feed before showing the hashtags
-  $('#tweet-feed').html('');
-  //get only the tweets that contain the hashtag
-  const hashtagTweets = streams.home.filter(tweet => 
-    tweet.message.toLowerCase().includes(hashtag.toLowerCase())
-  );
+  $('#tweet-feed').empty();
 
-// If no tweets are found for the hashtag, display a message
-if (hashtagTweets.length === 0) {
-$('#tweet-feed').html(`<p>No tweets available for the hashtag ${hashtag}.</p>`);
-return;
-}
+  const hashtagTweets = streams.home.filter(tweet => tweet.message.toLowerCase().includes(hashtag.toLowerCase()));
 
-// Display the hashtag's tweets
-hashtagTweets.forEach((tweet) => {
-  const $tweetDiv = $('<div class="tweet"></div>').css(createTweetStyle());
+  if (hashtagTweets.length === 0) {
+      $('#tweet-feed').html(`<p>No tweets available for the hashtag ${hashtag}.</p>`);
+      return;
+  }
 
-  const $user = $(`<span class="user">@${tweet.user}</span>`).css({
-      fontWeight: 'bold',
-      cursor: 'pointer',
-      color: '#00FFFF',
-      textShadow: '0 0 5px rgba(0, 255, 255, 0.7), 0 0 10px rgba(0, 0, 0, 0.9)'
+  hashtagTweets.forEach((tweet) => {
+      const $tweetDiv = $('<div class="tweet"></div>').css(createTweetStyle());
+
+      const $user = $(`<span class="user">@${tweet.user}</span>`).css({
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          color: '#00FFFF',
+          textShadow: '0 0 5px rgba(0, 255, 255, 0.7), 0 0 10px rgba(0, 0, 0, 0.9)'
+      }).on('click', function(e) {
+          e.stopPropagation();
+          showUserTimeline(tweet.user);
+      });
+
+      const $message = $('<p></p>').html(processMessage(tweet.message)).css({
+          margin: '10px 0',
+          color: '#FFFFFF',
+          textShadow: '0 0 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.6)'
+      });
+
+      $message.on('click', '.hashtag', function(e) {
+          e.stopPropagation();
+          const clickedHashtag = $(this).text();
+          showHashtagTimeline(clickedHashtag);
+      });
+
+      const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
+      const relativeTime = moment(tweet.created_at).fromNow();
+      const $timeInfo = $('<span class="time"></span>')
+          .text(`${relativeTime} | ${formattedTime}`)
+          .css(createTimeStampStyle());
+
+      $tweetDiv.append($user).append($message).append($timeInfo);
+      $('#tweet-feed').prepend($tweetDiv);
   });
-
-  const $message = $('<p></p>').html(processMessage(tweet.message)).css({
-      margin: '10px 0',
-      color: '#FFFFFF',
-      textShadow: '0 0 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.6)'
-  });
-
-  const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
-  const relativeTime = moment(tweet.created_at).fromNow();
-  const $timeInfo = $('<span class="time"></span>')
-      .text(`${relativeTime} | ${formattedTime}`)
-      .css(createTimeStampStyle());
-
-  $tweetDiv.append($user).append($message).append($timeInfo);
-  $('#tweet-feed').prepend($tweetDiv);
-});
 }
 
 // Function to load trending hashtags
@@ -222,8 +319,18 @@ function loadTrendingHashtags($trendingList) {
                   transition: 'all 0.3s ease'
               })
               .hover(
-                  function() { $(this).css({ textShadow: '0 0 10px rgba(255, 20, 147, 0.9)' }); },
-                  function() { $(this).css({ textShadow: '0 0 5px rgba(255, 20, 147, 0.7)' }); }
+                  function() {
+                      $(this).css({
+                          textShadow: '0 0 10px rgba(255, 20, 147, 0.9), 0 0 15px rgba(255, 20, 147, 0.7)',
+                          color: '#00FFFF'
+                      });
+                  },
+                  function() {
+                      $(this).css({
+                          textShadow: '0 0 5px rgba(255, 20, 147, 0.7)',
+                          color: '#FF1493'
+                      });
+                  }
               )
               .on('click', function() {
                   showHashtagTimeline(tag);
@@ -460,32 +567,7 @@ $usernameInput.add($tweetInput).on('focus', function() {
   });
 
   // Create the tweet button
-  const $tweetButton = $('<button id="tweet-button">Tweet</button>').css({
-    padding: '10px 20px',
-    backgroundColor: 'rgba(0, 255, 255, 0.2)',
-    border: '1px solid rgba(0, 255, 255, 0.5)',
-    borderRadius: '5px',
-    color: '#00FFFF',
-    fontSize: '16px',
-    fontWeight: 'bold',
-    cursor: 'pointer',
-    transition: 'all 0.3s ease',
-    outline: 'none',
-    textShadow: '0 0 5px rgba(0, 255, 255, 0.7)'
-}).hover(
-    function() {
-        $(this).css({
-            backgroundColor: 'rgba(0, 255, 255, 0.2)',
-            boxShadow: '0 0 15px rgba(0, 255, 255, 0.5)'
-        });
-    },
-    function() {
-        $(this).css({
-            backgroundColor: 'rgba(0, 255, 255, 0.2)',
-            boxShadow: 'none'
-        });
-    }
-);
+  const $tweetButton = $('<button id="tweet-button">Tweet</button>');
   
   // Update click handler
   $(document).on('click', '#tweet-button', function(e) {
@@ -549,32 +631,7 @@ $usernameInput.add($tweetInput).on('focus', function() {
     }
 });
 
-const $returnButton = $('<button id="return-button">Return to All Tweets</button>').css({
-  padding: '10px 20px',
-  backgroundColor: 'rgba(0, 255, 255, 0.2)',
-  border: '1px solid rgba(0, 255, 255, 0.5)',
-  borderRadius: '5px',
-  color: '#00FFFF',
-  fontSize: '16px',
-  fontWeight: 'bold',
-  cursor: 'pointer',
-  transition: 'all 0.3s ease',
-  outline: 'none',
-  textShadow: '0 0 5px rgba(0, 255, 255, 0.7)'
-}).hover(
-  function() {
-      $(this).css({
-          backgroundColor: 'rgba(0, 255, 255, 0.4)',
-          boxShadow: '0 0 15px rgba(0, 255, 255, 0.5)'
-      });
-  },
-  function() {
-      $(this).css({
-          backgroundColor: 'rgba(0, 255, 255, 0.2)',
-          boxShadow: 'none'
-      });
-  }
-);
+const $returnButton = $('<button id="return-button">Return to All Tweets</button>');
 
 $(document).on('click', '#return-button', function() {
   console.log('Return button clicked');
@@ -697,12 +754,9 @@ $tweetControls.append($usernameInput).append($tweetInput).append($buttonContaine
 };
   
 
-  const processMessage  = (message) => {
-    //use regex to find hashtags
-    return message.replace(/(#\w+)/g, (tag) => {
-      return `<span class="hashtag" style="color:#FF1493; text-shadow: 0 0 5px rgba(255, 20, 147, 0.7), 0 0 10px rgba(0, 0, 0, 0.8); cursor:pointer;">${tag}</span>`;
-    });
-  };
+function processMessage(message) {
+  return message.replace(/(#\w+)/g, '<span class="hashtag">$1</span>');
+}
 
   function createTweets(additionalTweets = []) {
     console.log('Creating tweets. Current view:', currentView);
@@ -710,40 +764,35 @@ $tweetControls.append($usernameInput).append($tweetInput).append($buttonContaine
     const allTweets = streams.home.slice().reverse();
     const tweetsToDisplay = allTweets.slice(0, maxDisplayedTweets);
     $('#tweet-feed').empty();
-
     tweetsToDisplay.forEach((tweet) => {
-        const $tweetDiv = $('<div class="tweet"></div>').css({
-          backgroundColor: 'rgba(20, 20, 20, 0.4)', // More transparent
-          border: '1px solid rgba(0, 255, 255, 0.1)',
-          borderRadius: '10px',
-          padding: '15px',
-          marginBottom: '15px',
-          transition: 'all 0.3s ease',
-          boxShadow: '0 0 10px rgba(0, 255, 255, 0.1)'
-        });
+        const $tweetDiv = $('<div class="tweet"></div>').css(createTweetStyle());
 
         // Add hover effect
-$tweetDiv.hover(
-  function() {
-      $(this).css({
-        background: 'rgba(255, 255, 255, 0.1)',
-            boxShadow: '0 4px 20px rgba(0, 255, 255, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.15)'
-      });
-  },
-  function() {
-      $(this).css(createTweetStyle());
-  }
-);
+        $tweetDiv.hover(
+            function() {
+                $(this).css({
+                    boxShadow: '0 0 15px rgba(0, 255, 255, 0.3), 0 0 30px rgba(0, 255, 255, 0.1)',
+                    borderColor: 'rgba(0, 255, 255, 0.3)'
+                });
+            },
+            function() {
+                $(this).css({
+                    boxShadow: '0 0 10px rgba(0, 255, 255, 0.1)',
+                    borderColor: 'rgba(0, 255, 255, 0.1)'
+                });
+            }
+        );
 
         const $user = $(`<span class="user">@${tweet.user}</span>`).css({
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            color: '#00FFFF', // Neon cyan
-            textShadow: '0 0 5px rgba(0, 255, 255, 0.7), 0 0 10px rgba(0, 0, 0, 0.9)'
-        }).on('click', () => {
-            console.log(`Username clicked: ${tweet.user}`);
-            showUserTimeline(tweet.user);
-        });
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          color: '#00FFFF',
+          textShadow: '0 0 5px rgba(0, 255, 255, 0.7), 0 0 10px rgba(0, 0, 0, 0.9)'
+      }).on('click', function(e) {
+          e.stopPropagation(); // Prevent event bubbling
+          console.log(`Username clicked: ${tweet.user}`);
+          showUserTimeline(tweet.user);
+      });
 
         const $message = $('<p></p>').html(processMessage(tweet.message)).css({
             margin: '10px 0',
@@ -751,14 +800,16 @@ $tweetDiv.hover(
             textShadow: '0 0 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.6)'
         });
 
-        $message.on('click', '.hashtag', function() {
-            const hashtag = $(this).text();
-            showHashtagTimeline(hashtag);
-        });
+        // Add click handler for hashtags
+        $message.on('click', '.hashtag', function(e) {
+          e.stopPropagation(); // Prevent event bubbling
+          const hashtag = $(this).text();
+          showHashtagTimeline(hashtag);
+      });
 
         const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
         const relativeTime = moment(tweet.created_at).fromNow();
-        const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css(createTimeStampStyle());
+        const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`);
 
         $tweetDiv.append($user).append($message).append($timeInfo);
         $('#tweet-feed').append($tweetDiv);
@@ -772,31 +823,44 @@ $tweetDiv.hover(
     updateTrendingHashtags();
 }
 
-  function showUserTimeline(username) {
-    clearTimeout(autoRefreshTimer);
-    currentView = 'user';
-    $('#return-button').show();
-    //maximum number of tweets to display per user
-    const maxUserTweets = 10;
-    // Clear the tweet feed before showing the user's tweets
-    $('#tweet-feed').html('');
-  
-    // Get only the tweets from the selected user and reverse them for chronological order
-    const userTweets = streams.users[username].slice().reverse();
-  
-    // If no tweets are found for the user, display a message
-    if (userTweets.length === 0) {
+function showUserTimeline(username) {
+  clearTimeout(autoRefreshTimer);
+  currentView = 'user';
+  $('#return-button').show();
+  $('#tweet-feed').empty();
+
+  const maxUserTweets = 10; // Maximum number of tweets to display per user
+
+  const userTweets = streams.users[username].slice().reverse().slice(0, maxUserTweets);
+
+  if (userTweets.length === 0) {
       $('#tweet-feed').html('<p>No tweets available for this user.</p>');
       return;
-    }
-    // Display the user's tweets
-    userTweets.forEach((tweet) => {
+  }
+
+  userTweets.forEach((tweet) => {
       const $tweetDiv = $('<div class="tweet"></div>').css(createTweetStyle());
+
+      const $user = $(`<span class="user">@${tweet.user}</span>`).css({
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          color: '#00FFFF',
+          textShadow: '0 0 5px rgba(0, 255, 255, 0.7), 0 0 10px rgba(0, 0, 0, 0.9)'
+      }).on('click', function(e) {
+          e.stopPropagation();
+          showUserTimeline(tweet.user);
+      });
 
       const $message = $('<p></p>').html(processMessage(tweet.message)).css({
           margin: '10px 0',
           color: '#FFFFFF',
           textShadow: '0 0 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.6)'
+      });
+
+      $message.on('click', '.hashtag', function(e) {
+          e.stopPropagation();
+          const hashtag = $(this).text();
+          showHashtagTimeline(hashtag);
       });
 
       const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
@@ -805,7 +869,7 @@ $tweetDiv.hover(
           .text(`${relativeTime} | ${formattedTime}`)
           .css(createTimeStampStyle());
 
-      $tweetDiv.append($message).append($timeInfo);
+      $tweetDiv.append($user).append($message).append($timeInfo);
       $('#tweet-feed').prepend($tweetDiv);
   });
 }
