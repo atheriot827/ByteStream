@@ -157,34 +157,62 @@ $(document).ready(() => {
   }
 
   function createSidebarWrapper() {
-      const $sidebarWrapper = $('<div id="sidebar-wrapper"></div>').css({
-          display: 'flex',
-          flexDirection: 'column',
-          flexBasis: '25%',
-          marginRight: '20px'
-      });
+    const $sidebarWrapper = $('<div id="sidebar-wrapper"></div>').css({
+        display: 'flex',
+        flexDirection: 'column',
+        flexBasis: '25%',
+        marginRight: '20px'
+    });
 
-      const $titleContainer = $('<div id="title-container"></div>').css({
-          marginBottom: '20px',
-          flexShrink: 0,
-      });
+    const $titleContainer = $('<div id="title-container"></div>').css({
+        marginBottom: '5px',
+        flexShrink: 0,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '0.30px',  // Reduce padding
+        boxSizing: 'border-box'
+    });
 
-      const $title = $('<h1>Twiddler!</h1>').css({
-          fontFamily: 'Orbitron, sans-serif',
-          color: '#00FFFF',
-          textShadow: '0 0 10px rgba(0, 255, 255, 0.7), 0 0 20px rgba(0, 255, 255, 0.5), 0 0 30px rgba(138, 43, 226, 0.3)',
-          margin: '0 0 20px 0',
-          fontSize: '2.5em',
-          textAlign: 'center'
-      });
+    // Create img element for the SVG logo
+    const $logo = $('<img>').attr({
+        id: 'logo-svg',
+        src: 'images/bytestream-logo.svg',
+        alt: 'ByteStream Logo'
+    }).css({
+        width: '100%',  // Adjust this value as needed
+        maxWidth: '900px',  // Adjust this value as needed
+        height: 'auto',
+        display: 'block'
+    });
 
-      $titleContainer.append($title);
+    $titleContainer.append($logo);
+    $sidebarWrapper.append($titleContainer);
 
-      const $sidebar = createSidebar();
-      $sidebarWrapper.append($titleContainer).append($sidebar);
+    $logo.css({
+        transition: 'transform 0.3s ease-in-out'
+    });
+    
+    // Add this to the head of your document
+    $('<style>')
+        .text(`
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+            #logo-svg {
+                animation: pulse 2s infinite;
+            }
+        `)
+        .appendTo('head');
 
-      return $sidebarWrapper;
-  }
+    // Create sidebar content (trending hashtags, etc.)
+    const $sidebar = createSidebar(); // Assuming you have this function
+    $sidebarWrapper.append($sidebar);
+
+    return $sidebarWrapper;
+}
 
   function createSidebar() {
       const $sidebar = $('<div id="sidebar"></div>').css({
@@ -295,7 +323,7 @@ $(document).ready(() => {
       });
 
       const $usernameInput = createInput('username-input', 'Enter your username');
-      const $tweetInput = createTextarea('tweet-input', "What's happening?");
+      const $tweetInput = createTextarea('tweet-input', "Take a Byte.");
       const $buttonContainer = createButtonContainer();
 
       $tweetControls.append($usernameInput).append($tweetInput).append($buttonContainer);
