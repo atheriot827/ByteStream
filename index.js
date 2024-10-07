@@ -3,75 +3,57 @@
 
 //wait until the document is fully loaded
 $(document).ready(() => {
+
+  // Set global styles
+$('body').css({
+  fontFamily: 'Roboto, sans-serif',
+  backgroundColor: '#1b1b1b',
+  color: '#fff'
+});
+
+$('h1, h2, h3').css({
+  fontFamily: "'Orbitron', sans-serif"
+});
+
+// Create a style for user and hashtag elements
+const globalStyles = `
+  <style>
+      .user { color: #00FFFF; }
+      .hashtag { color: #FF1493; cursor: pointer; }
+  </style>
+`;
+$('head').append(globalStyles);
+
+
+
+// Tweet styles
+const createTweetStyle = () => ({
+  background: 'rgba(255, 255, 255, 0.1)',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
+  backdropFilter: 'blur(10px)',
+  borderRadius: '10px',
+  padding: '10px',
+  marginBottom: '15px',
+  color: '#fff'
+});
+
+// Apply tweet hover effect
+$(document).on('mouseenter', '.tweet', function() {
+  $(this).css({
+      boxShadow: '0px 0px 15px #FF1493',
+      borderColor: '#FF1493'
+  });
+}).on('mouseleave', '.tweet', function() {
+  $(this).css({
+      boxShadow: 'none',
+      borderColor: 'rgba(255, 255, 255, 0.2)'
+  });
+});
   
 
-  $('head').append(`
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-      h1, h2, h3 {
-        font-family: 'Orbitron', sans-serif;
-      }
-      body {
-        font-family: 'Roboto', sans-serif;
-        background-color: #1b1b1b; /* dark charcoal */
-        color: #fff;
-        
-      }
-
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 10px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #1b1b1b; /* Dark background */
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #9400D3; /* electric purple */
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #FF1493; /* neon pink */
-      }
-
-      /* Tweet styles with glassmorphism */
-      #tweet-feed .tweet {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        backdrop-filter: blur(10px);
-        border-radius: 10px;
-        padding: 10px;
-        margin-bottom: 15px;
-        color: #fff;
-      }
-      #tweet-feed .tweet {
-        background: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
-        border: 1px solid rgba(255, 255, 255, 0.2); /* Semi-transparent border */
-        backdrop-filter: blur(10px); /* Glassmorphism effect */
-        border-radius: 10px; /* Rounded corners */
-        padding: 10px;
-        margin-bottom: 15px;
-        color: #fff;
-      }
-      #tweet-feed .tweet:hover {
-        box-shadow: 0px 0px 15px #FF1493; /* Neon pink glow */
-        border-color: #FF1493; /* neon pink border on hover */
-      }
-
-      /* User and Hashtag Colors */
-      .user {
-        color: #00FFFF; /* neon blue */
-      }
-      .hashtag {
-        color: #FF1493; /* neon pink */
-        cursor: pointer;
-      }
-    </style>
-  `);
-  
-
-
-  //number of new tweets to generate at a time, and max number of tweets to display
-  const newTweetsCount = 3; // Number of new tweets to generate at a time
-  const maxDisplayedTweets = 10; // Maximum number of tweets to display
+//number of new tweets to generate at a time, and max number of tweets to display
+const newTweetsCount = 3; // Number of new tweets to generate at a time
+const maxDisplayedTweets = 10; // Maximum number of tweets to display
 
 
 const $contentWrapper = $('<div id="content-wrapper"></div>').css({
@@ -90,10 +72,12 @@ const $titleContainer = $('<div id="title-container"></div>').css({
 });
 
 const $title = $('<h1>Twiddler!</h1>').css({
-  fontFamily: 'Orbitron',
-  color: '#00FFFF', // Neon blue color, adjust as needed
-  textShadow: '0 0 10px #00FFFF',
-  margin: '0'
+  fontFamily: 'Orbitron, sans-serif',
+    color: '#00FFFF',
+    textShadow: '0 0 10px rgba(0, 255, 255, 0.7), 0 0 20px rgba(0, 255, 255, 0.5)',
+    margin: '0 0 20px 0',
+    fontSize: '2.5em',
+    textAlign: 'center'
 });
 
 $titleContainer.append($title);
@@ -109,18 +93,21 @@ const $sidebarWrapper = $('<div id="sidebar-wrapper"></div>').css({
 const $sidebar = $('<div id="sidebar"></div>').css({
   // flexBasis: '25%',                   // Sidebar width
   flex: '1',
-  backgroundColor: '#333',      // Dark background
-  border: '',
-  padding: '20px',                 // Padding inside the sidebar
-  borderRadius: '10px',            // Rounded corners
-  boxShadow: '0 4px 10px rgba(0,0,0,0.3)',  // Soft shadow
-  maxHeight: '600px',              // Limit height of the sidebar
-  overflowY: 'auto',               // Enable scrolling if content overflows
-  marginRight: '20px',             // Add spacing between sidebar and main content
-  color: '#fff',                    // Text color in the sidebar
-  boxSizing: 'border-box',
-  display: 'flex',
-  flexDirection: 'column' // Ensures padding is included in width calculation
+    backgroundColor: 'rgba(10, 10, 10, 0.8)',
+    backgroundImage: `
+        linear-gradient(30deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
+        linear-gradient(150deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
+        linear-gradient(30deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
+        linear-gradient(150deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111)
+    `,
+    backgroundSize: '40px 70px',
+    padding: '20px',
+    borderRadius: '15px',
+    boxShadow: '0 0 15px rgba(0, 255, 255, 0.2)',
+    overflowY: 'auto',
+    color: '#fff',
+    boxSizing: 'border-box',
+    border: '1px solid rgba(0, 255, 255, 0.1)'
 });
 
 // Append title and sidebar to the sidebar wrapper
@@ -128,20 +115,21 @@ $sidebarWrapper.append($titleContainer).append($sidebar);
 
 // Add title for the sidebar
 const $sidebarTitle = $('<h2>Trending Hashtags</h2>').css({
-  textAlign: 'left',
-  fontSize: '1.5em',
-  marginBottom: '10px',
-  borderBottom: '2px solid #FF1493', // Neon pink underline
-  paddingBottom: '10px'
+    fontFamily: 'Orbitron, sans-serif',
+    textAlign: 'left',
+    fontSize: '1.5em',
+    marginBottom: '20px',
+    color: '#00FFFF',
+    textShadow: '0 0 10px rgba(0, 255, 255, 0.7)',
+    borderBottom: '2px solid rgba(0, 255, 255, 0.3)',
+    paddingBottom: '10px'
 });
 
 // Add a list for trending hashtags
 const $trendingList = $('<ul id="trending-list"></ul>').css({
     listStyle: 'none',
     padding: 0,
-    margin: 0,
-    flex: '1', // This will make it take up remaining space
-    overflowY: 'auto' // Allow scrolling if there are many trending hashtags
+    margin: 0 // Allow scrolling if there are many trending hashtags
 });
 
 loadTrendingHashtags($trendingList);
@@ -208,19 +196,25 @@ $('#tweet-feed').prepend($tweetDiv);
 // Function to load trending hashtags
 function loadTrendingHashtags($trendingList) {
   tags.forEach(tag => {
-    if(tag) {
-      const $li = $('<li></li>')
-      .text(tag)
-      .css({
-        padding: '5px 0',
-        cursor: 'pointer',
-        color: '#FF1493',
-      })
-      .on('click', function() {
-        showHashtagTimeline(tag);
-      });
-      $trendingList.append($li);
-    }
+      if(tag) {
+          const $li = $('<li></li>')
+              .text(tag)
+              .css({
+                  padding: '8px 0',
+                  cursor: 'pointer',
+                  color: '#FF1493',
+                  textShadow: '0 0 5px rgba(255, 20, 147, 0.7)',
+                  transition: 'all 0.3s ease'
+              })
+              .hover(
+                  function() { $(this).css({ textShadow: '0 0 10px rgba(255, 20, 147, 0.9)' }); },
+                  function() { $(this).css({ textShadow: '0 0 5px rgba(255, 20, 147, 0.7)' }); }
+              )
+              .on('click', function() {
+                  showHashtagTimeline(tag);
+              });
+          $trendingList.append($li);
+      }
   });
 }
 
@@ -291,65 +285,162 @@ function updateTrendingHashtags() {
     boxShadow: '0 0 20px rgba(0, 255, 255, 0.2)'
   });
 
-  const $tweetFeed = $('<div id="tweet-feed"></div>').css({
+  const $tweetFeedWrapper = $('<div id="tweet-feed-wrapper"></div>').css({
     flex: '1 1 auto',
-    overflowY: 'auto',
+    position: 'relative',
+    overflow: 'hidden',
     marginBottom: '20px',
-    padding: '20px',
-    backgroundColor: 'rgba(10, 10, 10, 0.6)', // More transparent
-    backdropFilter: 'blur(5px)',
-    WebkitBackdropFilter: 'blur(5px)',
     borderRadius: '15px',
-    border: '1px solid rgba(0, 255, 255, 0.1)', // Subtle neon border
-    boxShadow: '0 0 15px rgba(0, 255, 255, 0.2)' // Neon glow
-  });
-
-  //Create a div to hold tweet controls
-  const $tweetControls = $('<div id="tweet-controls"></div>').css({ 
-    flexShrink: 0,
+    border: '1px solid rgba(0, 255, 255, 0.1)',
+    boxShadow: '0 0 15px rgba(0, 255, 255, 0.2)',
+    height: '400px',  
     display: 'flex',
     flexDirection: 'column',
-    gap: '10px',
-    padding: '10px',
-    backgroundColor: 'rgba(27, 27, 27, 0.9)',
-    borderRadius: '10px',
-    boxShadow: '0 -5px 15px rgba(0,0,0,0.3)',
-  });
+    boxSizing: 'border-box'
+});
 
-  $container.append($tweetFeed).append($tweetControls);
+const $tweetFeed = $('<div id="tweet-feed"></div>').css({
+  flex: '1',
+  overflowY: 'auto',
+  padding: '20px',
+  paddingRight: '32px', 
+  backgroundColor: 'rgba(10, 10, 10, 0.6)',
+  backdropFilter: 'blur(5px)',
+  WebkitBackdropFilter: 'blur(5px)',
+  boxSizing: 'border-box',
+  height: '100%',
+  scrollbarWidth: 'none',
+  msOverflowStyle: 'none'  
+});
+
+// Add a style tag to hide webkit scrollbar
+$('head').append(`
+  <style>
+      #tweet-feed::-webkit-scrollbar {
+          display: none;
+      }
+  </style>
+`);
+
+const $customScrollbar = $('<div id="custom-scrollbar"></div>').css({
+  position: 'absolute',
+  right: '0',
+  top: '0',
+  width: '12px',
+  height: '100%',
+  backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  borderRadius: '6px'
+});
+
+const $customScrollbarThumb = $('<div id="custom-scrollbar-thumb"></div>').css({
+  position: 'absolute',
+  width: '100%',
+  background: 'linear-gradient(to bottom, #00FFFF, #FF1493)',
+  borderRadius: '6px',
+  cursor: 'pointer',
+  transition: 'background 0.3s'
+});
+
+$customScrollbarThumb.hover(
+  function() { $(this).css('background', 'linear-gradient(to bottom, #FF1493, #00FFFF)'); },
+  function() { $(this).css('background', 'linear-gradient(to bottom, #00FFFF, #FF1493)'); }
+);
+
+//Create a div to hold tweet controls
+const $tweetControls = $('<div id="tweet-controls"></div>').css({ 
+  flexShrink: 0,
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '10px',
+  padding: '20px',
+  backgroundColor: 'rgba(20, 20, 20, 0.8)',
+  borderRadius: '15px',
+  boxShadow: '0 0 15px rgba(0, 255, 255, 0.2)',
+  border: '1px solid rgba(0, 255, 255, 0.1)'
+});
+
+$customScrollbar.append($customScrollbarThumb);
+$tweetFeedWrapper.append($tweetFeed).append($customScrollbar);
+$container.append($tweetFeedWrapper).append($tweetControls);
+
+// Custom scrollbar functionality
+$tweetFeed.on('scroll', function() {
+  const scrollPercentage = ($(this).scrollTop() / (this[0].scrollHeight - $(this).height())) * 100;
+  const thumbHeight = ($(this).height() / this[0].scrollHeight) * 100;
+  const thumbPosition = (scrollPercentage / 100) * ($(this).height() - thumbHeight);
+  
+  $customScrollbarThumb.css({
+      height: `${thumbHeight}%`,
+      top: `${thumbPosition}px`
+  });
+});
+
+// Make the custom scrollbar draggable
+let isScrollbarDragging = false;
+let scrollbarStartY;
+let scrollbarStartScrollTop;
+
+$customScrollbarThumb.on('mousedown', function(e) {
+  isScrollbarDragging = true;
+  scrollbarStartY = e.clientY - $customScrollbarThumb.position().top;
+  scrollbarStartScrollTop = $tweetFeed.scrollTop();
+  $('body').css('user-select', 'none');
+});
+
+$(document).on('mousemove', function(e) {
+  if (!isScrollbarDragging) return;
+  const y = e.clientY - $customScrollbar.offset().top;
+  const percentage = y / $customScrollbar.height();
+  $tweetFeed.scrollTop(percentage * ($tweetFeed[0].scrollHeight - $tweetFeed.height()));
+}).on('mouseup', function() {
+  isScrollbarDragging = false;
+  $('body').css('user-select', '');
+});
  
-
-  $('body, html').css({
-    height: '100%',
-    margin: 0,
-    padding: 0,
-    overflow: 'hidden'
-  });
+  $('body').css({
+    backgroundColor: '#050505',
+    color: '#fff',
+    fontFamily: 'Roboto, sans-serif'
+});
   
-  
-  $container.append($tweetFeed).append($tweetControls);
-
   //create a username input field
   const $usernameInput = $('<input id="username-input" placeholder="Enter your username" />').css({
     width: '100%',
-    height: '40px',
-    marginBottom: '10px',
     padding: '10px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    boxSizing: 'border-box'
+    backgroundColor: 'rgba(30, 30, 30, 0.6)',
+    border: '1px solid rgba(0, 255, 255, 0.3)',
+    borderRadius: '5px',
+    color: '#fff',
+    fontSize: '14px',
+    outline: 'none'
   });
   
   // Create the tweet input textarea
   const $tweetInput = $('<textarea id="tweet-input" placeholder="What\'s happening?"></textarea>').css({
     width: '100%',
     padding: '10px',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    boxSizing: 'border-box',
+    backgroundColor: 'rgba(30, 30, 30, 0.6)',
+    border: '1px solid rgba(0, 255, 255, 0.3)',
+    borderRadius: '5px',
+    color: '#fff',
+    fontSize: '14px',
     resize: 'vertical',
-    minHeight: '60px'
+    minHeight: '60px',
+    outline: 'none'
   });
+
+  // Style for both inputs on focus
+$usernameInput.add($tweetInput).on('focus', function() {
+  $(this).css({
+      boxShadow: '0 0 10px rgba(0, 255, 255, 0.5)',
+      border: '1px solid rgba(0, 255, 255, 0.5)'
+  });
+}).on('blur', function() {
+  $(this).css({
+      boxShadow: 'none',
+      border: '1px solid rgba(0, 255, 255, 0.3)'
+  });
+});
 
   // Adjust button container
   const $buttonContainer = $('<div></div>').css({
@@ -359,152 +450,164 @@ function updateTrendingHashtags() {
 
   // Create the tweet button
   const $tweetButton = $('<button id="tweet-button">Tweet</button>').css({
-    padding: '10px 15px',
-    margin: '5px',
-    border: '2px solid #00FF00',
+    padding: '10px 20px',
+    backgroundColor: 'rgba(0, 255, 255, 0.2)',
+    border: '1px solid rgba(0, 255, 255, 0.5)',
     borderRadius: '5px',
-    backgroundColor: 'transparent',
-    color: '#00FF00',
+    color: '#00FFFF',
     fontSize: '16px',
     fontWeight: 'bold',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
-    boxShadow: '0 0 10px #00FF00', // Neon glow
-    textShadow: '0 0 5px #00FF00', // Text glow
-    outline: 'none'
-  }).hover(
+    outline: 'none',
+    textShadow: '0 0 5px rgba(0, 255, 255, 0.7)'
+}).hover(
     function() {
-      $(this).css({
-        backgroundColor: 'rgba(0, 255, 0, 0.2)', // Slight green tint
-        boxShadow: '0 0 20px #00FF00, 0 0 30px #00FF00', // Intensify glow
-        textShadow: '0 0 10px #00FF00',
-        transform: 'scale(1.05)' // Slight grow effect
-      });
+        $(this).css({
+            backgroundColor: 'rgba(0, 255, 255, 0.4)',
+            boxShadow: '0 0 15px rgba(0, 255, 255, 0.5)'
+        });
     },
     function() {
-      $(this).css({
-        backgroundColor: 'transparent',
-        boxShadow: '0 0 10px #00FF00',
-        textShadow: '0 0 5px #00FF00',
-        transform: 'scale(1)'
-      });
+        $(this).css({
+            backgroundColor: 'rgba(0, 255, 255, 0.2)',
+            boxShadow: 'none'
+        });
     }
-  ).on('mousedown', function() { // Mouse press
-    $(this).css({
-      transform: 'scale(0.95)', // Slight shrink effect
-      boxShadow: '0 0 5px #00FF00', // Reduce glow
-      textShadow: '0 0 2px #00FF00'
-    });
-  }).on('mouseup mouseleave', function() { // Mouse release or leave
-    $(this).css({
-      transform: 'scale(1)',
-      boxShadow: '0 0 10px #00FF00',
-      textShadow: '0 0 5px #00FF00'
-    });
-  });
+);
   
   // Update click handler
   $(document).on('click', '#tweet-button', function(e) {
     console.log('Tweet button clicked');
     e.preventDefault();
+    
+    const $button = $(this);
+    const originalText = $button.text();
     const username = $('#username-input').val().trim();
     const tweetMessage = $('#tweet-input').val().trim();
+    
     if (username && tweetMessage) {
-        writeTweetAndDisplay(tweetMessage, username);
-        $('#tweet-input').val('');
-        // Add success animation
-        $(this).text('Posted!').css({
-            backgroundColor: 'rgba(0, 255, 0, 0.3)',
-            color: '#FFFFFF',
-            textShadow: '0 0 10px #00FF00, 0 0 20px #00FF00',
-            boxShadow: '0 0 30px #00FF00, 0 0 50px #00FF00',
-            transform: 'scale(1.1)'
+        // Visual feedback on click
+        $button.css({
+            backgroundColor: 'rgba(0, 255, 255, 0.6)',
+            boxShadow: '0 0 20px rgba(0, 255, 255, 0.8)',
+            transform: 'scale(0.95)'
         });
-        // Reset button after animation
+        
         setTimeout(() => {
-            $(this).text('Tweet').css({
-                backgroundColor: 'transparent',
-                color: '#00FF00',
-                textShadow: '0 0 5px #00FF00',
-                boxShadow: '0 0 10px #00FF00',
-                transform: 'scale(1)'
-            });
-        }, 500);
+            writeTweetAndDisplay(tweetMessage, username);
+            $('#tweet-input').val('');
+            
+            // Success animation
+            $button.text('Posted!')
+                   .css({
+                       backgroundColor: 'rgba(0, 255, 255, 0.4)',
+                       color: '#FFFFFF',
+                       textShadow: '0 0 10px #00FFFF, 0 0 20px #00FFFF',
+                       boxShadow: '0 0 30px rgba(0, 255, 255, 0.8)',
+                       transform: 'scale(1.05)'
+                   });
+            
+            // Return to original state
+            setTimeout(() => {
+                $button.text(originalText)
+                       .css({
+                           backgroundColor: 'rgba(0, 255, 255, 0.2)',
+                           color: '#00FFFF',
+                           textShadow: '0 0 5px rgba(0, 255, 255, 0.7)',
+                           boxShadow: 'none',
+                           transform: 'scale(1)'
+                       });
+            }, 1500);
+        }, 100);
     } else {
+        // Error feedback
+        $button.css({
+            backgroundColor: 'rgba(255, 0, 0, 0.4)',
+            boxShadow: '0 0 20px rgba(255, 0, 0, 0.8)'
+        });
+        
+        setTimeout(() => {
+            $button.css({
+                backgroundColor: 'rgba(0, 255, 255, 0.2)',
+                boxShadow: 'none'
+            });
+        }, 200);
+        
         alert('Please enter both a username and a tweet message.');
     }
 });
 
-  
 const $returnButton = $('<button id="return-button">Return to All Tweets</button>').css({
   padding: '10px 20px',
-  margin: '5px',
-  border: 'none',
+  backgroundColor: 'rgba(0, 255, 255, 0.2)',
+  border: '1px solid rgba(0, 255, 255, 0.5)',
   borderRadius: '5px',
-  backgroundColor: 'transparent',
-  color: '#FF1493', // Neon pink text
+  color: '#00FFFF',
   fontSize: '16px',
   fontWeight: 'bold',
   cursor: 'pointer',
   transition: 'all 0.3s ease',
-  boxShadow: '0 0 10px #FF1493', // Neon glow
-  textShadow: '0 0 5px #FF1493', // Text glow
-  outline: 'none'
+  outline: 'none',
+  textShadow: '0 0 5px rgba(0, 255, 255, 0.7)'
 }).hover(
-  function() { // Mouse over
-    $(this).css({
-      backgroundColor: 'rgba(255, 20, 147, 0.2)', // Slight pink tint
-      boxShadow: '0 0 20px #FF1493, 0 0 30px #FF1493', // Intensify glow
-      textShadow: '0 0 10px #FF1493',
-      transform: 'scale(1.05)' // Slight grow effect
-    });
+  function() {
+      $(this).css({
+          backgroundColor: 'rgba(0, 255, 255, 0.4)',
+          boxShadow: '0 0 15px rgba(0, 255, 255, 0.5)'
+      });
   },
-  function() { // Mouse out
-    $(this).css({
-      backgroundColor: 'transparent',
-      boxShadow: '0 0 10px #FF1493',
-      textShadow: '0 0 5px #FF1493',
-      transform: 'scale(1)'
-    });
+  function() {
+      $(this).css({
+          backgroundColor: 'rgba(0, 255, 255, 0.2)',
+          boxShadow: 'none'
+      });
   }
-).on('mousedown', function() { // Mouse press
-  $(this).css({
-    transform: 'scale(0.95)', // Slight shrink effect
-    boxShadow: '0 0 5px #FF1493', // Reduce glow
-    textShadow: '0 0 2px #FF1493'
-  });
-}).on('mouseup mouseleave', function() { // Mouse release or leave
-  $(this).css({
-    transform: 'scale(1)',
-    boxShadow: '0 0 10px #FF1493',
-    textShadow: '0 0 5px #FF1493'
-  });
-});
+);
 
 $(document).on('click', '#return-button', function() {
   console.log('Return button clicked');
-  currentView = 'main';
-  createTweets();
-  autoRefreshTweets();
-  $(this).hide();
-  // Add click animation
-  $(this).css({
-      backgroundColor: 'rgba(255, 20, 147, 0.3)',
+  const $button = $(this);
+  const originalText = $button.text();
+
+  // Visual feedback on click
+  $button.css({
+      backgroundColor: 'rgba(255, 20, 147, 0.6)', // Brighter pink
+      boxShadow: '0 0 20px rgba(255, 20, 147, 0.8)',
+      transform: 'scale(0.95)',
       color: '#FFFFFF',
-      textShadow: '0 0 10px #FF1493, 0 0 20px #FF1493',
-      boxShadow: '0 0 30px #FF1493, 0 0 50px #FF1493',
-      transform: 'scale(1.1)'
+      textShadow: '0 0 10px rgba(255, 20, 147, 1)'
   });
-  // Reset button after animation
+
   setTimeout(() => {
-      $(this).css({
-          backgroundColor: 'transparent',
-          color: '#FF1493',
-          textShadow: '0 0 5px #FF1493',
-          boxShadow: '0 0 10px #FF1493',
-          transform: 'scale(1)'
-      });
-  }, 300);
+      currentView = 'main';
+      $('#tweet-feed').empty();
+      createTweets();
+      autoRefreshTweets();
+
+      // Success animation
+      $button.text('Returned!')
+             .css({
+                 backgroundColor: 'rgba(255, 20, 147, 0.4)',
+                 color: '#FFFFFF',
+                 textShadow: '0 0 10px #FF1493, 0 0 20px #FF1493',
+                 boxShadow: '0 0 30px rgba(255, 20, 147, 0.8)',
+                 transform: 'scale(1.05)'
+             });
+
+      // Return to original state and hide
+      setTimeout(() => {
+          $button.text(originalText)
+                 .css({
+                     backgroundColor: 'rgba(0, 255, 255, 0.2)',
+                     color: '#00FFFF',
+                     textShadow: '0 0 5px rgba(0, 255, 255, 0.7)',
+                     boxShadow: 'none',
+                     transform: 'scale(1)'
+                 })
+                 .hide();
+      }, 1000);
+  }, 100);
 });
   
 $buttonContainer.append($tweetButton).append($returnButton);
@@ -745,8 +848,6 @@ const $mainContentWrapper = $('<div id="main-content-wrapper"></div>').css({
   height: '100%',
   overflow: 'hidden'
 });
-
-
 
 // Append sidebar and container to main content wrapper
 $mainContentWrapper.append($sidebarWrapper).append($container);
