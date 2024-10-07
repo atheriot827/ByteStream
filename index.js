@@ -630,48 +630,57 @@ $(document).ready(() => {
 
     function writeTweetAndDisplay(message, username) {
         try {
-            writeTweet(message, username);
-            const tweet = {
-                user: username,
-                message: message,
-                created_at: new Date(),
-            };
-            streams.home.unshift(tweet);
-
+            // Check if the tweet already exists in streams.home
+            const existingTweet = streams.home.find(tweet => tweet.user === username && tweet.message === message);
+            
+            if (!existingTweet) {
+                // If the tweet doesn't exist, write it using the provided function
+                writeTweet(message, username);
+            }
+    
+            // Create the tweet element
             const $newTweet = $('<div class="tweet"></div>').css(createTweetStyle());
-            const $user = $(`<span class="user">@${tweet.user}</span>`).css({
+            const $user = $(`<span class="user">@${username}</span>`).css({
                 fontWeight: 'bold',
                 cursor: 'pointer',
                 color: '#00FFFF',
                 textShadow: '0 0 5px rgba(0, 255, 255, 0.7), 0 0 10px rgba(0, 0, 0, 0.9)'
             }).on('click', function(e) {
                 e.stopPropagation();
-                showUserTimeline(tweet.user);
+                showUserTimeline(username);
             });
-
-            const processedMessage = processMessage(tweet.message);
+    
+            const processedMessage = processMessage(message);
             const $message = $('<p></p>').html(processedMessage).css({
                 margin: '10px 0',
                 color: '#FFFFFF',
                 textShadow: '0 0 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.6)'
             });
-
+    
             $message.on('click', '.hashtag', function(e) {
                 e.stopPropagation();
                 const clickedHashtag = $(this).text();
                 showHashtagTimeline(clickedHashtag);
             });
-
+    
+            const tweet = existingTweet || streams.home[streams.home.length - 1];
             const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
             const relativeTime = moment(tweet.created_at).fromNow();
             const $timeInfo = $('<span class="time"></span>')
                 .text(`${relativeTime} | ${formattedTime}`)
                 .css(createTimeStampStyle());
-
+    
             $newTweet.append($user).append($message).append($timeInfo);
-            displayedTweetMessages.add(tweet.message);
+            
+            // Prepend the new tweet to the feed
             $('#tweet-feed').prepend($newTweet);
-
+            
+            // Remove the oldest tweet if we've exceeded the maximum
+            const $tweetFeed = $('#tweet-feed');
+            if ($tweetFeed.children().length > maxDisplayedTweets) {
+                $tweetFeed.children().last().remove();
+            }
+    
             updateTrendingHashtags();
         } catch (error) {
             console.error('Error in writeTweetAndDisplay:', error);
@@ -839,22 +848,50 @@ $(document).ready(() => {
       });
   }
 
-  function autoRefreshTweets() {
-      autoRefreshTimer = setTimeout(() => {
-          if (currentView === 'main') {
-              const newTweets = streams.home.slice(0, newTweetsCount);
-              const newTweetsToAdd = newTweets.filter(tweet => !displayedTweetMessages.has(tweet.message));
+  let lastDisplayedTweetIndex = 0;
 
-              newTweetsToAdd.forEach(tweet => {
-                  writeTweetAndDisplay(tweet.message, tweet.user);
-              });
+function autoRefreshTweets() {
+    console.log('autoRefreshTweets called');
 
-              const $tweetFeed = $('#tweet-feed');
-              while ($tweetFeed.children().length > maxDisplayedTweets) {
-                  $tweetFeed.children().last().remove();
-              }
-          }
-          autoRefreshTweets();
-      }, 5000);
-  }
+    autoRefreshTimer = setTimeout(() => {
+        console.log('Inside setTimeout, currentView:', currentView);
+        if (currentView === 'main') {
+            console.log('Current view is main, proceeding with refresh');
+            
+            // Get all new tweets since the last displayed tweet
+            const newTweets = streams.home.slice(lastDisplayedTweetIndex);
+            console.log('New tweets:', newTweets);
+
+            // Display only unique tweets
+            const uniqueTweets = [];
+            const seenMessages = new Set();
+
+            for (const tweet of newTweets) {
+                if (!seenMessages.has(tweet.message)) {
+                    uniqueTweets.push(tweet);
+                    seenMessages.add(tweet.message);
+                }
+            }
+
+            console.log('Unique tweets to add:', uniqueTweets);
+
+            uniqueTweets.forEach(tweet => {
+                console.log('Adding tweet:', tweet);
+                writeTweetAndDisplay(tweet.message, tweet.user);
+            });
+
+            // Update the last displayed tweet index
+            lastDisplayedTweetIndex = streams.home.length;
+
+            // Remove excess tweets from the display
+            const $tweetFeed = $('#tweet-feed');
+            while ($tweetFeed.children().length > maxDisplayedTweets) {
+                $tweetFeed.children().last().remove();
+            }
+        } else {
+            console.log('Current view is not main, skipping refresh');
+        }
+        autoRefreshTweets();
+    }, 5000);
+}
 });
