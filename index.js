@@ -24,18 +24,38 @@ const globalStyles = `
 `;
 $('head').append(globalStyles);
 
-
+$('head').append(`
+  <style>
+      #tweet-feed::-webkit-scrollbar {
+          display: none;
+      }
+  </style>
+`);
 
 // Tweet styles
-const createTweetStyle = () => ({
-  background: 'rgba(255, 255, 255, 0.1)',
-  border: '1px solid rgba(255, 255, 255, 0.2)',
-  backdropFilter: 'blur(10px)',
-  borderRadius: '10px',
-  padding: '10px',
-  marginBottom: '15px',
-  color: '#fff'
-});
+function createTweetStyle() {
+  return {
+      background: 'rgba(255, 255, 255, 0.05)', 
+      backdropFilter: 'blur(5px)',
+        WebkitBackdropFilter: 'blur(5px)',
+        borderRadius: '10px',
+        padding: '15px',
+        marginBottom: '15px',
+        color: '#fff',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.3s ease'
+  };
+}
+
+
+function createTimeStampStyle() {
+  return {
+      fontSize: '0.8em',
+      color: 'rgba(0, 255, 255, 0.7)',
+      textShadow: '0 0 3px rgba(0, 0, 0, 0.8)'
+  };
+}
 
 // Apply tweet hover effect
 $(document).on('mouseenter', '.tweet', function() {
@@ -63,7 +83,18 @@ const $contentWrapper = $('<div id="content-wrapper"></div>').css({
     width: '100%',
     boxSizing: 'border-box',
     padding: '20px',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    backgroundColor: '#050505', // Darker base color
+    backgroundImage: `
+        linear-gradient(30deg, #0a0a0a 12%, transparent 12.5%, transparent 87%, #0a0a0a 87.5%, #0a0a0a),
+        linear-gradient(150deg, #0a0a0a 12%, transparent 12.5%, transparent 87%, #0a0a0a 87.5%, #0a0a0a),
+        linear-gradient(30deg, #0a0a0a 12%, transparent 12.5%, transparent 87%, #0a0a0a 87.5%, #0a0a0a),
+        linear-gradient(150deg, #0a0a0a 12%, transparent 12.5%, transparent 87%, #0a0a0a 87.5%, #0a0a0a),
+        linear-gradient(60deg, #15151580 25%, transparent 25.5%, transparent 75%, #15151580 75%, #15151580),
+        linear-gradient(60deg, #15151580 25%, transparent 25.5%, transparent 75%, #15151580 75%, #15151580)
+    `,
+    backgroundSize: '80px 140px',
+    backgroundPosition: '0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px'
 });
 
 const $titleContainer = $('<div id="title-container"></div>').css({
@@ -74,7 +105,7 @@ const $titleContainer = $('<div id="title-container"></div>').css({
 const $title = $('<h1>Twiddler!</h1>').css({
   fontFamily: 'Orbitron, sans-serif',
     color: '#00FFFF',
-    textShadow: '0 0 10px rgba(0, 255, 255, 0.7), 0 0 20px rgba(0, 255, 255, 0.5)',
+    textShadow: '0 0 10px rgba(0, 255, 255, 0.7), 0 0 20px rgba(0, 255, 255, 0.5), 0 0 30px rgba(138, 43, 226, 0.3)',
     margin: '0 0 20px 0',
     fontSize: '2.5em',
     textAlign: 'center'
@@ -91,23 +122,17 @@ const $sidebarWrapper = $('<div id="sidebar-wrapper"></div>').css({
 
 // Create the sidebar container
 const $sidebar = $('<div id="sidebar"></div>').css({
-  // flexBasis: '25%',                   // Sidebar width
   flex: '1',
-    backgroundColor: 'rgba(10, 10, 10, 0.8)',
-    backgroundImage: `
-        linear-gradient(30deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
-        linear-gradient(150deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
-        linear-gradient(30deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
-        linear-gradient(150deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111)
-    `,
-    backgroundSize: '40px 70px',
-    padding: '20px',
-    borderRadius: '15px',
-    boxShadow: '0 0 15px rgba(0, 255, 255, 0.2)',
-    overflowY: 'auto',
-    color: '#fff',
-    boxSizing: 'border-box',
-    border: '1px solid rgba(0, 255, 255, 0.1)'
+  backgroundColor: 'rgba(20, 20, 20, 0.4)', // Match tweet feed background
+  backdropFilter: 'blur(5px)',
+  WebkitBackdropFilter: 'blur(5px)',
+  padding: '20px',
+  borderRadius: '15px',
+  boxShadow: '0 0 15px rgba(0, 255, 255, 0.2)', // Add cyan glow
+  overflowY: 'auto',
+  color: '#fff',
+  boxSizing: 'border-box',
+  border: '1px solid rgba(0, 255, 255, 0.1)' // Add subtle cyan border
 });
 
 // Append title and sidebar to the sidebar wrapper
@@ -115,14 +140,14 @@ $sidebarWrapper.append($titleContainer).append($sidebar);
 
 // Add title for the sidebar
 const $sidebarTitle = $('<h2>Trending Hashtags</h2>').css({
-    fontFamily: 'Orbitron, sans-serif',
-    textAlign: 'left',
-    fontSize: '1.5em',
-    marginBottom: '20px',
-    color: '#00FFFF',
-    textShadow: '0 0 10px rgba(0, 255, 255, 0.7)',
-    borderBottom: '2px solid rgba(0, 255, 255, 0.3)',
-    paddingBottom: '10px'
+  fontFamily: 'Orbitron, sans-serif',
+  textAlign: 'left',
+  fontSize: '1.5em',
+  marginBottom: '20px',
+  color: '#00FFFF',
+  textShadow: '0 0 10px rgba(0, 255, 255, 0.7)',
+  borderBottom: '2px solid rgba(0, 255, 255, 0.3)',
+  paddingBottom: '10px'
 });
 
 // Add a list for trending hashtags
@@ -157,40 +182,30 @@ return;
 
 // Display the hashtag's tweets
 hashtagTweets.forEach((tweet) => {
-const $tweetDiv = $('<div class="tweet"></div>').css({
-border: '1px solid #ddd',
-margin: '10px',
-padding: '10px',
-borderRadius: '5px',
-textAlign: 'left',
+  const $tweetDiv = $('<div class="tweet"></div>').css(createTweetStyle());
+
+  const $user = $(`<span class="user">@${tweet.user}</span>`).css({
+      fontWeight: 'bold',
+      cursor: 'pointer',
+      color: '#00FFFF',
+      textShadow: '0 0 5px rgba(0, 255, 255, 0.7), 0 0 10px rgba(0, 0, 0, 0.9)'
+  });
+
+  const $message = $('<p></p>').html(processMessage(tweet.message)).css({
+      margin: '10px 0',
+      color: '#FFFFFF',
+      textShadow: '0 0 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.6)'
+  });
+
+  const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
+  const relativeTime = moment(tweet.created_at).fromNow();
+  const $timeInfo = $('<span class="time"></span>')
+      .text(`${relativeTime} | ${formattedTime}`)
+      .css(createTimeStampStyle());
+
+  $tweetDiv.append($user).append($message).append($timeInfo);
+  $('#tweet-feed').prepend($tweetDiv);
 });
-
-const $user = $(`<span class="user">@${tweet.user}</span>`).css({
-fontWeight: 'bold',
-cursor: 'pointer',
-color: '#00FFFF', // Neon blue for usernames
-});
-
-// Create a message element to hold the tweet's message
-const $message = $('<p></p>').html(processMessage(tweet.message)).css({
-margin: '5px 0'
-});
-
-const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
-const relativeTime = moment(tweet.created_at).fromNow();
-const $timeInfo = $('<span class="time"></span>')
-.text(`${relativeTime} | ${formattedTime}`)
-.css({
-  fontSize: '0.8em',
-  color: 'gray',
-});
-
-// Append user, message, and time to the tweet div
-$tweetDiv.append($user).append($message).append($timeInfo);
-$('#tweet-feed').prepend($tweetDiv);
-});
-
-
 }
 
 // Function to load trending hashtags
@@ -267,23 +282,17 @@ function updateTrendingHashtags() {
     flexBasis: '70%',
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: '#0a0a0a', // Very dark background
-    backgroundImage: `
-        linear-gradient(30deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
-        linear-gradient(150deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
-        linear-gradient(30deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
-        linear-gradient(150deg, #111 12%, transparent 12.5%, transparent 87%, #111 87.5%, #111),
-        linear-gradient(60deg, #22222280 25%, transparent 25.5%, transparent 75%, #22222280 75%, #22222280),
-        linear-gradient(60deg, #22222280 25%, transparent 25.5%, transparent 75%, #22222280 75%, #22222280)
-    `,
-    backgroundSize: '80px 140px',
-    backgroundPosition: '0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px',
+    backgroundColor: 'transparent', // Completely transparent
+    backdropFilter: 'none', // Remove any backdrop filter
+    WebkitBackdropFilter: 'none', // Remove for Safari support
     borderRadius: '20px',
     padding: '30px',
     boxSizing: 'border-box',
     overflow: 'hidden',
-    boxShadow: '0 0 20px rgba(0, 255, 255, 0.2)'
-  });
+    boxShadow: 'none', // Remove any shadow
+    border: 'none' // Remove any border
+     
+});
 
   const $tweetFeedWrapper = $('<div id="tweet-feed-wrapper"></div>').css({
     flex: '1 1 auto',
@@ -300,18 +309,20 @@ function updateTrendingHashtags() {
 });
 
 const $tweetFeed = $('<div id="tweet-feed"></div>').css({
-  flex: '1',
-  overflowY: 'auto',
-  padding: '20px',
-  paddingRight: '32px', 
-  backgroundColor: 'rgba(10, 10, 10, 0.6)',
-  backdropFilter: 'blur(5px)',
-  WebkitBackdropFilter: 'blur(5px)',
-  boxSizing: 'border-box',
-  height: '100%',
-  scrollbarWidth: 'none',
-  msOverflowStyle: 'none'  
+    flex: '1 1 auto',
+    overflowY: 'scroll',
+    padding: '20px',
+    backgroundColor: 'rgba(20, 20, 20, 0.4)', // Darker, similar to tweet controls
+    backdropFilter: 'blur(5px)',
+    WebkitBackdropFilter: 'blur(5px)',
+    borderRadius: '15px',
+    boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)', // Subtle shadow
+    border: '1px solid rgba(255, 255, 255, 0.1)', // Subtle border
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none'
 });
+
+$tweetFeedWrapper.append($tweetFeed);
 
 // Add a style tag to hide webkit scrollbar
 $('head').append(`
@@ -322,29 +333,29 @@ $('head').append(`
   </style>
 `);
 
-const $customScrollbar = $('<div id="custom-scrollbar"></div>').css({
-  position: 'absolute',
-  right: '0',
-  top: '0',
-  width: '12px',
-  height: '100%',
-  backgroundColor: 'rgba(0, 0, 0, 0.3)',
-  borderRadius: '6px'
-});
+// const $customScrollbar = $('<div id="custom-scrollbar"></div>').css({
+//   position: 'absolute',
+//   right: '0',
+//   top: '0',
+//   width: '12px',
+//   height: '100%',
+//   backgroundColor: 'rgba(0, 0, 0, 0.3)',
+//   borderRadius: '6px'
+// });
 
-const $customScrollbarThumb = $('<div id="custom-scrollbar-thumb"></div>').css({
-  position: 'absolute',
-  width: '100%',
-  background: 'linear-gradient(to bottom, #00FFFF, #FF1493)',
-  borderRadius: '6px',
-  cursor: 'pointer',
-  transition: 'background 0.3s'
-});
+// const $customScrollbarThumb = $('<div id="custom-scrollbar-thumb"></div>').css({
+//   position: 'absolute',
+//   width: '100%',
+//   background: 'linear-gradient(to bottom, #00FFFF, #FF1493)',
+//   borderRadius: '6px',
+//   cursor: 'pointer',
+//   transition: 'background 0.3s'
+// });
 
-$customScrollbarThumb.hover(
-  function() { $(this).css('background', 'linear-gradient(to bottom, #FF1493, #00FFFF)'); },
-  function() { $(this).css('background', 'linear-gradient(to bottom, #00FFFF, #FF1493)'); }
-);
+// $customScrollbarThumb.hover(
+//   function() { $(this).css('background', 'linear-gradient(to bottom, #FF1493, #00FFFF)'); },
+//   function() { $(this).css('background', 'linear-gradient(to bottom, #00FFFF, #FF1493)'); }
+// );
 
 //Create a div to hold tweet controls
 const $tweetControls = $('<div id="tweet-controls"></div>').css({ 
@@ -359,49 +370,49 @@ const $tweetControls = $('<div id="tweet-controls"></div>').css({
   border: '1px solid rgba(0, 255, 255, 0.1)'
 });
 
-$customScrollbar.append($customScrollbarThumb);
-$tweetFeedWrapper.append($tweetFeed).append($customScrollbar);
+// $customScrollbar.append($customScrollbarThumb);
 $container.append($tweetFeedWrapper).append($tweetControls);
 
 // Custom scrollbar functionality
-$tweetFeed.on('scroll', function() {
-  const scrollPercentage = ($(this).scrollTop() / (this[0].scrollHeight - $(this).height())) * 100;
-  const thumbHeight = ($(this).height() / this[0].scrollHeight) * 100;
-  const thumbPosition = (scrollPercentage / 100) * ($(this).height() - thumbHeight);
+// $tweetFeed.on('scroll', function() {
+//   const scrollPercentage = ($(this).scrollTop() / (this[0].scrollHeight - $(this).height())) * 100;
+//   const thumbHeight = ($(this).height() / this[0].scrollHeight) * 100;
   
-  $customScrollbarThumb.css({
-      height: `${thumbHeight}%`,
-      top: `${thumbPosition}px`
-  });
-});
+//   $customScrollbarThumb.css({
+//       height: `${thumbHeight}%`,
+//       top: `${thumbPosition}px`
+//   });
+
 
 // Make the custom scrollbar draggable
-let isScrollbarDragging = false;
-let scrollbarStartY;
-let scrollbarStartScrollTop;
+// let isScrollbarDragging = false;
+// let scrollbarStartY;
+// let scrollbarStartScrollTop;
 
-$customScrollbarThumb.on('mousedown', function(e) {
-  isScrollbarDragging = true;
-  scrollbarStartY = e.clientY - $customScrollbarThumb.position().top;
-  scrollbarStartScrollTop = $tweetFeed.scrollTop();
-  $('body').css('user-select', 'none');
-});
+// $customScrollbarThumb.on('mousedown', function(e) {
+//   isScrollbarDragging = true;
+//   scrollbarStartY = e.clientY - $customScrollbarThumb.position().top;
+//   scrollbarStartScrollTop = $tweetFeed.scrollTop();
+//   $('body').css('user-select', 'none');
+// });
 
-$(document).on('mousemove', function(e) {
-  if (!isScrollbarDragging) return;
-  const y = e.clientY - $customScrollbar.offset().top;
-  const percentage = y / $customScrollbar.height();
-  $tweetFeed.scrollTop(percentage * ($tweetFeed[0].scrollHeight - $tweetFeed.height()));
-}).on('mouseup', function() {
-  isScrollbarDragging = false;
-  $('body').css('user-select', '');
-});
+// $(document).on('mousemove', function(e) {
+//   if (!isScrollbarDragging) return;
+//   const y = e.clientY - $customScrollbar.offset().top;
+//   const percentage = y / $customScrollbar.height();
+//   $tweetFeed.scrollTop(percentage * ($tweetFeed[0].scrollHeight - $tweetFeed.height()));
+// }).on('mouseup', function() {
+//   isScrollbarDragging = false;
+//   $('body').css('user-select', '');
+// });
  
-  $('body').css({
-    backgroundColor: '#050505',
-    color: '#fff',
-    fontFamily: 'Roboto, sans-serif'
-});
+//   $('body').css({
+//     backgroundColor: '#050505',
+//     color: '#fff',
+//     fontFamily: 'Roboto, sans-serif',
+//     margin: 0,
+//     padding: 0
+// });
   
   //create a username input field
   const $usernameInput = $('<input id="username-input" placeholder="Enter your username" />').css({
@@ -464,7 +475,7 @@ $usernameInput.add($tweetInput).on('focus', function() {
 }).hover(
     function() {
         $(this).css({
-            backgroundColor: 'rgba(0, 255, 255, 0.4)',
+            backgroundColor: 'rgba(0, 255, 255, 0.2)',
             boxShadow: '0 0 15px rgba(0, 255, 255, 0.5)'
         });
     },
@@ -648,7 +659,7 @@ $tweetControls.append($usernameInput).append($tweetInput).append($buttonContaine
     // Create a clickable user element and bind a click event to show the user's timeline
     const $user = $(`<span class="user">@${tweet.user}</span>`).css({
       fontWeight: 'bold',
-      cursor: 'pointer'
+      cursor: 'pointer',
     }).on('click', () => {
       showUserTimeline(tweet.user); // Call the function to show the user's timeline
     });
@@ -696,10 +707,8 @@ $tweetControls.append($usernameInput).append($tweetInput).append($buttonContaine
   function createTweets(additionalTweets = []) {
     console.log('Creating tweets. Current view:', currentView);
     $('#return-button').hide();
-
     const allTweets = streams.home.slice().reverse();
     const tweetsToDisplay = allTweets.slice(0, maxDisplayedTweets);
-
     $('#tweet-feed').empty();
 
     tweetsToDisplay.forEach((tweet) => {
@@ -717,17 +726,12 @@ $tweetControls.append($usernameInput).append($tweetInput).append($buttonContaine
 $tweetDiv.hover(
   function() {
       $(this).css({
-        backgroundColor: 'rgba(30, 30, 30, 0.6)',
-        boxShadow: '0 0 20px rgba(0, 255, 255, 0.3)',
-        transform: 'translateY(-2px)'
+        background: 'rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 4px 20px rgba(0, 255, 255, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.15)'
       });
   },
   function() {
-      $(this).css({
-        backgroundColor: 'rgba(20, 20, 20, 0.4)',
-        boxShadow: '0 0 10px rgba(0, 255, 255, 0.1)',
-        transform: 'translateY(0)'
-      });
+      $(this).css(createTweetStyle());
   }
 );
 
@@ -754,11 +758,7 @@ $tweetDiv.hover(
 
         const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
         const relativeTime = moment(tweet.created_at).fromNow();
-        const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css({
-            fontSize: '0.8em',
-            color: 'rgba(0, 255, 255, 0.7)',
-            textShadow: '0 0 3px rgba(0, 0, 0, 0.8)'
-        });
+        const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css(createTimeStampStyle());
 
         $tweetDiv.append($user).append($message).append($timeInfo);
         $('#tweet-feed').append($tweetDiv);
@@ -766,7 +766,7 @@ $tweetDiv.hover(
 
     displayedTweetMessages.clear();
     tweetsToDisplay.forEach(tweet => {
-        displayedTweetMessages.add(tweet.message);
+    displayedTweetMessages.add(tweet.message);
     });
 
     updateTrendingHashtags();
@@ -789,64 +789,54 @@ $tweetDiv.hover(
       $('#tweet-feed').html('<p>No tweets available for this user.</p>');
       return;
     }
-
-  
     // Display the user's tweets
     userTweets.forEach((tweet) => {
-      // Create tweet styling
-      const $tweetDiv = $('<div class="tweet"></div>').css({
-        border: '1px solid #ddd',
-        margin: '10px',
-        padding: '10px',
-        borderRadius: '5px',
-        textAlign: 'left',
+      const $tweetDiv = $('<div class="tweet"></div>').css(createTweetStyle());
+
+      const $message = $('<p></p>').html(processMessage(tweet.message)).css({
+          margin: '10px 0',
+          color: '#FFFFFF',
+          textShadow: '0 0 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.6)'
       });
 
-      //format the actual time and human-friendly time
       const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
       const relativeTime = moment(tweet.created_at).fromNow();
-      const $timeInfo = $('<span class="time"></span>').text(`${relativeTime} | ${formattedTime}`).css({
-        fontSize: '0.8em',
-        color: 'gray',
-      });
+      const $timeInfo = $('<span class="time"></span>')
+          .text(`${relativeTime} | ${formattedTime}`)
+          .css(createTimeStampStyle());
 
-      //create a message element to hold the tweet's message
-      const $message = $('<p></p>').text(tweet.message).css({
-        margin: '5px 0'
-      });
-
-      //append user, message, and time to the tweet div
       $tweetDiv.append($message).append($timeInfo);
-      //prepend the newly created tweet to the tweet feed
       $('#tweet-feed').prepend($tweetDiv);
-    });
-  }
+  });
+}
 
   let currentView = 'main'
   let autoRefreshTimer;
 
   const autoRefreshTweets = () => {
     console.log('Auto-refreshing. Current view:', currentView);
-    clearTimeout(autoRefreshTimer); // Clear any existing timer
+    clearTimeout(autoRefreshTimer);
 
     if (currentView === 'main') {
-    const newTweets = [];
-    for (let i = 0; i < newTweetsCount; i++) {
-      generateRandomTweet();
-      newTweets.push(streams.home[streams.home.length - 1]);
+        for (let i = 0; i < newTweetsCount; i++) {
+            generateRandomTweet();
+        }
+
+        createTweets();
+        updateTrendingHashtags();
     }
-    createTweets(newTweets);
-  }
-  autoRefreshTimer = setTimeout(autoRefreshTweets, 10000);
+
+    autoRefreshTimer = setTimeout(autoRefreshTweets, 10000); // Refresh every 10 seconds
 };
 
 // Create main content wrapper
 const $mainContentWrapper = $('<div id="main-content-wrapper"></div>').css({
   display: 'flex',
   justifyContent: 'space-between',
-  flex: 1,
+  flex: '1 1 auto',
   height: '100%',
-  overflow: 'hidden'
+  overflow: 'hidden',
+  backgroundColor: 'transparent' 
 });
 
 // Append sidebar and container to main content wrapper
@@ -864,28 +854,3 @@ createTweets();
 autoRefreshTweets(); // Start auto-refresh
 
 });
-  
-
-  // const $tweets = streams.home.map((tweet) => {
-  //   const $tweet = $('<div></div>');
-  //   const text = `@${tweet.user}: ${tweet.message}`;
-
-  //   $tweet.text(text);
-
-  //   return $tweet;
-  // });
-  // $body.append($tweets);
-
-
-
-//create a tweets div
-//streams.home is an array of tweets
-//console.log streams.home -> constantly new tweets(?) are being added to streams.home because of data-generator.js
-//will need the actual time (moment - format dates) and the human friendly time (moment - relative time)
-  //google cdn moment -> we're using jQuery so add script tag to head of html file and paste in link from the google search of cdn moment
-//everything should be done in jQuery even styling
-//all tweets are being put into body - suggests having tweets go into a separate div (instead of appending to body, add a tweets div)
-//inside function createTweets():
-  //tweet.user will need to be clickable -> out in own tag
-  //add timestamp
-  //const test will change
