@@ -217,6 +217,7 @@ $(document).ready(() => {
           padding: 0,
           margin: 0
       });
+      
 
       $sidebar.append($sidebarTitle).append($trendingList);
       loadTrendingHashtags($trendingList);
@@ -331,32 +332,43 @@ $(document).ready(() => {
     }
 
     function createButtonContainer() {
-        const $buttonContainer = $('<div></div>').css({
-            display: 'flex',
-            justifyContent: 'space-between'
-        });
-
-        const $emojiButton = $('<button id="emoji-button">😀</button>').css({
-            padding: '10px 20px',
-            backgroundColor: 'rgba(0, 255, 255, 0.2)',
-            border: '1px solid rgba(0, 255, 255, 0.5)',
-            borderRadius: '5px',
-            color: '#00FFFF',
-            fontSize: '16px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            outline: 'none',
-            textShadow: '0 0 5px rgba(0, 255, 255, 0.7)'
-        });
-
-        const $tweetButton = $('<button id="tweet-button">Tweet</button>');
-        const $returnButton = $('<button id="return-button">Return to All Tweets</button>');
-
-        $buttonContainer.append($emojiButton).append($tweetButton).append($returnButton);
-
-        return $buttonContainer;
-    }
+      const $buttonContainer = $('<div></div>').css({
+          display: 'flex',
+          justifyContent: 'space-between'
+      });
+  
+      const $leftButtonGroup = $('<div></div>').css({
+          display: 'flex',
+          gap: '10px'  // This adds space between the Tweet and Emoji buttons
+      });
+  
+      const $tweetButton = $('<button id="tweet-button">Tweet</button>').css({
+          // Add any specific styles for the tweet button here
+      });
+  
+      const $emojiButton = $('<button id="emoji-button">😀</button>').css({
+          padding: '10px 20px',
+          backgroundColor: 'rgba(0, 255, 255, 0.2)',
+          border: '1px solid rgba(0, 255, 255, 0.5)',
+          borderRadius: '5px',
+          color: '#00FFFF',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease',
+          outline: 'none',
+          textShadow: '0 0 5px rgba(0, 255, 255, 0.7)'
+      });
+  
+      const $returnButton = $('<button id="return-button">Return to All Tweets</button>').css({
+          // Add any specific styles for the return button here
+      });
+  
+      $leftButtonGroup.append($tweetButton).append($emojiButton);
+      $buttonContainer.append($leftButtonGroup).append($returnButton);
+  
+      return $buttonContainer;
+  }
 
     function initializeEventListeners() {
         initializeEmojiPicker();
