@@ -157,11 +157,15 @@ $(document).ready(() => {
   }
 
   function createSidebarWrapper() {
+    const leftMargin = '30px';
+    const bottomMargin = '30px';
     const $sidebarWrapper = $('<div id="sidebar-wrapper"></div>').css({
         display: 'flex',
         flexDirection: 'column',
-        flexBasis: '25%',
-        marginRight: '20px'
+        flexBasis: '20%',
+        marginRight: '10px',
+        marginLeft: leftMargin,
+        marginBottom: bottomMargin,
     });
 
     const $titleContainer = $('<div id="title-container"></div>').css({
@@ -351,11 +355,13 @@ $(document).ready(() => {
           backgroundColor: 'rgba(30, 30, 30, 0.6)',
           border: '1px solid rgba(0, 255, 255, 0.3)',
             borderRadius: '5px',
-            color: '#fff',
+            color: '#ffffff',
             fontSize: '14px',
             resize: 'vertical',
             minHeight: '60px',
-            outline: 'none'
+            outline: 'none',
+            caretColor: '#00FFFF',
+            textShadow: '0 0 2px rgba(255, 255, 255, 0.5)'
         });
     }
 
@@ -371,8 +377,23 @@ $(document).ready(() => {
       });
   
       const $tweetButton = $('<button id="tweet-button">Tweet</button>').css({
-          // Add any specific styles for the tweet button here
-      });
+        padding: '8px 16px',
+        backgroundColor: 'rgba(0, 255, 255, 0.3)', // More transparent cyan
+        color: '#ffffff',
+        border: '1px solid rgba(0, 255, 255, 0.5)',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        transition: 'all 0.3s ease'
+    }).hover(
+        function() {
+            $(this).css('backgroundColor', 'rgba(0, 255, 255, 0.5)'); // Slightly less transparent on hover
+        },
+        function() {
+            $(this).css('backgroundColor', 'rgba(0, 255, 255, 0.3)'); // Back to original transparency
+        }
+    );
   
       const $emojiButton = $('<button id="emoji-button">😀</button>').css({
           padding: '10px 20px',
