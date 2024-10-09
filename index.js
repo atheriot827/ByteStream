@@ -11,6 +11,8 @@ $(document).ready(() => {
   // Initialize the page
   initializeStyles();
   createLayout();
+  createSidebar();
+  updateTrendingReactions();
   initializeEventListeners();
   currentView = 'main';
   createTweets();
@@ -247,28 +249,41 @@ $(document).ready(() => {
           border: '1px solid rgba(0, 255, 255, 0.01)'
       });
 
-      const $sidebarTitle = $('<h2>Trending Hashtags</h2>').css({
-          fontFamily: 'Orbitron, sans-serif',
-          textAlign: 'left',
-          fontSize: '1.5em',
-          marginBottom: '20px',
-          color: '#00FFFF',
-          textShadow: '0 0 10px rgba(0, 255, 255, 0.7)',
-          borderBottom: '2px solid rgba(0, 255, 255, 0.3)',
-          paddingBottom: '10px'
-      });
+      // Add trending reactions section
+    const $trendingReactionsTitle = $('<h2>Trending Reactions</h2>').css({
+        fontFamily: 'Orbitron, sans-serif',
+        textAlign: 'left',
+        fontSize: '1.5em',
+        marginBottom: '20px',
+        color: '#00FFFF',
+        textShadow: '0 0 10px rgba(0, 255, 255, 0.7)',
+        borderBottom: '2px solid rgba(0, 255, 255, 0.3)',
+        paddingBottom: '10px'
+    });
+    const $trendingReactions = $('<div id="trending-reactions"></div>');
+    $sidebar.append($trendingReactionsTitle).append($trendingReactions);
 
-      const $trendingList = $('<ul id="trending-list"></ul>').css({
-          listStyle: 'none',
-          padding: 0,
-          margin: 0
-      });
-      
+    // Add trending hashtags section
+    const $trendingHashtagsTitle = $('<h2>Trending Hashtags</h2>').css({
+        fontFamily: 'Orbitron, sans-serif',
+        textAlign: 'left',
+        fontSize: '1.5em',
+        marginTop: '30px',
+        marginBottom: '20px',
+        color: '#00FFFF',
+        textShadow: '0 0 10px rgba(0, 255, 255, 0.7)',
+        borderBottom: '2px solid rgba(0, 255, 255, 0.3)',
+        paddingBottom: '10px'
+    });
+    const $trendingList = $('<ul id="trending-list"></ul>').css({
+        listStyle: 'none',
+        padding: 0,
+        margin: 0
+    });
+    $sidebar.append($trendingHashtagsTitle).append($trendingList);
 
-      $sidebar.append($sidebarTitle).append($trendingList);
-      loadTrendingHashtags($trendingList);
-
-      return $sidebar;
+    loadTrendingHashtags($trendingList);
+    return $sidebar;
   }
 
   //add feature to side bar showing top reactions
@@ -285,21 +300,7 @@ $(document).ready(() => {
 }
 
 function updateTrendingReactions() {
-    let $trendingReactions = $('#trending-reactions');
-    if ($trendingReactions.length === 0) {
-        // If the trending reactions section doesn't exist, create it
-        const $sidebarTitle = $('<h3>Trending Reactions</h3>').css({
-            fontFamily: 'Orbitron, sans-serif',
-            fontSize: '1.2em',
-            marginTop: '20px',
-            marginBottom: '10px',
-            color: '#00FFFF',
-            textShadow: '0 0 5px rgba(0, 255, 255, 0.7)'
-        });
-        $trendingReactions = $('<div id="trending-reactions"></div>');
-        $('#sidebar').append($sidebarTitle).append($trendingReactions);
-    }
-
+    const $trendingReactions = $('#trending-reactions');
     const topReactions = getTopReactions();
     $trendingReactions.empty();
 
