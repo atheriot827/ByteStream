@@ -106,6 +106,20 @@ $(document).ready(() => {
                   box-shadow: 0 0 20px rgba(255, 20, 147, 0.2), 0 0 40px rgba(255, 20, 147, 0.1), inset 0 0 30px rgba(255, 20, 147, 0.1);
                   border: 1px solid rgba(255, 20, 147, 0.3);
               }
+                .prop('type', 'text/css')
+                .html('\
+                @keyframes neonGlow {\
+                    0% {\
+                        box-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF, 0 0 15px #00FFFF, 0 0 20px #00FFFF;\
+                            }\
+                                50% {\
+                                    box-shadow: 0 0 10px #00FFFF, 0 0 20px #00FFFF, 0 0 30px #00FFFF, 0 0 40px #00FFFF;\
+                                }\
+                        100% {\
+                    box-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF, 0 0 15px #00FFFF, 0 0 20px #00FFFF;\
+                }\
+            }\
+        ')  
           </style>
       `;
       $('head').append(globalStyles);
@@ -590,10 +604,10 @@ $(document).ready(() => {
             borderRadius: '10px',
             padding: '15px',
             marginBottom: '15px',
-            color: '#fff',
+            color: 'FF1493',
             border: '1px solid rgba(255, 255, 255, 0.1)',
             boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-            transition: 'all 0.3s ease'
+            animation: 'neonGlow 2s infinite',
         };
     }
 
