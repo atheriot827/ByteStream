@@ -248,6 +248,46 @@ $(document).ready(() => {
           border: '1px solid rgba(0, 255, 255, 0.05)'
       });
 
+      // Create the celebration button
+    const $celebrateButton = $('<button id="celebrate-button">Byte-sized Fun!</button>').css({
+        fontFamily: 'Orbitron, sans-serif',
+        width: '100%',
+        padding: '10px',
+        marginBottom: '25px',
+        backgroundColor: 'rgba(255, 20, 147, 0.1)', 
+        color: '#ffffff',
+        border: '1px solid rgba(255, 20, 147, 0.5)',
+        borderRadius: '5px',
+        fontSize: '16px',
+        fontWeight: 'bold',
+        cursor: 'pointer',
+        transition: 'all 0.3s ease',
+        boxShadow: '0 0 10px rgba(255, 20, 147, 0.9)',
+        textShadow: '0 0 5px rgba(255, 255, 255, 0.5)'
+    });
+
+    // Add hover effect
+    $celebrateButton.hover(
+        function() {
+            $(this).css({
+                backgroundColor: 'rgba(255, 20, 147, 1)',
+                boxShadow: '0 0 15px rgba(255, 20, 147, 0.8)'
+            });
+        },
+        function() {
+            $(this).css({
+                backgroundColor: 'rgba(255, 20, 147, 0.1)',
+                boxShadow: '0 0 10px rgba(255, 20, 147, 0.5)'
+            });
+        }
+    );
+
+    // Add click event for confetti
+    $celebrateButton.on('click', triggerConfetti);
+
+    // Add the button to the sidebar
+    $sidebar.prepend($celebrateButton);
+
       // Add trending reactions section
     const $trendingReactionsTitle = $('<h2>Trending Reactions</h2>').css({
         fontFamily: 'Orbitron, sans-serif',
@@ -285,6 +325,16 @@ $(document).ready(() => {
     loadTrendingHashtags($trendingList);
     return $sidebar;
   }
+
+  // Confetti function
+function triggerConfetti() {
+    confetti({
+        particleCount: 300,
+        spread: 100,
+        origin: { y: 0.6 },
+        colors: ['#FF1493', '#00FFFF', '#B14AED']
+    });
+}
 
   //add feature to side bar showing top reactions
   function getTopReactions() {
