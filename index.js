@@ -105,23 +105,22 @@ $(document).ready(() => {
                   background-color: rgba(20, 20, 20, 0.6);
                   border-radius: 15px;
                   padding: 20px;
-                  box-shadow: 0 0 20px rgba(255, 20, 147, 0.2), 0 0 40px rgba(255, 20, 147, 0.1), inset 0 0 30px rgba(255, 20, 147, 0.1);
+                  box-shadow: 0 0 20px rgba(255, 20, 147, 0.5), 0 0 40px rgba(255, 20, 147, 0.5), inset 0 0 30px rgba(255, 20, 147, 0.1);
                   border: 1px solid rgba(255, 20, 147, 0.3);
               }
                 .prop('type', 'text/css')
                 .html('\
-                @keyframes neonGlow {\
-                    0% {\
-                        box-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF, 0 0 15px #00FFFF, 0 0 20px #00FFFF;\
-                            }\
-                                50% {\
-                                    box-shadow: 0 0 10px #00FFFF, 0 0 20px #00FFFF, 0 0 30px #00FFFF, 0 0 40px #00FFFF;\
-                                }\
-                        100% {\
-                    box-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF, 0 0 15px #00FFFF, 0 0 20px #00FFFF;\
-                }\
-            }\
-        ')  
+                @keyframes neonGlow {
+        0% {
+            box-shadow: 0 0 5px #FF1493, 0 0 10px #FF1493, 0 0 15px #FF1493, 0 0 20px #FF1493;
+        }
+        50% {
+            box-shadow: 0 0 10px #FF1493, 0 0 20px #FF1493, 0 0 30px #FF1493, 0 0 40px #FF1493;
+        }
+        100% {
+            box-shadow: 0 0 5px #FF1493, 0 0 10px #FF1493, 0 0 15px #FF1493, 0 0 20px #FF1493;
+        }
+    }
           </style>
       `;
       $('head').append(globalStyles);
@@ -200,8 +199,8 @@ $(document).ready(() => {
         src: 'images/bytestream-logo.svg',
         alt: 'ByteStream Logo'
     }).css({
-        width: '100%',  // Adjust this value as needed
-        maxWidth: '900px',  // Adjust this value as needed
+        width: '270px',  // Adjust this value as needed
+        maxWidth: '1200px',  // Adjust this value as needed
         height: 'auto',
         display: 'block'
     });
@@ -242,11 +241,11 @@ $(document).ready(() => {
           WebkitBackdropFilter: 'blur(5px)',
           padding: '20px',
           borderRadius: '15px',
-          boxShadow: '0 0 15px rgba(0, 255, 255, 0.2)',
+          boxShadow: '0 0 15px rgba(0, 255, 255, 0.5)',
           overflowY: 'auto',
           color: '#fff',
           boxSizing: 'border-box',
-          border: '1px solid rgba(0, 255, 255, 0.01)'
+          border: '1px solid rgba(0, 255, 255, 0.05)'
       });
 
       // Add trending reactions section
@@ -256,10 +255,11 @@ $(document).ready(() => {
         fontSize: '1.5em',
         marginBottom: '20px',
         color: '#00FFFF',
-        textShadow: '0 0 10px rgba(0, 255, 255, 0.7)',
+        textShadow: '0 0 10px rgba(0, 255, 255, 0.9)',
         borderBottom: '2px solid rgba(0, 255, 255, 0.3)',
         paddingBottom: '10px'
-    });
+    })
+
     const $trendingReactions = $('<div id="trending-reactions"></div>');
     $sidebar.append($trendingReactionsTitle).append($trendingReactions);
 
@@ -271,7 +271,7 @@ $(document).ready(() => {
         marginTop: '30px',
         marginBottom: '20px',
         color: '#00FFFF',
-        textShadow: '0 0 10px rgba(0, 255, 255, 0.7)',
+        textShadow: '0 0 10px rgba(0, 255, 255, 0.9)',
         borderBottom: '2px solid rgba(0, 255, 255, 0.3)',
         paddingBottom: '10px'
     });
@@ -358,10 +358,10 @@ function updateTrendingReactions() {
           flex: '1 1 auto',
           position: 'relative',
           overflow: 'hidden',
-          marginBottom: '20px',
+          marginBottom: '15px',
           borderRadius: '15px',
           border: '1px solid rgba(0, 255, 255, 0.1)',
-          boxShadow: '0 0 15px rgba(0, 255, 255, 0.2)',
+          boxShadow: '0 0 15px rgba(0, 255, 255, 0.5)',
           height: '400px',
           display: 'flex',
           flexDirection: 'column',
@@ -376,7 +376,7 @@ function updateTrendingReactions() {
           backdropFilter: 'blur(5px)',
           WebkitBackdropFilter: 'blur(5px)',
           borderRadius: '15px',
-          boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
+          boxShadow: '0 4px 30px rgba(0, 0, 0, 0.5)',
           border: '1px solid rgba(255, 255, 255, 0.1)',
           scrollbarWidth: 'none',
           msOverflowStyle: 'none'
@@ -396,7 +396,7 @@ function updateTrendingReactions() {
           padding: '20px',
           backgroundColor: 'rgba(20, 20, 20, 0.8)',
           borderRadius: '15px',
-          boxShadow: '0 0 15px rgba(0, 255, 255, 0.2)',
+          boxShadow: '0 0 15px rgba(0, 255, 255, 0.5)',
           border: '1px solid rgba(0, 255, 255, 0.1)'
       });
 
@@ -662,10 +662,10 @@ function updateTrendingReactions() {
             backdropFilter: 'blur(5px)',
             WebkitBackdropFilter: 'blur(5px)',
             borderRadius: '10px',
-            padding: '15px',
-            marginBottom: '15px',
-            color: 'FF1493',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            padding: '10px',
+            marginBottom: '10px',
+            color: '#00FFFF',
+            border: '1px solid rgba(0, 255, 255, 0.3)',
             boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
             animation: 'neonGlow 2s infinite',
         };
@@ -863,8 +863,8 @@ function updateTrendingReactions() {
         $tweetDiv.hover(
             function() {
                 $(this).css({
-                    boxShadow: '0 0 15px rgba(0, 255, 255, 0.3), 0 0 30px rgba(0, 255, 255, 0.1)',
-                    borderColor: 'rgba(0, 255, 255, 0.3)'
+                    boxShadow: '0 0 15px rgba(255, 20, 147, 0.3), 0 0 30px rgba(255, 20, 147, 0.1)',
+                    borderColor: 'rgba(255, 20, 147, 0.3)'
                 });
             },
             function() {
