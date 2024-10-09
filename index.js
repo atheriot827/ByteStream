@@ -271,6 +271,65 @@ $(document).ready(() => {
       return $sidebar;
   }
 
+  //add feature to side bar showing top reactions
+  function getTopReactions() {
+    const reactionCounts = {};
+    $('.reaction-button').each(function() {
+        const emoji = $(this).find('.reaction-emoji').text();
+        const count = parseInt($(this).find('.reaction-count').text());
+        reactionCounts[emoji] = (reactionCounts[emoji] || 0) + count;
+    });
+    return Object.entries(reactionCounts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);  // Get top 5 reactions
+}
+
+function updateTrendingReactions() {
+    let $trendingReactions = $('#trending-reactions');
+    if ($trendingReactions.length === 0) {
+        // If the trending reactions section doesn't exist, create it
+        const $sidebarTitle = $('<h3>Trending Reactions</h3>').css({
+            fontFamily: 'Orbitron, sans-serif',
+            fontSize: '1.2em',
+            marginTop: '20px',
+            marginBottom: '10px',
+            color: '#00FFFF',
+            textShadow: '0 0 5px rgba(0, 255, 255, 0.7)'
+        });
+        $trendingReactions = $('<div id="trending-reactions"></div>');
+        $('#sidebar').append($sidebarTitle).append($trendingReactions);
+    }
+
+    const topReactions = getTopReactions();
+    $trendingReactions.empty();
+
+    topReactions.forEach(([emoji, count]) => {
+        const $reactionItem = $(`
+            <div class="trending-reaction-item">
+                <span class="trending-reaction-emoji">${emoji}</span>
+                <span class="trending-reaction-count">${count}</span>
+            </div>
+        `).css({
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '5px 0',
+            borderBottom: '1px solid rgba(0, 255, 255, 0.2)'
+        });
+
+        $reactionItem.find('.trending-reaction-emoji').css({
+            fontSize: '18px'
+        });
+
+        $reactionItem.find('.trending-reaction-count').css({
+            color: '#00FFFF',
+            fontSize: '14px'
+        });
+
+        $trendingReactions.append($reactionItem);
+    });
+}
+
   function createContainer() {
       const $container = $('<div class="container"></div>').css({
           flexBasis: '70%',
@@ -794,6 +853,7 @@ $(document).ready(() => {
         });
     
         $tweetDiv.append($reactionContainer);
+        updateTrendingReactions();
     }
 
     function createTweetElement(tweet) {
@@ -862,6 +922,7 @@ $(document).ready(() => {
             displayedTweetMessages.add(tweet.message);
         });
         updateTrendingHashtags();
+        updateTrendingReactions();
     }
 
   function showUserTimeline(username) {
@@ -974,6 +1035,9 @@ function autoRefreshTweets() {
             // Get all new tweets since the last displayed tweet
             const newTweets = streams.home.slice(lastDisplayedTweetIndex);
             console.log('New tweets:', newTweets);
+
+            updateTrendingHashtags();
+            updateTrendingReactions();
 
             // Display only unique tweets
             const uniqueTweets = [];
