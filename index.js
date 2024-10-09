@@ -695,59 +695,157 @@ $(document).ready(() => {
         try {
             // Check if the tweet already exists in streams.home
             const existingTweet = streams.home.find(tweet => tweet.user === username && tweet.message === message);
-            
             if (!existingTweet) {
                 // If the tweet doesn't exist, write it using the provided function
                 writeTweet(message, username);
             }
-    
             // Create the tweet element
-            const $newTweet = $('<div class="tweet"></div>').css(createTweetStyle());
-            const $user = $(`<span class="user">@${username}</span>`).css({
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                color: '#00FFFF',
-                textShadow: '0 0 5px rgba(0, 255, 255, 0.7), 0 0 10px rgba(0, 0, 0, 0.9)'
-            }).on('click', function(e) {
-                e.stopPropagation();
-                showUserTimeline(username);
-            });
-    
-            const processedMessage = processMessage(message);
-            const $message = $('<p></p>').html(processedMessage).css({
-                margin: '10px 0',
-                color: '#FFFFFF',
-                textShadow: '0 0 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.6)'
-            });
-    
-            $message.on('click', '.hashtag', function(e) {
-                e.stopPropagation();
-                const clickedHashtag = $(this).text();
-                showHashtagTimeline(clickedHashtag);
-            });
-    
             const tweet = existingTweet || streams.home[streams.home.length - 1];
-            const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
-            const relativeTime = moment(tweet.created_at).fromNow();
-            const $timeInfo = $('<span class="time"></span>')
-                .text(`${relativeTime} | ${formattedTime}`)
-                .css(createTimeStampStyle());
-    
-            $newTweet.append($user).append($message).append($timeInfo);
+            const $newTweet = createTweetElement(tweet);
             
             // Prepend the new tweet to the feed
             $('#tweet-feed').prepend($newTweet);
-            
+    
             // Remove the oldest tweet if we've exceeded the maximum
             const $tweetFeed = $('#tweet-feed');
             if ($tweetFeed.children().length > maxDisplayedTweets) {
                 $tweetFeed.children().last().remove();
             }
-    
             updateTrendingHashtags();
         } catch (error) {
             console.error('Error in writeTweetAndDisplay:', error);
         }
+    }
+
+    //create a random reaction count for each user
+    function getRandomReactions() {
+        const reactions = ['👍', '❤️', '😂', '😮', '😢', '😡'];
+        const counts = {};
+        reactions.forEach(reaction => {
+            counts[reaction] = Math.floor(Math.random() * 50);
+        });
+        return counts;
+    }
+
+    function addReactions($tweetDiv) {
+        const initialReactions = getRandomReactions();
+        const $reactionContainer = $('<div class="reaction-container"></div>').css({
+            display: 'flex',
+            justifyContent: 'flex-start',
+            flexWrap: 'wrap',
+            marginTop: '8px'  // Reduced from 10px
+        });
+    
+        Object.keys(initialReactions).forEach(reaction => {
+            const $reactionButton = $(`
+                <button class="reaction-button">
+                    <span class="reaction-emoji">${reaction}</span>
+                    <span class="reaction-count">${initialReactions[reaction]}</span>
+                </button>
+            `).css({
+                background: 'rgba(0, 255, 255, 0.1)',
+                border: '1px solid rgba(0, 255, 255, 0.3)',
+                color: '#00FFFF',
+                cursor: 'pointer',
+                fontSize: '12px',  // Reduced from 14px
+                padding: '3px 8px',  // Reduced from 5px 10px
+                borderRadius: '15px',  // Reduced from 20px
+                marginRight: '4px',  // Reduced from 5px
+                marginBottom: '4px',  // Reduced from 5px
+                display: 'flex',
+                alignItems: 'center',
+                transition: 'all 0.3s ease'
+            });
+    
+            $reactionButton.find('.reaction-emoji').css({
+                marginRight: '3px'  // Reduced from 5px
+            });
+    
+            $reactionButton.find('.reaction-count').css({
+                fontSize: '10px'  // Reduced from 12px
+            });
+    
+            $reactionButton.hover(
+                function() {
+                    $(this).css({
+                        background: 'rgba(0, 255, 255, 0.2)',
+                        boxShadow: '0 0 8px rgba(0, 255, 255, 0.3)'  // Reduced from 10px
+                    });
+                },
+                function() {
+                    $(this).css({
+                        background: 'rgba(0, 255, 255, 0.1)',
+                        boxShadow: 'none'
+                    });
+                }
+            );
+    
+            $reactionButton.on('click', function() {
+                const $countSpan = $(this).find('.reaction-count');
+                const currentCount = parseInt($countSpan.text());
+                $countSpan.text(currentCount + 1);
+                
+                // Add a quick animation effect
+                $(this).css('transform', 'scale(1.1)');
+                setTimeout(() => $(this).css('transform', 'scale(1)'), 200);
+            });
+    
+            $reactionContainer.append($reactionButton);
+        });
+    
+        $tweetDiv.append($reactionContainer);
+    }
+
+    function createTweetElement(tweet) {
+        const $tweetDiv = $('<div class="tweet"></div>').css(createTweetStyle());
+        
+        $tweetDiv.hover(
+            function() {
+                $(this).css({
+                    boxShadow: '0 0 15px rgba(0, 255, 255, 0.3), 0 0 30px rgba(0, 255, 255, 0.1)',
+                    borderColor: 'rgba(0, 255, 255, 0.3)'
+                });
+            },
+            function() {
+                $(this).css({
+                    boxShadow: '0 0 10px rgba(0, 255, 255, 0.1)',
+                    borderColor: 'rgba(0, 255, 255, 0.1)'
+                });
+            }
+        );
+    
+        const $user = $(`<span class="user">@${tweet.user}</span>`).css({
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            color: '#00FFFF',
+            textShadow: '0 0 5px rgba(0, 255, 255, 0.7), 0 0 10px rgba(0, 0, 0, 0.9)'
+        }).on('click', function(e) {
+            e.stopPropagation();
+            showUserTimeline(tweet.user);
+        });
+    
+        const $message = $('<p></p>').html(processMessage(tweet.message)).css({
+            margin: '10px 0',
+            color: '#FFFFFF',
+            textShadow: '0 0 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.6)'
+        });
+    
+        $message.on('click', '.hashtag', function(e) {
+            e.stopPropagation();
+            const hashtag = $(this).text();
+            showHashtagTimeline(hashtag);
+        });
+    
+        const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
+        const relativeTime = moment(tweet.created_at).fromNow();
+        const $timeInfo = $('<span class="time"></span>')
+            .text(`${relativeTime} | ${formattedTime}`)
+            .css(createTimeStampStyle());
+    
+        $tweetDiv.append($user).append($message).append($timeInfo);
+        addReactions($tweetDiv);
+    
+        return $tweetDiv;
     }
 
     function createTweets(additionalTweets = []) {
@@ -755,64 +853,16 @@ $(document).ready(() => {
         const allTweets = streams.home.slice().reverse();
         const tweetsToDisplay = allTweets.slice(0, maxDisplayedTweets);
         $('#tweet-feed').empty();
-
         tweetsToDisplay.forEach((tweet) => {
-            const $tweetDiv = $('<div class="tweet"></div>').css(createTweetStyle());
-
-            $tweetDiv.hover(
-                function() {
-                    $(this).css({
-                        boxShadow: '0 0 15px rgba(0, 255, 255, 0.3), 0 0 30px rgba(0, 255, 255, 0.1)',
-                        borderColor: 'rgba(0, 255, 255, 0.3)'
-                    });
-                },
-                function() {
-                    $(this).css({
-                        boxShadow: '0 0 10px rgba(0, 255, 255, 0.1)',
-                        borderColor: 'rgba(0, 255, 255, 0.1)'
-                    });
-                }
-            );
-
-            const $user = $(`<span class="user">@${tweet.user}</span>`).css({
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                color: '#00FFFF',
-                textShadow: '0 0 5px rgba(0, 255, 255, 0.7), 0 0 10px rgba(0, 0, 0, 0.9)'
-            }).on('click', function(e) {
-                e.stopPropagation();
-                showUserTimeline(tweet.user);
-            });
-
-            const $message = $('<p></p>').html(processMessage(tweet.message)).css({
-              margin: '10px 0',
-              color: '#FFFFFF',
-              textShadow: '0 0 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.6)'
-          });
-
-          $message.on('click', '.hashtag', function(e) {
-              e.stopPropagation();
-              const hashtag = $(this).text();
-              showHashtagTimeline(hashtag);
-          });
-
-          const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
-          const relativeTime = moment(tweet.created_at).fromNow();
-          const $timeInfo = $('<span class="time"></span>')
-              .text(`${relativeTime} | ${formattedTime}`)
-              .css(createTimeStampStyle());
-
-          $tweetDiv.append($user).append($message).append($timeInfo);
-          $('#tweet-feed').append($tweetDiv);
-      });
-
-      displayedTweetMessages.clear();
-      tweetsToDisplay.forEach(tweet => {
-          displayedTweetMessages.add(tweet.message);
-      });
-
-      updateTrendingHashtags();
-  }
+            const $tweetDiv = createTweetElement(tweet);
+            $('#tweet-feed').append($tweetDiv);
+        });
+        displayedTweetMessages.clear();
+        tweetsToDisplay.forEach(tweet => {
+            displayedTweetMessages.add(tweet.message);
+        });
+        updateTrendingHashtags();
+    }
 
   function showUserTimeline(username) {
       clearTimeout(autoRefreshTimer);
@@ -940,7 +990,8 @@ function autoRefreshTweets() {
 
             uniqueTweets.forEach(tweet => {
                 console.log('Adding tweet:', tweet);
-                writeTweetAndDisplay(tweet.message, tweet.user);
+                const $newTweet = createTweetElement(tweet);
+                $('#tweet-feed').prepend($newTweet);
             });
 
             // Update the last displayed tweet index
