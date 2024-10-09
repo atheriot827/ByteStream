@@ -199,8 +199,8 @@ $(document).ready(() => {
         src: 'images/bytestream-logo.svg',
         alt: 'ByteStream Logo'
     }).css({
-        width: '270px',  // Adjust this value as needed
-        maxWidth: '1200px',  // Adjust this value as needed
+        width: '270px',  
+        maxWidth: '1200px',  
         height: 'auto',
         display: 'block'
     });
@@ -212,7 +212,6 @@ $(document).ready(() => {
         transition: 'transform 0.3s ease-in-out'
     });
     
-    // Add this to the head of your document
     $('<style>')
         .text(`
             @keyframes pulse {
@@ -227,7 +226,7 @@ $(document).ready(() => {
         .appendTo('head');
 
     // Create sidebar content (trending hashtags, etc.)
-    const $sidebar = createSidebar(); // Assuming you have this function
+    const $sidebar = createSidebar(); 
     $sidebarWrapper.append($sidebar);
 
     return $sidebarWrapper;
@@ -534,7 +533,6 @@ function updateTrendingReactions() {
       });
   
       const $returnButton = $('<button id="return-button">Return to All Tweets</button>').css({
-          // Add any specific styles for the return button here
       });
   
       $leftButtonGroup.append($tweetButton).append($emojiButton);
@@ -843,7 +841,7 @@ function updateTrendingReactions() {
             display: 'flex',
             justifyContent: 'flex-start',
             flexWrap: 'wrap',
-            marginTop: '8px'  // Reduced from 10px
+            marginTop: '8px'  
         });
     
         Object.keys(initialReactions).forEach(reaction => {
@@ -857,29 +855,29 @@ function updateTrendingReactions() {
                 border: '1px solid rgba(0, 255, 255, 0.3)',
                 color: '#00FFFF',
                 cursor: 'pointer',
-                fontSize: '12px',  // Reduced from 14px
-                padding: '3px 8px',  // Reduced from 5px 10px
-                borderRadius: '15px',  // Reduced from 20px
-                marginRight: '4px',  // Reduced from 5px
-                marginBottom: '4px',  // Reduced from 5px
+                fontSize: '12px',  
+                padding: '3px 8px',  
+                borderRadius: '15px',
+                marginRight: '4px', 
+                marginBottom: '4px',
                 display: 'flex',
                 alignItems: 'center',
                 transition: 'all 0.3s ease'
             });
     
             $reactionButton.find('.reaction-emoji').css({
-                marginRight: '3px'  // Reduced from 5px
+                marginRight: '3px'  
             });
     
             $reactionButton.find('.reaction-count').css({
-                fontSize: '10px'  // Reduced from 12px
+                fontSize: '10px'
             });
     
             $reactionButton.hover(
                 function() {
                     $(this).css({
                         background: 'rgba(0, 255, 255, 0.2)',
-                        boxShadow: '0 0 8px rgba(0, 255, 255, 0.3)'  // Reduced from 10px
+                        boxShadow: '0 0 8px rgba(0, 255, 255, 0.3)'
                     });
                 },
                 function() {
