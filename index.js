@@ -1,14 +1,23 @@
 $(document).ready(() => {
-  // Constants
+  // Constants ////////////////////////////////////////////////////////////////////////////////
+
+  //these constants define the number of the new tweets to display and the max number of tweets to show in the feed
+
   const newTweetsCount = 3;
   const maxDisplayedTweets = 10;
 
-  // Global variables
+  // Global variables /////////////////////////////////////////////////////////////////////////
+
+  //keep track of current view ('main', 'user', or 'hashtag')
   let currentView = 'main';
+  //store the timer for auto-refreshing tweets
   let autoRefreshTimer;
+  //a set to store unique tweet messages to avoid duplicates
   const displayedTweetMessages = new Set();
 
-  // Initialize the page
+  // Initialize the page ///////////////////////////////////////////////////////////////////////
+
+  //ensures that the code runs only after the DOM is fully loaded
   initializeStyles();
   createLayout();
   createSidebar();
@@ -18,7 +27,9 @@ $(document).ready(() => {
   createTweets();
   autoRefreshTweets();
 
-  // Main functions
+  // Main functions ///////////////////////////////////////////////////////////////////////////
+
+  //set up the global styles for the application, including fonts, colors and animations
   function initializeStyles() {
       $('body').css({
           fontFamily: 'Roboto, sans-serif',
@@ -126,6 +137,7 @@ $(document).ready(() => {
       $('head').append(globalStyles);
   }
 
+  //create the main layout structure of the application, including content wrapper, main content, and sidebar
   function createLayout() {
       const $contentWrapper = createContentWrapper();
       const $mainContentWrapper = createMainContentWrapper();
@@ -232,6 +244,8 @@ $(document).ready(() => {
     return $sidebarWrapper;
 }
 
+
+  //generate the sidebar content, including the logo, celebrate button, trending reactions, and trending hashtags
   function createSidebar() {
       const $sidebar = $('<div id="sidebar"></div>').css({
           flex: '1',
@@ -247,7 +261,7 @@ $(document).ready(() => {
           border: '1px solid rgba(0, 255, 255, 0.05)'
       });
 
-      // Create the celebration button
+      //create the celebration button
     const $celebrateButton = $('<button id="celebrate-button">Byte-sized Fun!</button>').css({
         fontFamily: 'Orbitron, sans-serif',
         width: '100%',
@@ -265,7 +279,7 @@ $(document).ready(() => {
         textShadow: '0 0 5px rgba(255, 255, 255, 0.5)'
     });
 
-    // Add hover effect
+    //add hover effect
     $celebrateButton.hover(
         function() {
             $(this).css({
@@ -281,13 +295,13 @@ $(document).ready(() => {
         }
     );
 
-    // Add click event for confetti
+    //add click event for confetti
     $celebrateButton.on('click', triggerConfetti);
 
-    // Add the button to the sidebar
+    //add the button to the sidebar
     $sidebar.prepend($celebrateButton);
 
-      // Add trending reactions section
+      //add trending reactions section
     const $trendingReactionsTitle = $('<h2>Trending Reactions</h2>').css({
         fontFamily: 'Orbitron, sans-serif',
         textAlign: 'left',
@@ -302,7 +316,7 @@ $(document).ready(() => {
     const $trendingReactions = $('<div id="trending-reactions"></div>');
     $sidebar.append($trendingReactionsTitle).append($trendingReactions);
 
-    // Add trending hashtags section
+    //add trending hashtags section
     const $trendingHashtagsTitle = $('<h2>Trending Hashtags</h2>').css({
         fontFamily: 'Orbitron, sans-serif',
         textAlign: 'left',
@@ -325,7 +339,7 @@ $(document).ready(() => {
     return $sidebar;
   }
 
-  // Confetti function
+  //confetti function
 function triggerConfetti() {
     confetti({
         particleCount: 300,
@@ -380,6 +394,7 @@ function updateTrendingReactions() {
     });
 }
 
+  //create the main container for tweets and tweet controls
   function createContainer() {
       const $container = $('<div class="container"></div>').css({
           flexBasis: '70%',
@@ -541,6 +556,7 @@ function updateTrendingReactions() {
       return $buttonContainer;
   }
 
+    //set up event listener for various interactive elements like the emoji picker, tweet button, and return button
     function initializeEventListeners() {
         initializeEmojiPicker();
         initializeTweetButton();
@@ -703,7 +719,9 @@ function updateTrendingReactions() {
         });
     }
 
-    // Helper functions
+    // Helper functions //////////////////////////////////////////////////////////////////////////
+
+    //generate CSS styles for tweets and timestamps
     function createTweetStyle() {
         return {
             background: 'rgba(255, 255, 255, 0.05)',
@@ -727,10 +745,12 @@ function updateTrendingReactions() {
         };
     }
 
+    //process tweet messages to highlight hashtags
     function processMessage(message) {
         return message.replace(/(#\w+)/g, '<span class="hashtag">$1</span>');
     }
 
+    //populate the trending hashtags list in the sidebar
     function loadTrendingHashtags($trendingList) {
         tags.forEach(tag => {
             if(tag) {
@@ -765,6 +785,7 @@ function updateTrendingReactions() {
         });
     }
 
+    //update the trending hashtags based on the current tweets
     function updateTrendingHashtags() {
         const hashtagCounts = {};
         const $tweetFeed = $('#tweet-feed');
@@ -799,6 +820,7 @@ function updateTrendingReactions() {
         });
     }
 
+    //write a new tweet and display it in the feed
     function writeTweetAndDisplay(message, username) {
         try {
             // Check if the tweet already exists in streams.home
@@ -825,7 +847,7 @@ function updateTrendingReactions() {
         }
     }
 
-    //create a random reaction count for each user
+    //create a random reaction count for tweets
     function getRandomReactions() {
         const reactions = ['👍', '❤️', '😂', '😮', '😢', '😡'];
         const counts = {};
@@ -835,6 +857,7 @@ function updateTrendingReactions() {
         return counts;
     }
 
+    //add reaction buttons to a tweet
     function addReactions($tweetDiv) {
         const initialReactions = getRandomReactions();
         const $reactionContainer = $('<div class="reaction-container"></div>').css({
@@ -905,6 +928,7 @@ function updateTrendingReactions() {
         updateTrendingReactions();
     }
 
+    //create a DOM element for a single tweet
     function createTweetElement(tweet) {
         const $tweetDiv = $('<div class="tweet"></div>').css(createTweetStyle());
         
@@ -957,6 +981,7 @@ function updateTrendingReactions() {
         return $tweetDiv;
     }
 
+    //populate the tweet feed with tweets
     function createTweets(additionalTweets = []) {
         $('#return-button').hide();
         const allTweets = streams.home.slice().reverse();
@@ -974,6 +999,7 @@ function updateTrendingReactions() {
         updateTrendingReactions();
     }
 
+    //display tweets from a specific user
   function showUserTimeline(username) {
       clearTimeout(autoRefreshTimer);
       currentView = 'user';
@@ -1023,6 +1049,7 @@ function updateTrendingReactions() {
       });
   }
 
+  //show tweets containing a specific hashtag
   function showHashtagTimeline(hashtag) {
       clearTimeout(autoRefreshTimer);
       currentView = 'hashtag';
@@ -1073,6 +1100,7 @@ function updateTrendingReactions() {
 
   let lastDisplayedTweetIndex = 0;
 
+  //automatically refresh tweet feed at regular intervals
 function autoRefreshTweets() {
     console.log('autoRefreshTweets called');
 
