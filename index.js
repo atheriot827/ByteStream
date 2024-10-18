@@ -17,7 +17,7 @@ $(document).ready(() => {
 
   // Initialize the page ///////////////////////////////////////////////////////////////////////
 
-  //ensures that the code runs only after the DOM is fully loaded
+  //ensure that the code runs only after the DOM is fully loaded
   initializeStyles();
   createLayout();
   createSidebar();
@@ -31,16 +31,19 @@ $(document).ready(() => {
 
   //set up the global styles for the application, including fonts, colors and animations
   function initializeStyles() {
+    //set the body's font family and background color
       $('body').css({
           fontFamily: 'Roboto, sans-serif',
           backgroundColor: '#1b1b1b',
           color: '#fff'
       });
 
+      //set the font family for headings
       $('h1, h2, h3').css({
           fontFamily: "'Orbitron', sans-serif"
       });
 
+      //define and append global styles
       const globalStyles = `
           <style>
               .user { color: #00FFFF; }
@@ -134,23 +137,31 @@ $(document).ready(() => {
     }
           </style>
       `;
+      //append the global styles to the head of the document
       $('head').append(globalStyles);
   }
 
   //create the main layout structure of the application, including content wrapper, main content, and sidebar
   function createLayout() {
+    //create the main components of the layout
       const $contentWrapper = createContentWrapper();
       const $mainContentWrapper = createMainContentWrapper();
       const $sidebarWrapper = createSidebarWrapper();
       const $container = createContainer();
 
+      //append the sidebar and the main container to the main content wrapper
       $mainContentWrapper.append($sidebarWrapper).append($container);
+      //append main content wrapper to the content wrapper
       $contentWrapper.append($mainContentWrapper);
+      //clear the body and append the new layout
       $('body').empty().append($contentWrapper);
   }
 
+  //create and return the main content wrapper with specific styles
   function createContentWrapper() {
+    //create a new div element with id 'content-wrapper'
       return $('<div id="content-wrapper"></div>').css({
+        //set various CSS properties for the content wrapper
           display: 'flex',
           flexDirection: 'column',
           minHeight: '100vh',
@@ -159,6 +170,7 @@ $(document).ready(() => {
           padding: '20px',
           overflow: 'hidden',
           backgroundColor: '#050505',
+          //complex background with a cyberpunk feel
           backgroundImage: `
               linear-gradient(30deg, #0a0a0a 12%, transparent 12.5%, transparent 87%, #0a0a0a 87.5%, #0a0a0a),
               linear-gradient(150deg, #0a0a0a 12%, transparent 12.5%, transparent 87%, #0a0a0a 87.5%, #0a0a0a),
@@ -172,8 +184,11 @@ $(document).ready(() => {
       });
   }
 
+  //create and return the wrapper for the main content area
   function createMainContentWrapper() {
+    //create a new div element with id 'main-content-wrapper'
       return $('<div id="main-content-wrapper"></div>').css({
+        //set various CSS properties for the main content wrapper
           display: 'flex',
           justifyContent: 'space-between',
           flex: '1 1 auto',
@@ -184,8 +199,10 @@ $(document).ready(() => {
   }
 
   function createSidebarWrapper() {
+    //define margin values
     const leftMargin = '30px';
     const bottomMargin = '30px';
+    //create the sidebar wrapper with specific styling
     const $sidebarWrapper = $('<div id="sidebar-wrapper"></div>').css({
         display: 'flex',
         flexDirection: 'column',
@@ -195,17 +212,18 @@ $(document).ready(() => {
         marginBottom: bottomMargin,
     });
 
+    //create container for the title (logo)
     const $titleContainer = $('<div id="title-container"></div>').css({
         marginBottom: '5px',
         flexShrink: 0,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: '0.30px',  // Reduce padding
+        padding: '0.30px',  //reduce padding
         boxSizing: 'border-box'
     });
 
-    // Create img element for the SVG logo
+    //create img element for the SVG logo
     const $logo = $('<img>').attr({
         id: 'logo-svg',
         src: 'images/bytestream-logo.svg',
@@ -217,13 +235,17 @@ $(document).ready(() => {
         display: 'block'
     });
 
+    //append logo to the title container
     $titleContainer.append($logo);
+    //append the title container to the sidebar wrapper
     $sidebarWrapper.append($titleContainer);
 
+    //add transition effect to the logo
     $logo.css({
         transition: 'transform 0.3s ease-in-out'
     });
     
+    //add pulsing animation to the logo
     $('<style>')
         .text(`
             @keyframes pulse {
@@ -237,7 +259,7 @@ $(document).ready(() => {
         `)
         .appendTo('head');
 
-    // Create sidebar content (trending hashtags, etc.)
+    //create and append the sidebar content (trending hashtags, etc.)
     const $sidebar = createSidebar(); 
     $sidebarWrapper.append($sidebar);
 
@@ -247,6 +269,7 @@ $(document).ready(() => {
 
   //generate the sidebar content, including the logo, celebrate button, trending reactions, and trending hashtags
   function createSidebar() {
+      //create the main sidebar container with styling
       const $sidebar = $('<div id="sidebar"></div>').css({
           flex: '1',
           backgroundColor: 'rgba(20, 20, 20, 0.6)',
@@ -335,6 +358,7 @@ $(document).ready(() => {
     });
     $sidebar.append($trendingHashtagsTitle).append($trendingList);
 
+    //load initial trending hashtags
     loadTrendingHashtags($trendingList);
     return $sidebar;
   }
@@ -351,22 +375,38 @@ function triggerConfetti() {
 
   //add feature to side bar showing top reactions
   function getTopReactions() {
+    //create an empty object to store the total count for each emoji reaction
     const reactionCounts = {};
+    //use jQuery to select all elements with the class 'reaction-button' and iterate over them
     $('.reaction-button').each(function() {
+        //for each reaction button extract the emoji text
         const emoji = $(this).find('.reaction-emoji').text();
+        //extract the reaction count and parse it as an integer
         const count = parseInt($(this).find('.reaction-count').text());
+        //add the count to the total for that emoji to the reactionCounts object
         reactionCounts[emoji] = (reactionCounts[emoji] || 0) + count;
+        //(this) refers to the current DOM element in the iteration
+        //when using jQuery's .each()method, it iterated over a set of elements (all elements with the class 'reaction-button')
+        //inside the callback function passed to .each(), this is set to the current element being processed in the iteration
+        //$(this) wraps the current DOM element in a jQuery object, allowing the use of jQuery methods on it
+        //so, $(this).find('.reaction-emoji') is looking for an element with the class 'reaction-emoji' within the current reaction button
+        //$(this).find('.reaction-count') is looking for an element with the class 'reaction-count' within the current reaction button
     });
+    //convert the reactionCount object into an array of [emoji, count] pairs
     return Object.entries(reactionCounts)
+        //sort this array in descending order based on the count
         .sort((a, b) => b[1] - a[1])
-        .slice(0, 5);  // Get top 5 reactions
+        //return the top 5 reactions using slice 
+        .slice(0, 5);
 }
 
+//create function to update trending reactions in the sidebar
 function updateTrendingReactions() {
     const $trendingReactions = $('#trending-reactions');
     const topReactions = getTopReactions();
+    //clear the existing reactions
     $trendingReactions.empty();
-
+    //add each top reaction to the sidebar
     topReactions.forEach(([emoji, count]) => {
         const $reactionItem = $(`
             <div class="trending-reaction-item">
@@ -417,6 +457,7 @@ function updateTrendingReactions() {
       return $container;
   }
 
+  //function to create the wrapper for the tweet feed
   function createTweetFeedWrapper() {
       const $tweetFeedWrapper = $('<div id="tweet-feed-wrapper"></div>').css({
           flex: '1 1 auto',
@@ -451,6 +492,7 @@ function updateTrendingReactions() {
       return $tweetFeedWrapper;
   }
 
+  //function to create the tweet controls section
   function createTweetControls() {
       const $tweetControls = $('<div id="tweet-controls"></div>').css({
           flexShrink: 0,
@@ -473,6 +515,7 @@ function updateTrendingReactions() {
       return $tweetControls;
   }
 
+  //function to create an input element with specified id and placeholder
   function createInput(id, placeholder) {
       return $(`<input id="${id}" placeholder="${placeholder}" />`).css({
           width: '100%',
@@ -486,6 +529,7 @@ function updateTrendingReactions() {
       });
   }
 
+  //function to create a textarea element with specified id and placeholder
   function createTextarea(id, placeholder) {
       return $(`<textarea id="${id}" placeholder="${placeholder}"></textarea>`).css({
           width: '100%',
@@ -503,6 +547,7 @@ function updateTrendingReactions() {
         });
     }
 
+    //function to create the container for the tweet and emoji buttons
     function createButtonContainer() {
       const $buttonContainer = $('<div></div>').css({
           display: 'flex',
@@ -511,12 +556,12 @@ function updateTrendingReactions() {
   
       const $leftButtonGroup = $('<div></div>').css({
           display: 'flex',
-          gap: '10px'  // This adds space between the Tweet and Emoji buttons
+          gap: '10px'  //this adds space between the Tweet and Emoji buttons
       });
   
       const $tweetButton = $('<button id="tweet-button">Tweet</button>').css({
         padding: '8px 16px',
-        backgroundColor: 'rgba(0, 255, 255, 0.3)', // More transparent cyan
+        backgroundColor: 'rgba(0, 255, 255, 0.3)', 
         color: '#ffffff',
         border: '1px solid rgba(0, 255, 255, 0.5)',
         borderRadius: '5px',
@@ -526,12 +571,16 @@ function updateTrendingReactions() {
         transition: 'all 0.3s ease'
     }).hover(
         function() {
-            $(this).css('backgroundColor', 'rgba(0, 255, 255, 0.5)'); // Slightly less transparent on hover
+            $(this).css('backgroundColor', 'rgba(0, 255, 255, 0.5)'); //slightly less transparent on hover
         },
         function() {
-            $(this).css('backgroundColor', 'rgba(0, 255, 255, 0.3)'); // Back to original transparency
+            $(this).css('backgroundColor', 'rgba(0, 255, 255, 0.3)'); //back to original transparency
         }
+        //(this) refers to the DOM element that triggered the hover event (the tweet button)
+        //the hover method takes two functions: one for mouseenter and one for mouseleave
+        //in both cases (this) is the button element
     );
+
   
       const $emojiButton = $('<button id="emoji-button">😀</button>').css({
           padding: '10px 20px',
@@ -557,6 +606,8 @@ function updateTrendingReactions() {
   }
 
     //set up event listener for various interactive elements like the emoji picker, tweet button, and return button
+
+    //function to initialize all event listeners
     function initializeEventListeners() {
         initializeEmojiPicker();
         initializeTweetButton();
@@ -564,7 +615,9 @@ function updateTrendingReactions() {
         initializeInputFocus();
     }
 
+    //function to initialize the emoji picker
     function initializeEmojiPicker() {
+        //create a new EmojiButton instance
         const picker = new EmojiButton({
             position: 'top-start',
             theme: 'dark',
@@ -578,15 +631,18 @@ function updateTrendingReactions() {
             }
         });
 
+        //add click event listener to the emoji button
         $('#emoji-button').on('click', (event) => {
             event.preventDefault();
             picker.togglePicker(event.target);
         });
 
+        //add emoji to tweet input when an emoji is selected
         picker.on('emoji', emoji => {
             $('#tweet-input').val($('#tweet-input').val() + emoji);
         });
 
+        //add hover effects tot he emoji button
         $('#emoji-button').hover(
             function() {
                 $(this).css({
@@ -605,6 +661,7 @@ function updateTrendingReactions() {
         );
     }
 
+    //function to initialize the tweet button
     function initializeTweetButton() {
         $(document).on('click', '#tweet-button', function(e) {
             e.preventDefault();
@@ -614,6 +671,7 @@ function updateTrendingReactions() {
             const tweetMessage = $('#tweet-input').val().trim();
 
             if (username && tweetMessage) {
+                //visual feedback when tweet is being posted
                 $button.css({
                     backgroundColor: 'rgba(0, 255, 255, 0.6)',
                     boxShadow: '0 0 20px rgba(0, 255, 255, 0.8)',
@@ -624,6 +682,7 @@ function updateTrendingReactions() {
                     writeTweetAndDisplay(tweetMessage, username);
                     $('#tweet-input').val('');
 
+                    //change button appearance to indicate successful posting
                     $button.text('Posted!')
                         .css({
                             backgroundColor: 'rgba(0, 255, 255, 0.4)',
@@ -633,6 +692,7 @@ function updateTrendingReactions() {
                             transform: 'scale(1.05)'
                         });
 
+                    //reset  button after a delay
                     setTimeout(() => {
                         $button.text(originalText)
                             .css({
@@ -645,6 +705,7 @@ function updateTrendingReactions() {
                     }, 1500);
                 }, 100);
             } else {
+                //visual feedback for invalid input
                 $button.css({
                     backgroundColor: 'rgba(255, 0, 0, 0.4)',
                     boxShadow: '0 0 20px rgba(255, 0, 0, 0.8)'
@@ -662,11 +723,13 @@ function updateTrendingReactions() {
         });
     }
 
+    //function to initialize the return button
     function initializeReturnButton() {
         $(document).on('click', '#return-button', function() {
             const $button = $(this);
             const originalText = $button.text();
 
+            //visual feedback when button is clicked
             $button.css({
                 backgroundColor: 'rgba(255, 20, 147, 0.6)',
                 boxShadow: '0 0 20px rgba(255, 20, 147, 0.8)',
@@ -681,6 +744,7 @@ function updateTrendingReactions() {
                 createTweets();
                 autoRefreshTweets();
 
+                //change button appearance to indicate successful return
                 $button.text('Returned!')
                     .css({
                         backgroundColor: 'rgba(255, 20, 147, 0.4)',
@@ -690,6 +754,7 @@ function updateTrendingReactions() {
                         transform: 'scale(1.05)'
                     });
 
+                //reset and hide button after a delay
                 setTimeout(() => {
                     $button.text(originalText)
                         .css({
@@ -705,6 +770,7 @@ function updateTrendingReactions() {
         });
     }
 
+    //function to initialize input focus effects
     function initializeInputFocus() {
         $('#username-input, #tweet-input').on('focus', function() {
             $(this).css({
@@ -790,6 +856,7 @@ function updateTrendingReactions() {
         const hashtagCounts = {};
         const $tweetFeed = $('#tweet-feed');
 
+        //count hashtags in all tweets
         $tweetFeed.find('.tweet').each(function() {
             const tweetText = $(this).find('p').text();
             const hashtags = tweetText.match(/#\w+/g) || [];
@@ -798,6 +865,7 @@ function updateTrendingReactions() {
             });
         });
 
+        //sort hashtags by count and get top 10
         const sortedHashtags = Object.entries(hashtagCounts)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 10)
@@ -805,6 +873,8 @@ function updateTrendingReactions() {
 
         const $trendingList = $('#trending-list');
         $trendingList.empty();
+
+        //add sorted hashtags to the trending list
         sortedHashtags.forEach(tag => {
             $('<li></li>')
                 .text(tag)
@@ -932,6 +1002,7 @@ function updateTrendingReactions() {
     function createTweetElement(tweet) {
         const $tweetDiv = $('<div class="tweet"></div>').css(createTweetStyle());
         
+        //add hoer effect to the tweet
         $tweetDiv.hover(
             function() {
                 $(this).css({
@@ -947,6 +1018,7 @@ function updateTrendingReactions() {
             }
         );
     
+        //create and style the username element
         const $user = $(`<span class="user">@${tweet.user}</span>`).css({
             fontWeight: 'bold',
             cursor: 'pointer',
@@ -957,25 +1029,30 @@ function updateTrendingReactions() {
             showUserTimeline(tweet.user);
         });
     
+        //create and style the message element
         const $message = $('<p></p>').html(processMessage(tweet.message)).css({
             margin: '10px 0',
             color: '#FFFFFF',
             textShadow: '0 0 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.6)'
         });
     
+        //add click event to hashtags in the message
         $message.on('click', '.hashtag', function(e) {
             e.stopPropagation();
             const hashtag = $(this).text();
             showHashtagTimeline(hashtag);
         });
     
+        //format and add timestamp
         const formattedTime = moment(tweet.created_at).format('MMMM Do YYYY, h:mm A');
         const relativeTime = moment(tweet.created_at).fromNow();
         const $timeInfo = $('<span class="time"></span>')
             .text(`${relativeTime} | ${formattedTime}`)
             .css(createTimeStampStyle());
     
+        //assemble the tweet elements
         $tweetDiv.append($user).append($message).append($timeInfo);
+        //add reaction buttons to the tweet
         addReactions($tweetDiv);
     
         return $tweetDiv;
